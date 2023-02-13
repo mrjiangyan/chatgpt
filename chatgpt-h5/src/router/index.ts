@@ -1,72 +1,84 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { useRandomName } from "./../utils/utils";
+
+import {
+  createRouter,
+  createWebHistory,
+  Router,
+  RouteRecordRaw
+} from "vue-router";
+import store from "../store";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'Home',
-    // route level code-splitting
-    // this generates a separate chunk (home.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('../views/home/index.vue'),
-    meta: {
-      title: '首页',
-      showTab: true,
-      keepAlive: true
-    }
+    path: "/",
+    name: "LAYOUT",
+    redirect: "/home",
+    component: () =>
+      import(/* webpackChunkName: "layout" */ "../views/layout/index.vue"),
+    children: [
+      {
+        path: "home",
+        name: "HOME",
+        component: () =>
+          import(/* webpackChunkName: "about" */ "../views/Home.vue")
+      },
+      {
+        path: "about",
+        name: "ABOUT",
+        component: () =>
+          import(/* webpackChunkName: "about" */ "../views/About.vue")
+      }
+    ]
   },
   {
-    path: '/signin',
-    name: 'Signin',
-    component: () => import('../views/login/signin.vue'),
-    meta: {
-      title: '登录'
-    }
+    path: "/shop",
+    name: "SHOP",
+    component: () =>
+      import(/* webpackChunkName: "SHOP" */ "../views/shop/index.vue")
   },
   {
-    path: '/signup',
-    name: 'Signup',
-    component: () => import('../views/login/signup.vue'),
-    meta: {
-      title: '注册'
-    }
+    path: "/vuex",
+    name: "VUEX",
+    component: () =>
+      import(/* webpackChunkName: "vuex" */ "../views/vuex/index.vue")
   },
   {
-    path: '/power',
-    name: 'Power',
-    component: () => import('../views/power/index.vue'),
-    meta: {
-      title: '扩展功能',
-      showTab: true
-    }
+    path: "/message",
+    name: "MESSAGE",
+    component: () =>
+      import(/* webpackChunkName: "message" */ "../views/message/index.vue")
   },
   {
-    path: '/power/svg-icon',
-    name: 'SvgIcon',
-    component: () => import('../views/power/demo/svgicon.vue'),
-    meta: {
-      title: '图标组件'
-    }
+    path: "/form",
+    name: "FORM",
+    component: () =>
+      import(/* webpackChunkName: "form" */ "../views/message/form.vue")
   },
   {
-    path: '/user',
-    name: 'User',
-    component: () => import('../views/user/index.vue'),
-    meta: {
-      title: '个人中心',
-      showTab: true
-    }
-  },
-  // 404
-  {
-    path: '/:pathMatch(.*)*',
-    name: '404',
-    redirect: '/'
+    path: "/video",
+    name: "Video",
+    component: () =>
+      import(/* webpackChunkName: "video" */ "../views/video/index")
   }
-]
+];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(process.env.BASE_URL),
   routes
-})
+});
 
-export default router
+function RouterStack(router: Router) {
+  // const stack = [];
+  router.afterEach((to, from) => {
+    if (!store.state.user.loginUser) {
+      store.commit("setUserInfo", useRandomName());
+    }
+
+    console.log(to, from);
+  });
+  return router;
+}
+
+RouterStack(router);
+
+export default router;

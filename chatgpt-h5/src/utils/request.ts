@@ -1,42 +1,35 @@
-import { AxiosRequestConfig } from 'axios'
-import { Toast, Dialog } from 'vant'
-import store from '@/store'
-import service from './axios'
+import axios from "axios";
+const baseURL = "http://localhost:8080/api";
+const requestTimeout = 10000;
+const instance = axios.create({
+  baseURL,
+  timeout: requestTimeout,
+  headers: {
+    "Content-Type": "application/json;charset=UTF-8"
+  }
+});
 
-interface BaseResponse<T> {
-  code: number
-  status: boolean
-  data: T
-  message?: string
-}
+instance.interceptors.request.use(
+  config => {
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
+  }
+);
+instance.interceptors.response.use(
+  response => {
+    const res = response.data;
+    return res;
+  },
+  error => {
+    const { response } = error;
+    if (response && response.data) {
+      return Promise.reject(error);
+    } else {
+      return Promise.reject(error);
+    }
+  }
+);
 
-const request = <T>(config: AxiosRequestConfig): Promise<BaseResponse<T>> => {
-  return new Promise((resolve, reject) => {
-    service.request<BaseResponse<T>>(config).then(
-      res => {
-        resolve(res.data)
-      },
-      err => {
-        switch (err?.code) {
-          case 401:
-            // token失效
-            Dialog.alert({
-              title: '提示',
-              message: '您还未登录或登录已过期，请重新登录'
-            }).then(() => {
-              store.dispatch('user/signOut').then(() => {
-                location.reload()
-              })
-            })
-            break
-          default:
-            Toast(err.message)
-            break
-        }
-        reject(err)
-      }
-    )
-  })
-}
-
-export default request
+export default instance;

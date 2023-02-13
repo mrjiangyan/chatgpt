@@ -4,31 +4,23 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-  <title>
-    <%= htmlWebpackPlugin.options.title %>
-  </title>
-  <script src="https://cdn.bootcdn.net/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
-  <script>
-    if ('addEventListener' in document) {
-      document.addEventListener('DOMContentLoaded', function () {
-        FastClick.attach(document.body);
-      }, false);
-    }
-    if (!window.Promise) {
-      document.writeln('<script src="https://cdn.bootcdn.net/ajax/libs/es6-promise/4.2.8/es6-promise.min.js"' + '>' + '<' + '/' + 'script>');
-    }
-  </script>
+  <link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_2099210_52d6qisgxxl.css">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title><%= htmlWebpackPlugin.options.title %></title>
 </head>
 
 <body>
   <noscript>
     <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
-        Please enable it to continue.</strong>
+      Please enable it to continue.</strong>
   </noscript>
-  <div id="app"></div>
-  <!-- built files will be auto injected -->
+  <div id="app">
+    你能看见我？
+  </div>
 </body>
 
 </html>

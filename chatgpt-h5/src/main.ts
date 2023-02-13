@@ -1,19 +1,20 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
+import { vantPlugins } from "./plugins/vant";
+import Bmob, { globalPlugins } from "./plugins/global";
+import "./assets/style/reset.less";
+import "./assets/style/global.less";
+import { Toast } from "vant";
+const app = createApp(App);
+app.config.globalProperties.$bmob = Bmob;
+app.config.globalProperties.$toast = Toast;
 
-import './icons/index'
-import './styles/index.scss'
-
-import './utils/auth'
-import './utils/permission'
-
-import vant from '@/components/Vant'
-
-// eslint-disable-next-line
-createApp(App)
+app
+  .use(Toast)
   .use(store)
   .use(router)
-  .use(vant)
-  .mount('#app')
+  .use(globalPlugins)
+  .use(vantPlugins)
+  .mount("#app");

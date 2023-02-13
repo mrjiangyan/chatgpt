@@ -1,83 +1,87 @@
-'use strict'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const merge = require("webpack-merge");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tsImportPluginFactory = require("ts-import-plugin");
 
-const path = require('path')
-const { merge } = require('webpack-merge')
-const tsImportPluginFactory = require('ts-import-plugin')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pxtoviewport = require("postcss-px-to-viewport");
 
-const config = require('./config')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require("path");
 
 function resolve(dir) {
-  return path.join(__dirname, dir)
+  return path.join(__dirname, dir);
 }
 
-const { mockURL } = config[process.env.NODE_ENV]
+const { VantResolver } = require("unplugin-vue-components/resolvers");
+const ComponentsPlugin = require("unplugin-vue-components/webpack");
 
-// All configuration item explanations can be find in https://cli.vuejs.org/config/
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const autoprefixer = require("autoprefixer");
 module.exports = {
-  publicPath: '/',
-  outputDir: 'dist',
-  assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
-  // https://github.com/youzan/vant/issues/5735
-  parallel: process.env.NODE_ENV === 'development',
-  devServer: {
-    proxy: {
-      '/dev-api': {
-        target: mockURL,
-        pathRewrite: {
-          '^/dev-api': '/'
-        },
-        secure: false,
-        changeOrigin: true
+  parallel: false,
+  css: {
+    loaderOptions: {
+      //配置less主题
+      less: {
+        lessOptions: {
+          modifyVars: {
+            // 直接覆盖变量
+            "text-color": "#111",
+            "border-color": "#eee",
+            // 或者可以通过 less 文件覆盖（文件路径为绝对路径）
+            hack: `true; @import "./src/theme/var.less";`
+          }
+        }
+      },
+      //配置路vw vm适配
+      postcss: {
+        plugins: [
+          autoprefixer(),
+          pxtoviewport({
+            viewportWidth: 375
+          })
+        ]
       }
     }
   },
+  //配置路径别名
   configureWebpack: {
-    devtool: 'source-map',
-    name: 'vue-h5-template',
+    plugins: [
+      ComponentsPlugin({
+        resolvers: [VantResolver()]
+      })
+    ],
     resolve: {
       alias: {
-        '@': resolve('src')
+        "@": resolve("src"),
+        "@assets": resolve("src/assets")
       }
     }
   },
 
-  chainWebpack(config) {
-    // set ts-loader
+  chainWebpack: config => {
     config.module
-      .rule('ts')
-      .use('ts-loader')
+      .rule("ts")
+      .use("ts-loader")
       .tap(options => {
         options = merge(options, {
           transpileOnly: true,
           getCustomTransformers: () => ({
             before: [
               tsImportPluginFactory({
-                libraryName: 'vant',
-                libraryDirectory: 'es',
-                style: true
+                libraryName: "vant",
+                libraryDirectory: "es",
+                style: name => `${name}/style/less`
+                // style: true
               })
             ]
           }),
           compilerOptions: {
-            module: 'es2015'
+            module: "es2015"
           }
-        })
-        return options
-      })
-
-    // set svg-sprite-loader
-    config.module.rule('svg').exclude.add(resolve('src/icons')).end()
-    config.module
-      .rule('icons')
-      .test(/\.svg$/)
-      .include.add(resolve('src/icons'))
-      .end()
-      .use('svg-sprite-loader')
-      .loader('svg-sprite-loader')
-      .options({
-        symbolId: 'icon-[name]'
-      })
-      .end()
+        });
+        return options;
+      });
   }
-}
+};
