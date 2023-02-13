@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos.ai-prime.tech:8848
+        watch:
+          enabled: true
+      config:
+        server-addr: nacos.ai-prime.tech:8848
+        file-extension: yaml
+        enabled: true
+
+
+
+

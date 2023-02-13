@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="warn" scan="true">
+
+    <property name="logbasedir" value="/opt/logs/chatgpt-service"/>
+    <springProperty scope="context" name="app.name" source="spring.application.name"/>
+    <springProperty scope="context" name="profile" source="spring.profiles.active"/>
+    <property name="logStore" value="${app.name}"/>
+    <property name="logPattern" value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%cyan(%X{traceId})] [%class{0}:%line]: %msg%n%rEx{full,
+     java.lang.reflect.Method,
+     sun.reflect,
+     org.apache.catalina,
+     org.springframework.aop,
+     org.springframework.security,
+     org.springframework.transaction,
+     org.springframework.web,
+     org.springframework.beans,
+     org.springframework.cglib,
+     net.sf.cglib,
+     org.apache.tomcat.util,
+     org.apache.coyote,
+     ByCGLIB,
+     BySpringCGLIB,
+     com.google.common.cache.LocalCache$
+}"/>
+    <property name="maxHistory" value="3" />
+
+    <appender class="ch.qos.logback.core.ConsoleAppender" name="Console" target="SYSTEM_OUT" follow="true">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+    <appender name="ROOT-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/root.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/root-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <!--
+           当日志文件超过maxFileSize指定的大小时，根据上面提到的%i进行日志文件滚动
+           注意此处配置SizeBasedTriggeringPolicy是无法实现按文件大小进行滚动的，必须配置timeBasedFileNamingAndTriggeringPolicy
+           -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>500MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+    </appender>
+    <appender name="ERROR-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/error.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/error-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    <appender name="TRACE-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/trace.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>trace</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/trace-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    <appender name="INFO-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/info.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    <appender name="DEBUG-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/debug.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/debug-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    <appender name="WARN-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/warn.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>warn</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/warn-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="HTTP-LOG"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logbasedir}/http-log.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${logPattern}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logbasedir}/http-log-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ASYNC-ROOT" class="ch.qos.logback.classic.AsyncAppender">
+        <includeCallerData>true</includeCallerData>
+        <discardingThreshold>-1</discardingThreshold>
+        <queueSize>1024</queueSize>
+        <appender-ref ref="ROOT-LOG"/>
+    </appender>
+
+    <logger name="com.alibaba.nacos" level="error"/>
+
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+
+
+    <springProfile name="local|dev|uat">
+        <logger name="com.touchbiz" level="error"/>
+        <root level="info">
+            <!--Console日志是同步、阻塞的，推荐只在本地调试时使用，线上将该配置去掉-->
+            <appender-ref ref="Console"/>
+            <appender-ref ref="ASYNC-ROOT"/>
+            <appender-ref ref="TRACE-LOG"/>
+            <appender-ref ref="INFO-LOG"/>
+            <appender-ref ref="ERROR-LOG"/>
+            <appender-ref ref="WARN-LOG"/>
+            <appender-ref ref="DEBUG-LOG"/>
+        </root>
+    </springProfile>
+    <springProfile name="preview|production|test|">
+        <logger name="com.touchbiz" level="error"/>
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="ASYNC-ROOT"/>
+            <appender-ref ref="INFO-LOG"/>
+            <appender-ref ref="ERROR-LOG"/>
+            <appender-ref ref="WARN-LOG"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="pat">
+        <logger name="com.touchbiz" level="error"/>
+        <root level="INFO">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="ASYNC-ROOT"/>
+            <appender-ref ref="INFO-LOG"/>
+            <appender-ref ref="ERROR-LOG"/>
+            <appender-ref ref="WARN-LOG"/>
+        </root>
+    </springProfile>
+</configuration>

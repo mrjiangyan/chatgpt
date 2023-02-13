@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        namespace: test
+      config:
+        namespace: test
+
+

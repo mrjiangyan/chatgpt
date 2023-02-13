@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: system-service
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+
+  quartz:
+    auto-startup: false
+    overwrite-existing-jobs: true
+    scheduler-name: system-service-quartz-scheduler
+    properties:
+      org.quartz.scheduler.skipUpdateCheck: true
+management:
+  health:
+    mail:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    health:
+      sensitive: true
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+logging:
+  config: classpath:logback-spring.xml
+mybatis-plus:
+  global-config:
+    banner: false
+    db-config:
+      id-type: AUTO
+      table-underline: true
+  configuration:
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
