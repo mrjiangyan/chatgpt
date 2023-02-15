@@ -1,4 +1,4 @@
-package com.touchbiz.chatgpt;
+package com.touchbiz.chatgpt.common;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

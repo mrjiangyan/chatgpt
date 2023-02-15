@@ -1,4 +1,4 @@
-package com.touchbiz.chatgpt;
+package com.touchbiz.chatgpt.common;
 
 import com.touchbiz.chatgpt.boot.ChatgptApplication;
 import org.junit.runner.RunWith;
@@ -11,14 +11,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(value = {"classpath:application.yml"}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = ChatgptApplication.class)
-@ActiveProfiles(profiles = "local")
+@ActiveProfiles(profiles = "dev")
 @AutoConfigureMockMvc
-@Transactional
+//@Transactional
 @Import({FeignAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class})
 public abstract class BaseTest {
 

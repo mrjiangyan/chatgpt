@@ -1,9 +1,11 @@
 package com.touchbiz.chatgpt.boot.config;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
+import com.alibaba.cloud.nacos.NacosConfigAutoConfiguration;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,7 @@ import java.util.Properties;
  */
 @Configuration
 @RefreshScope
+@ConditionalOnBean(NacosConfigAutoConfiguration.class)
 public class NacosConfig {
 
     public String serverAddr;

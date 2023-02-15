@@ -1,7 +1,6 @@
-package com.touchbiz.chatgpt;
+package com.touchbiz.chatgpt.common;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.touchbiz.cache.starter.IRedisTemplate;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.entity.result.ApiResult;
 import com.touchbiz.common.utils.tools.JsonUtils;
@@ -32,9 +31,6 @@ public abstract class BaseControllerTest extends BaseTest {
 
 //    @Autowired
 //    private WebApplicationContext context;
-
-    @Autowired
-    private IRedisTemplate redisTemplate;
 
     @Before
     public void before() {

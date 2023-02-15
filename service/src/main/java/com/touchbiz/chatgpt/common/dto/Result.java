@@ -1,4 +1,4 @@
-package com.touchbiz.chatgpt.dto;
+package com.touchbiz.chatgpt.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;

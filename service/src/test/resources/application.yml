@@ -3,6 +3,8 @@ server:
   shutdown: graceful
 
 spring:
+  profiles:
+    active: dev
   application:
     name: system-service
   main:

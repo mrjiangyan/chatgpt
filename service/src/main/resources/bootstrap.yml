@@ -5,10 +5,11 @@ spring:
         server-addr: nacos.ai-prime.tech:8848
         watch:
           enabled: true
+        enabled: false
       config:
         server-addr: nacos.ai-prime.tech:8848
         file-extension: yaml
-        enabled: true
+        enabled: false
 
 
 

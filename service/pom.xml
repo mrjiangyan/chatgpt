@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
-    <groupId>com.touchbiz</groupId>
-    <artifactId>chatgpt</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>chatgpt</name>
-    <description>chatgpt</description>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>chatgpt-service</artifactId>
+    <name>chatgpt-service</name>
+
     <properties>
         <java.version>17</java.version>
         <inf-bom.version>2023.2.11.1</inf-bom.version>
@@ -21,8 +20,6 @@
         <spring-cloud.version>2021.0.3</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
         <spring-cloud-commons.version>3.1.2</spring-cloud-commons.version>
-
-        <fastjson.version>1.2.83</fastjson.version>
         <knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
         <knife4j-spring-ui.version>3.0.3</knife4j-spring-ui.version>
         <hutool.version>5.8.9</hutool.version>
@@ -30,11 +27,17 @@
         <guava.version>29.0-jre</guava.version>
         <jmock.version>1.49</jmock.version>
         <commons.version>2.6</commons.version>
+        <!-- shiro -->
+        <shiro.version>1.9.1</shiro.version>
+        <java-jwt.version>4.2.1</java-jwt.version>
+        <minio.version>8.0.3</minio.version>
+        <dom4j.version>1.6.1</dom4j.version>
         <!-- Log4j2爆雷漏洞 -->
         <log4j2.version>2.17.0</log4j2.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <mapstruct.version>1.5.3.Final</mapstruct.version>
         <java-jwt.version>3.11.0</java-jwt.version>
+        <fabric.io.version>5.10.2</fabric.io.version>
     </properties>
 
     <dependencyManagement>
@@ -71,40 +74,15 @@
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>chatgpt-java</id>
-            <url>https://raw.github.com/AcaiSoftware/chatgpt-java/repository/</url>
-        </repository>
-    </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.plexpt</groupId>
-            <artifactId>chatgpt</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>gg.acai</groupId>
-            <artifactId>chatgpt-java</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-jackson</artifactId>
-            <version>12.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>2.0.19</version>
         </dependency>
         <dependency>
             <groupId>com.touchbiz.starter</groupId>
@@ -113,15 +91,27 @@
         <dependency>
             <groupId>com.touchbiz.starter</groupId>
             <artifactId>config-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mapstruct</artifactId>
+                    <groupId>org.mapstruct</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.touchbiz.starter</groupId>
-            <artifactId>cache-starter</artifactId>
-        </dependency>
-        <dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.touchbiz.starter</groupId>-->
+<!--            <artifactId>cache-starter</artifactId>-->
+<!--        </dependency>-->
+        <!-- <dependency>
             <groupId>com.touchbiz.starter</groupId>
             <artifactId>db-starter</artifactId>
-        </dependency>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>mysql</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency> -->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-jdk8</artifactId>
@@ -149,12 +139,26 @@
         </dependency>
 
 
+        <!-- spring quartz -->
+         <!-- <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency> -->
+    
+
+
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>${hutool.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.theokanning.openai-gpt3-java</groupId>
+            <artifactId>client</artifactId>
+            <version>0.10.0</version>
+        </dependency>
+       
         <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
@@ -256,5 +260,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -178,8 +178,6 @@
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
-
-
     <springProfile name="local|dev|uat">
         <logger name="com.touchbiz" level="error"/>
         <root level="info">
@@ -204,14 +202,4 @@
         </root>
     </springProfile>
 
-    <springProfile name="pat">
-        <logger name="com.touchbiz" level="error"/>
-        <root level="INFO">
-            <appender-ref ref="Console"/>
-            <appender-ref ref="ASYNC-ROOT"/>
-            <appender-ref ref="INFO-LOG"/>
-            <appender-ref ref="ERROR-LOG"/>
-            <appender-ref ref="WARN-LOG"/>
-        </root>
-    </springProfile>
 </configuration>

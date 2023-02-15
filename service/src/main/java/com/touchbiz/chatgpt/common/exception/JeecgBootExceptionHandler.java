@@ -1,10 +1,10 @@
-package com.touchbiz.chatgpt.exception;
+package com.touchbiz.chatgpt.common.exception;
 
-import com.touchbiz.chatgpt.dto.Result;
+import com.touchbiz.chatgpt.common.dto.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.redis.connection.PoolException;
+//import org.springframework.dao.DataIntegrityViolationException;
+//import org.springframework.dao.DuplicateKeyException;
+//import org.springframework.data.redis.connection.PoolException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -52,12 +52,12 @@ public class JeecgBootExceptionHandler {
 //	}
 
 
-
-	@ExceptionHandler(DuplicateKeyException.class)
-	public Result<?> handleDuplicateKeyException(DuplicateKeyException e){
-		log.error(e.getMessage(), e);
-		return Result.error("数据库中已存在该记录");
-	}
+//
+//	@ExceptionHandler(DuplicateKeyException.class)
+//	public Result<?> handleDuplicateKeyException(DuplicateKeyException e){
+//		log.error(e.getMessage(), e);
+//		return Result.error("数据库中已存在该记录");
+//	}
 
 
 
@@ -119,17 +119,17 @@ public class JeecgBootExceptionHandler {
         return Result.error("文件大小超出10MB限制, 请压缩或降低文件质量! ");
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public Result<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-    	log.error(e.getMessage(), e);
-    	//【issues/3624】数据库执行异常handleDataIntegrityViolationException提示有误 #3624
-        return Result.error("执行数据库异常,违反了完整性例如：违反惟一约束、违反非空限制、字段内容超出长度等");
-    }
-
-    @ExceptionHandler(PoolException.class)
-    public Result<?> handlePoolException(PoolException e) {
-    	log.error(e.getMessage(), e);
-        return Result.error("Redis 连接异常!");
-    }
+//    @ExceptionHandler(DataIntegrityViolationException.class)
+//    public Result<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+//    	log.error(e.getMessage(), e);
+//    	//【issues/3624】数据库执行异常handleDataIntegrityViolationException提示有误 #3624
+//        return Result.error("执行数据库异常,违反了完整性例如：违反惟一约束、违反非空限制、字段内容超出长度等");
+//    }
+//
+//    @ExceptionHandler(PoolException.class)
+//    public Result<?> handlePoolException(PoolException e) {
+//    	log.error(e.getMessage(), e);
+//        return Result.error("Redis 连接异常!");
+//    }
 
 }

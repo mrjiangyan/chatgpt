@@ -1,4 +1,4 @@
-package com.touchbiz.chatgpt.exception;
+package com.touchbiz.chatgpt.common.exception;
 
 import java.io.Serial;
 
