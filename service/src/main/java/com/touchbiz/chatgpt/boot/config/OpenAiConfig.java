@@ -5,6 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
+
 @Data
 @RefreshScope
 @Configuration
@@ -12,4 +14,6 @@ import org.springframework.context.annotation.Configuration;
 public class OpenAiConfig {
 
     private String key;
+
+    private Duration timeout;
 }

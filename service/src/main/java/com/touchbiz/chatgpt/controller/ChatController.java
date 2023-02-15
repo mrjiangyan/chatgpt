@@ -3,15 +3,17 @@ package com.touchbiz.chatgpt.controller;
 import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.touchbiz.chatgpt.common.dto.Result;
+import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.common.utils.tools.JsonUtils;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 @Slf4j
@@ -20,7 +22,7 @@ import java.util.Arrays;
 public class ChatController {
 
     @Autowired
-    private OpenAiService service;
+    private OpenAiEventStreamService service;
 
     @PostMapping()
     public Mono<Result<?>> prompt(@RequestBody Chat chat){
