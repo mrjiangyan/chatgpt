@@ -6,21 +6,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive } from 'vue'
 export default defineComponent({
   setup() {
     const state = reactive({
       count: 0
-    });
+    })
     const addClick = () => {
-      state.count++;
-    };
+      state.count++
+    }
     return {
       state,
       addClick
-    };
+    }
   }
-});
+})
 </script>
 
 <style scoped></style>

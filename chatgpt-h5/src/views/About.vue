@@ -1,10 +1,11 @@
 <template>
   <div class="mine">
     <div class="my-head">
-      <img :src="require('@/assets/images/banner1.jpg')" alt="" />
+      <div style="background:gray;height:46px;width:100%"></div>
       <span class="head-title">我的</span>
     </div>
     <div
+      v-if="false"
       class="my-container"
       ref="container"
       :draggable="true"
@@ -52,12 +53,7 @@
         </div>
       </div>
       <div class="talk">
-        <van-tabs
-          v-model:active="activeModule"
-          sticky
-          class=" my-tab"
-          color="#85a5ff"
-        >
+        <van-tabs v-model:active="state.activeModule" sticky class=" my-tab" color="#85a5ff">
           <van-tab title="动态">
             <div class="talk-item">
               <div class="talk-user">
@@ -77,33 +73,15 @@
                   冬天总是爱犯困😪
                 </div>
                 <div class="content-img">
-                  <img
-                    class="img1"
-                    :src="talk1Img"
-                    alt=""
-                    @click="showImg([talk1Img])"
-                    srcset=""
-                  />
-                  <img
-                    class="img2"
-                    :src="talk2Img"
-                    alt=""
-                    srcset=""
-                    @click="showImg([talk2Img])"
-                  />
+                  <img class="img1" :src="talk1Img" alt="" @click="showImg([talk1Img])" srcset="" />
+                  <img class="img2" :src="talk2Img" alt="" srcset="" @click="showImg([talk2Img])" />
                 </div>
               </div>
               <div class="talk-action">
                 <!-- 点赞70 -->
-                <div class="like">
-                  <van-icon name="like" size="16" color="red" /> <span>79</span>
-                </div>
-                <div class="comment">
-                  <van-icon name="comment-o" size="16" /><span>12</span>
-                </div>
-                <div class="guide">
-                  <van-icon name="guide-o" size="16" /> <span>10</span>
-                </div>
+                <div class="like"><van-icon name="like" size="16" color="red" /> <span>79</span></div>
+                <div class="comment"><van-icon name="comment-o" size="16" /><span>12</span></div>
+                <div class="guide"><van-icon name="guide-o" size="16" /> <span>10</span></div>
               </div>
             </div>
           </van-tab>
@@ -116,34 +94,34 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
-import { showImg } from "@/utils/utils";
+import { defineComponent, reactive, ref } from 'vue'
+import { showImg } from '@/utils/utils'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const talk1Img = require("@/assets/images/talk1.png");
+const talk1Img = require('@/assets/images/talk1.png')
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const talk2Img = require("@/assets/images/talk2.png");
+const talk2Img = require('@/assets/images/talk2.png')
 export default defineComponent({
-  name: "ABOUT",
+  name: 'ABOUT',
   setup() {
-    const todos = ref([]);
-    const container = ref<HTMLElement>();
+    const todos = ref([])
+    const container = ref<HTMLElement>()
 
     const person = reactive({
       state: {
         age: 0,
-        name: "weizhanzhan"
+        name: 'weizhanzhan'
       },
       methods: {
         setAge: (age: number) => {
-          person.state.age = age;
+          person.state.age = age
         }
       }
-    });
+    })
 
     const state = reactive({
       startY: 0,
       activeModule: 0
-    });
+    })
 
     // async function getTodos() {
     //   todos.value = await axios.get(
@@ -156,29 +134,29 @@ export default defineComponent({
     //   refresh();
     // }
     const onDragStart = (e: TouchEvent) => {
-      state.startY = e.changedTouches[0].clientY;
-    };
+      state.startY = e.changedTouches[0].clientY
+    }
     const onDragOver = (e: TouchEvent) => {
-      const clientY = e.changedTouches[0].clientY;
-      const containerDom = container.value;
-      const initClientY = -100;
-      const scrollAble = clientY - state.startY;
+      const clientY = e.changedTouches[0].clientY
+      const containerDom = container.value
+      const initClientY = -100
+      const scrollAble = clientY - state.startY
 
-      let y = scrollAble + initClientY;
-      y = y / 3.75;
+      let y = scrollAble + initClientY
+      y = y / 3.75
       if (containerDom) {
-        containerDom.style.transition = "none";
-        containerDom.style.transform = "translateY(" + y + "vw)";
+        containerDom.style.transition = 'none'
+        containerDom.style.transform = 'translateY(' + y + 'vw)'
       }
-    };
+    }
     const onDragEnd = (e: TouchEvent) => {
-      console.log(e);
-      const containerDom = container.value;
+      console.log(e)
+      const containerDom = container.value
       if (containerDom) {
-        containerDom.style.transition = "transform .6s";
-        containerDom.style.transform = "translateY(" + -(100 / 3.75) + "vw)";
+        containerDom.style.transition = 'transform .6s'
+        containerDom.style.transform = 'translateY(' + -(100 / 3.75) + 'vw)'
       }
-    };
+    }
 
     return {
       todos,
@@ -191,9 +169,9 @@ export default defineComponent({
       showImg,
       talk1Img,
       talk2Img
-    };
+    }
   }
-});
+})
 </script>
 <style lang="less" scoped>
 .mine {

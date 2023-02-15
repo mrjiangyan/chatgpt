@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts">
-import { ResourceOption } from "@/entities/resource";
-import { defineComponent, PropType } from "vue";
+import { ResourceOption } from '@/entities/resource'
+import { defineComponent, PropType } from 'vue'
 
 export default defineComponent({
   props: {
@@ -26,17 +26,17 @@ export default defineComponent({
   },
   setup(props) {
     const toDetail = () => {
-      props.data && window.open(props.data.url);
-    };
+      props.data && window.open(props.data.url)
+    }
     return {
       toDetail
-    };
+    }
   }
-});
+})
 </script>
 
 <style lang="less" scoped>
-@import "@/theme/hairline";
+@import '@/theme/hairline';
 .recommend {
   position: relative;
   padding: 12px 6px;

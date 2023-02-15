@@ -1,18 +1,18 @@
-import { ResourceOption } from "@/entities/resource";
-import request from "@/utils/request";
+import { ResourceOption } from '@/entities/resource'
+import request from '@/utils/http/axios/request'
 export const getResouceList = () => {
   return request<ResourceOption[]>({
-    url: "api/resource/list",
-    method: "get"
-  });
-};
+    url: 'api/resource/list',
+    method: 'get'
+  })
+}
 interface ApiType {
-  "/couse/buy": {
-    id: number;
-  };
+  '/couse/buy': {
+    id: number
+  }
 }
 
 function test<T extends keyof ApiType>(url: T, obj: ApiType[T]) {
-  console.log(url, obj);
+  console.log(url, obj)
 }
-test("/couse/buy", { id: 1 });
+test('/couse/buy', { id: 1 })
