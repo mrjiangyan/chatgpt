@@ -1,17 +1,17 @@
 interface DemoState {
-  count: number;
+  count: number
 }
 const state: DemoState = {
   count: 0
-};
+}
 export default {
   state,
   mutations: {
     increase(state: DemoState) {
-      state.count++;
+      state.count++
     },
     decrease(state: DemoState) {
-      state.count--;
+      state.count--
     }
   }
-};
+}

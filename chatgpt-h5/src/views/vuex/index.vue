@@ -12,35 +12,35 @@
   </app-container>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, computed } from "vue";
-import { useStore } from "vuex";
-import ChildComponent from "@/components/HelloWorld.vue";
-import provideStore from "@/utils/provideStore";
+import { defineComponent, reactive, toRefs, computed } from 'vue'
+import { useStore } from 'vuex'
+import ChildComponent from '@/components/HelloWorld.vue'
+import provideStore from '@/utils/provideStore'
 export default defineComponent({
-  name: "VUEX",
+  name: 'VUEX',
   components: {
     ChildComponent
   },
   setup() {
-    console.log("vuex", provideStore.planList);
-    const store = useStore();
+    console.log('vuex', provideStore.planList)
+    const store = useStore()
     const state = reactive({
       count: computed(() => store.state.demo.count)
-    });
+    })
 
     const increase = () => {
-      store.commit("increase");
-    };
+      store.commit('increase')
+    }
     const decrease = () => {
-      store.commit("decrease");
-    };
+      store.commit('decrease')
+    }
     return {
       ...toRefs(state),
       increase,
       decrease
-    };
+    }
   }
-});
+})
 </script>
 <style lang="less" scoped>
 // @import "@assets/style/mixin.scss";

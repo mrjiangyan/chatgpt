@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-export default defineComponent({});
+import { defineComponent } from 'vue'
+export default defineComponent({})
 </script>
 
 <style>
@@ -16,8 +16,7 @@ export default defineComponent({});
 }
 
 body {
-  font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
-    Helvetica, Segoe UI, Arial, Roboto, "PingFang SC", "miui",
-    "Hiragino Sans GB", "Microsoft Yahei", sans-serif !important;
+  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto,
+    'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif !important;
 }
 </style>

@@ -1,5 +1,5 @@
 class RouteStack {
-  stack = [];
+  stack = []
 }
 
-export const routeStack = new RouteStack();
+export const routeStack = new RouteStack()

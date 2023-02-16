@@ -1,17 +1,17 @@
 export interface UserState {
-  loginUser: string;
+  loginUser: string
 }
 
 export default {
   state: {
-    name: "VUE3.0快速入门",
+    name: 'VUE3.0快速入门',
     age: 18,
-    github: "https://github.com/weizhanzhan",
-    loginUser: ""
+    github: 'https://github.com/weizhanzhan',
+    loginUser: ''
   },
   mutations: {
     setUserInfo(state: UserState, data: string) {
-      state.loginUser = data;
+      state.loginUser = data
     }
   }
-};
+}

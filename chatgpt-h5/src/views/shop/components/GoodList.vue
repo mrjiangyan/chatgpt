@@ -2,31 +2,10 @@
   <div class="good-list" :ref="bindContainertDom">
     <div class="action-bar">
       <div class="action">
-        <van-icon
-          name="arrow-left"
-          size="20"
-          @click="toBack"
-          class="action-left"
-          color="#ffffff"
-        />
-        <van-icon
-          name="ellipsis"
-          size="20"
-          class="action-right"
-          color="#ffffff"
-        />
-        <van-icon
-          name="like-o"
-          size="20"
-          class="action-right"
-          color="#ffffff"
-        />
-        <van-icon
-          name="search"
-          size="20"
-          class="action-right"
-          color="#ffffff"
-        />
+        <van-icon name="arrow-left" size="20" @click="toBack" class="action-left" color="#ffffff" />
+        <van-icon name="ellipsis" size="20" class="action-right" color="#ffffff" />
+        <van-icon name="like-o" size="20" class="action-right" color="#ffffff" />
+        <van-icon name="search" size="20" class="action-right" color="#ffffff" />
         <div class="clear"></div>
       </div>
     </div>
@@ -38,14 +17,14 @@
 </template>
 
 <script lang="ts">
-import { useRouter } from "vue-router";
-import { defineComponent, onMounted, ref } from "vue";
-import GoodLeft from "./GoodLeft.vue";
-import GoodRight from "./GoodRight.vue";
-const INIT_HEIGHT = 200;
-const MAX_TOP_SCROLL = 150;
+import { useRouter } from 'vue-router'
+import { defineComponent, onMounted, ref } from 'vue'
+import GoodLeft from './GoodLeft.vue'
+import GoodRight from './GoodRight.vue'
+const INIT_HEIGHT = 200
+const MAX_TOP_SCROLL = 150
 export default defineComponent({
-  props: ["goods"],
+  props: ['goods'],
   components: {
     // eslint-disable-next-line vue/no-unused-components
     GoodLeft,
@@ -53,34 +32,34 @@ export default defineComponent({
     GoodRight
   },
   setup(props) {
-    const router = useRouter();
-    let containerDom: HTMLElement | null = null;
+    const router = useRouter()
+    let containerDom: HTMLElement | null = null
 
-    let contentElement: HTMLElement | null = null;
+    let contentElement: HTMLElement | null = null
 
-    const headerHeightAndContentTop = ref(INIT_HEIGHT);
-    const bindContainertDom = (el: HTMLElement) => (containerDom = el);
-    const bindContentDom = (el: HTMLElement) => (contentElement = el);
+    const headerHeightAndContentTop = ref(INIT_HEIGHT)
+    const bindContainertDom = (el: HTMLElement) => (containerDom = el)
+    const bindContentDom = (el: HTMLElement) => (contentElement = el)
     const scroll = function() {
-      const top = containerDom?.scrollTop || 0;
+      const top = containerDom?.scrollTop || 0
       // const mintop =
       //   INIT_HEIGHT - (top > MAX_TOP_SCROLL ? MAX_TOP_SCROLL : top);
       // headerHeightAndContentTop.value = mintop;
       if (top > MAX_TOP_SCROLL && contentElement) {
-        contentElement.style.position = "absolute";
-        contentElement.style.top = INIT_HEIGHT - MAX_TOP_SCROLL + "px";
+        contentElement.style.position = 'absolute'
+        contentElement.style.top = INIT_HEIGHT - MAX_TOP_SCROLL + 'px'
 
         // containerDom.style.overflow = "hidden";
       }
-    };
+    }
 
     onMounted(() => {
       // contentElement && (contentElement.onscroll = scroll);
-      containerDom && (containerDom.onscroll = scroll);
-    });
+      containerDom && (containerDom.onscroll = scroll)
+    })
     const toBack = () => {
-      router.back();
-    };
+      router.back()
+    }
 
     return {
       toBack,
@@ -88,9 +67,9 @@ export default defineComponent({
       bindContentDom,
       bindContainertDom,
       headerHeightAndContentTop
-    };
+    }
   }
-});
+})
 </script>
 
 <style scoped lang="less">

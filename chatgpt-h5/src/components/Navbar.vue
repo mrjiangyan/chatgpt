@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   props: {
@@ -20,17 +20,17 @@ export default defineComponent({
   },
   setup(props, ctx) {
     function submit() {
-      props.submitPermission && ctx.emit("submit");
+      props.submitPermission && ctx.emit('submit')
     }
     function back() {
-      ctx.emit("back");
+      ctx.emit('back')
     }
     return {
       submit,
       back
-    };
+    }
   }
-});
+})
 </script>
 
 <style lang="less" scoped>

@@ -1,4 +1,4 @@
 export interface VantFile {
-  content: string;
-  file: File;
+  content: string
+  file: File
 }
