@@ -11,6 +11,6 @@ public class OpenAiConfiguration {
 
     @Bean
     public OpenAiEventStreamService getOpenAiService(OpenAiConfig config){
-        return new OpenAiEventStreamService(config.getKey());
+        return new OpenAiEventStreamService(config);
     }
 }
