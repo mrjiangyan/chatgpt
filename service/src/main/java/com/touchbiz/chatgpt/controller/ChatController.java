@@ -27,7 +27,7 @@ public class ChatController {
     @Autowired
     private OpenAiEventStreamService service;
 
-    @PostMapping()
+    @PostMapping
     public Mono<Result<?>> prompt(@RequestBody Chat chat){
         log.info("chat:{}, length:{}", chat, chat.getPrompt().length());
         CompletionRequest completionRequest = CompletionRequest.builder()

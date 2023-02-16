@@ -2,7 +2,7 @@ import axios from 'axios'
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
 const baseURL = 'http://chat-service.touchbiz.tech:8080/api'
-const requestTimeout = 10000
+const requestTimeout = 15000
 const instance = axios.create({
   baseURL,
   timeout: requestTimeout,
