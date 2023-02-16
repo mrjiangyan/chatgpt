@@ -171,7 +171,6 @@ export default defineComponent({
     }
 
     function submit() {
-      console.log(prompt)
       const param = {
         prompt: prompt.value
       }

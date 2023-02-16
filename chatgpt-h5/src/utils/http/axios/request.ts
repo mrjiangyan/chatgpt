@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
 const baseURL = 'http://chat-service.touchbiz.tech:8080/api'
+// const baseURL = 'http://127.0.0.1:8080/api'
 const requestTimeout = 15000
 const instance = axios.create({
   baseURL,
@@ -21,7 +22,9 @@ instance.interceptors.request.use(
 )
 instance.interceptors.response.use(
   response => {
+    console.log(response)
     const res = response.data
+    console.log(res)
     return res
   },
   error => {
