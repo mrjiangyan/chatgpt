@@ -8,7 +8,7 @@ const instance = axios.create({
   timeout: requestTimeout,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'
-  }
+  },
 })
 
 instance.interceptors.request.use(
@@ -20,9 +20,12 @@ instance.interceptors.request.use(
   }
 )
 instance.interceptors.response.use(
-  response => {
-    const res = response.data
-    return res
+  res => {
+    if (res.status !== 200) {
+      return Promise.reject(res);
+    } else {
+      return res.data;
+    }
   },
   error => {
     const { response } = error
