@@ -1,5 +1,5 @@
 <template>
-  <app-container title="Vue3 Vuex">
+  <app-container title="">
     <h1 class="title">This is Vuex Demo:</h1>
     <div class="count">
       {{ count }}
