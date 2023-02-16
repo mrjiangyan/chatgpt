@@ -14,7 +14,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <inf-bom.version>2023.2.11.1</inf-bom.version>
+        <inf-bom.version>2023.2.16.2</inf-bom.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- 微服务 -->
         <spring-cloud.version>2021.0.3</spring-cloud.version>
@@ -22,7 +22,7 @@
         <spring-cloud-commons.version>3.1.2</spring-cloud-commons.version>
         <knife4j-spring-boot-starter.version>3.0.3</knife4j-spring-boot-starter.version>
         <knife4j-spring-ui.version>3.0.3</knife4j-spring-ui.version>
-        <hutool.version>5.8.9</hutool.version>
+        <hutool.version>5.8.11</hutool.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <guava.version>29.0-jre</guava.version>
         <jmock.version>1.49</jmock.version>
@@ -137,15 +137,6 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-
-
-        <!-- spring quartz -->
-         <!-- <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency> -->
-    
-
 
         <dependency>
             <groupId>cn.hutool</groupId>
