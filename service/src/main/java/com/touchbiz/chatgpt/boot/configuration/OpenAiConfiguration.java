@@ -1,12 +1,13 @@
 package com.touchbiz.chatgpt.boot.configuration;
 
-import com.theokanning.openai.OpenAiService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
+@EnableConfigurationProperties(OpenAiConfig.class )
 public class OpenAiConfiguration {
 
     @Bean

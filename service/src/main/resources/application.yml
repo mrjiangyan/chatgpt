@@ -36,3 +36,7 @@ mybatis-plus:
   configuration:
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+openai:
+  model: 'text-davinci-001'

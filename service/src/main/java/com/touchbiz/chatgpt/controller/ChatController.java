@@ -1,7 +1,7 @@
 package com.touchbiz.chatgpt.controller;
 
-import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
+import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.dto.Chat;
@@ -22,6 +22,9 @@ import java.util.Arrays;
 public class ChatController {
 
     @Autowired
+    private OpenAiConfig config;
+
+    @Autowired
     private OpenAiEventStreamService service;
 
     @PostMapping()
@@ -30,7 +33,7 @@ public class ChatController {
         CompletionRequest completionRequest = CompletionRequest.builder()
 //                .prompt("Human:" + chat.prompt +"\nAI:")
                 .prompt(chat.getPrompt())
-                .model("text-davinci-001")
+                .model(config.getModel())
 //                .echo(true)
                 .stop(Arrays.asList(" Human:"," AI:"))
                 .maxTokens(1024)

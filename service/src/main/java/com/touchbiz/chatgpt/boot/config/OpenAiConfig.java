@@ -9,11 +9,12 @@ import java.time.Duration;
 
 @Data
 @RefreshScope
-@Configuration
 @ConfigurationProperties(prefix = "openai")
 public class OpenAiConfig {
 
     private String key;
 
     private Duration timeout = Duration.ofSeconds(10);
+
+    private String model;
 }
