@@ -4,17 +4,12 @@ server:
 
 spring:
   application:
-    name: system-service
+    name: chat-service
   main:
     allow-circular-references: true
     allow-bean-definition-overriding: true
 
-  quartz:
-    auto-startup: false
-    overwrite-existing-jobs: true
-    scheduler-name: system-service-quartz-scheduler
-    properties:
-      org.quartz.scheduler.skipUpdateCheck: true
+
 management:
   health:
     mail:
@@ -41,4 +36,3 @@ mybatis-plus:
   configuration:
     call-setters-on-nulls: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-log_service: management-service

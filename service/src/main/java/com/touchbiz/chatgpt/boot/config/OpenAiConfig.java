@@ -15,5 +15,5 @@ public class OpenAiConfig {
 
     private String key;
 
-    private Duration timeout;
+    private Duration timeout = Duration.ofSeconds(10);
 }
