@@ -38,7 +38,7 @@ mybatis-plus:
 
 
 openai:
-  model: 'text-ada-001'
+  model: 'text-curie-001'
   timeout: 15s
 
 
