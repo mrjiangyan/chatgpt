@@ -13,8 +13,3 @@ interface ApiType {
     id: number
   }
 }
-
-function test<T extends keyof ApiType>(url: T, obj: ApiType[T]) {
-  console.log(url, obj)
-}
-test('/couse/buy', { id: 1 })
