@@ -27,7 +27,6 @@ management:
 logging:
   config: classpath:logback-spring.xml
 mybatis-plus:
-#  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
   global-config:
     banner: false
     db-config:

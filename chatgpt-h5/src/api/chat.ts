@@ -3,7 +3,7 @@ import { CompletionResult } from '@/entities/chat'
 import request from '@/utils/http/axios/request'
 export const chat = (chat: any) => {
   return request<ApiResult<CompletionResult>>({
-    url: 'chatgpt/chat',
+    url: 'chatGpt/chatting',
     method: 'post',
     data: chat
   })
