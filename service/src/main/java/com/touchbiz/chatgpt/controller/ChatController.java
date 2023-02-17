@@ -8,6 +8,7 @@ import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,10 +29,9 @@ public class ChatController {
     private OpenAiEventStreamService service;
 
     @PostMapping
-    public Mono<Result<?>> prompt(@RequestBody Chat chat){
+    public Mono<Result<?>> prompt(@RequestBody Chat chat, ServerHttpRequest request){
         log.info("chat:{}, length:{}", chat, chat.getPrompt().length());
         CompletionRequest completionRequest = CompletionRequest.builder()
-//                .prompt("Human:" + chat.prompt +"\nAI:")
                 .prompt(chat.getPrompt())
                 .model(config.getModel())
 //                .echo(true)
@@ -42,9 +42,8 @@ public class ChatController {
                 .temperature(0.57D)
                 .bestOf(1)
                 .topP(1d)
-//                .stream(true)
                 .build();
-        var result = service.createCompletion(completionRequest);
+        var result = service.createCompletion(completionRequest, request.getHeaders().getAcceptLanguage().get(0).toString());
         log.info("result:{}", JsonUtils.toJson(result));
         return Mono.just(Result.ok(result));
 

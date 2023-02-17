@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.service.OpenAiService;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,29 +16,28 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 @Slf4j
 public class EventStreamTest {
 
-    String token = "";
+    String token = "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";
 
     @Test
     public void testRetrofit(){
 
         CompletionRequest completionRequest = CompletionRequest.builder()
 //                .prompt("Human:" + chat.prompt +"\nAI:")
-                .prompt("给我推荐10本小说")
-                .model("text-davinci-001")
+                .prompt("胡寅恺帅嘛")
+                .model("text-davinci-003")
 //                .echo(true)
-                .stop(Arrays.asList(" Human:"," AI:"))
-                .maxTokens(1024)
+//                .stop(Arrays.asList(" Human:"," AI:"))
+                .maxTokens(128)
                 .presencePenalty(0d)
                 .frequencyPenalty(0d)
                 .temperature(0.7D)
                 .bestOf(1)
                 .topP(1d)
-                .stream(true)
+//                .stream(true)
                 .build();
         OpenAiService service = new OpenAiService(token);
 
@@ -48,7 +47,7 @@ public class EventStreamTest {
 
     @SneakyThrows
     @Test
-    public void testHttp() throws ExecutionException, InterruptedException {
+    public void testHttp() throws InterruptedException {
 
         HttpClient client = HttpClient.newBuilder().build();
 
