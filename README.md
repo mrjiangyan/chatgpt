@@ -17,3 +17,5 @@
   通过SpringBoot方式启动，openAi访问的appkey通过 -Dopenai.key=xxx 来带入
   
  
+流水线访问地址: https://flow.aliyun.com/my?page=1
+前端演示地址: 
