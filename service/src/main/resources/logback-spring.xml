@@ -178,18 +178,19 @@
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
+    <root level="info">
+        <!--Console日志是同步、阻塞的，推荐只在本地调试时使用，线上将该配置去掉-->
+        <appender-ref ref="Console"/>
+        <appender-ref ref="ASYNC-ROOT"/>
+        <appender-ref ref="TRACE-LOG"/>
+        <appender-ref ref="INFO-LOG"/>
+        <appender-ref ref="ERROR-LOG"/>
+        <appender-ref ref="WARN-LOG"/>
+        <appender-ref ref="DEBUG-LOG"/>
+    </root>
+
     <springProfile name="local|dev|uat">
-        <logger name="com.touchbiz" level="error"/>
-        <root level="info">
-            <!--Console日志是同步、阻塞的，推荐只在本地调试时使用，线上将该配置去掉-->
-            <appender-ref ref="Console"/>
-            <appender-ref ref="ASYNC-ROOT"/>
-            <appender-ref ref="TRACE-LOG"/>
-            <appender-ref ref="INFO-LOG"/>
-            <appender-ref ref="ERROR-LOG"/>
-            <appender-ref ref="WARN-LOG"/>
-            <appender-ref ref="DEBUG-LOG"/>
-        </root>
+
     </springProfile>
     <springProfile name="preview|production|test|">
         <logger name="com.touchbiz" level="error"/>

@@ -1,5 +1,6 @@
 package com.touchbiz.chatgpt.controller;
 
+import com.theokanning.openai.completion.CompletionResult;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +13,8 @@ import java.time.Duration;
 public class SSEController {
 
     @GetMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> sse() {
+    public Flux<ServerSentEvent<CompletionResult>> sse() {
         return Flux.interval(Duration.ofSeconds(1))
-                .map(sequence -> ServerSentEvent.builder("SSE event " + sequence).build());
+                .map(sequence -> ServerSentEvent.builder(new CompletionResult()).build());
     }
 }
