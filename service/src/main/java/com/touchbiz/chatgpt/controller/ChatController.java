@@ -29,7 +29,7 @@ public class ChatController {
     private OpenAiEventStreamService service;
 
     @PostMapping
-    public Mono<Result<?>> prompt(@RequestBody Chat chat, ServerHttpRequest request){
+    public Mono<Result<?>> prompt(@RequestBody Chat chat){
         log.info("chat:{}", chat);
         CompletionRequest completionRequest = CompletionRequest.builder()
                 .prompt(chat.getPrompt())
@@ -42,7 +42,7 @@ public class ChatController {
                 .bestOf(1)
                 .topP(1d)
                 .build();
-        var result = service.createCompletion(completionRequest, request.getHeaders().getAcceptLanguage().get(0).toString());
+        var result = service.createCompletion(completionRequest);
         log.info("result:{}", JsonUtils.toJson(result));
         return Mono.just(Result.ok(result));
 
