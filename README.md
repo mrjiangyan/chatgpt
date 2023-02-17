@@ -48,11 +48,11 @@ ChatGPT一体化开发平台
 
 | 源码                | 源码地址                     | 
 |--------------------|------------------------|
-| 源码    | https://github.com/mrjiangyan/chatgp       |
+| 源码    | https://github.com/mrjiangyan/chatgpt       |
 
 #####  快速搭建开发环境
 
-- [通过IDEA启动前后端项目](http://doc.jeecg.com/2043874)
+- [通过IDEA启动前后端项目]()
 
 ##### 项目说明
 
