@@ -86,4 +86,28 @@ public class EventStreamTest {
                 .forEach(System.out::println);
     }
 
+
+    @SneakyThrows
+    @Test
+    public void testModels() {
+
+        HttpClient client = HttpClient.newBuilder().build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .header("Authorization", "Bearer " + this.token)
+                .header( "Content-Type", "application/json")
+                .GET()
+                .uri(URI.create("https://api.openai.com/v1/models"))
+                .build();
+
+        var response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body).get();
+        log.info("response:{}", response);
+
+    }
 }
