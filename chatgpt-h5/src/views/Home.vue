@@ -167,7 +167,7 @@ export default defineComponent({
           if (res.success) {
             const anwsers = res.result.choices.map(
               (choice): Message => ({
-                text: choice.text,
+                text: choice.text.replace('\n\n', '\n'),
                 time: new Date(),
                 direction: 'received'
               })
