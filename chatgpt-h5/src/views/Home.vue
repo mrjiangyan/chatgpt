@@ -54,19 +54,10 @@
       </div>
     </div> -->
     <div v-if="false" class="hot_topic">
-      <van-tabs
-        v-model:active="activeTopic"
-        sticky
-        class="topic_tab my-tab"
-        color="#85a5ff"
-      >
+      <van-tabs v-model:active="activeTopic" sticky class="topic_tab my-tab" color="#85a5ff">
         <van-tab title="发现">
           <div class="topic_box">
-            <van-swipe-cell
-              class="swipe-item"
-              v-for="(item, index) in list"
-              :key="index"
-            >
+            <van-swipe-cell class="swipe-item" v-for="(item, index) in list" :key="index">
               <Recommend :data="item" />
               <template #right>
                 <van-button
@@ -83,16 +74,8 @@
         </van-tab>
         <van-tab title="关注">
           <div class="topic_box">
-            <van-empty
-              v-if="collection.length == 0"
-              description="发现列表向左滑动每一项来关注😄"
-            />
-            <van-swipe-cell
-              v-else
-              class="swipe-item"
-              v-for="(item, index) in collection"
-              :key="'collection' + index"
-            >
+            <van-empty v-if="collection.length == 0" description="发现列表向左滑动每一项来关注😄" />
+            <van-swipe-cell v-else class="swipe-item" v-for="(item, index) in collection" :key="'collection' + index">
               <Recommend :data="item" />
               <template #right>
                 <van-button
@@ -108,17 +91,8 @@
         </van-tab>
       </van-tabs>
     </div>
+
     <div class="page_prompt">
-      <!-- <van-field
-        v-model="prompt"
-        style="font-size:12px"
-        autosize
-        clearable
-        type="textarea"
-        label=""
-        placeholder="请在此输入你的问题"
-      />
-      <van-button @click="submit()" text="提问" color="#85a5ff" class="btn" /> -->
       <ChatBox
         ref="chatRef"
         :sourceAvatar="sourceAvatar"
@@ -130,156 +104,142 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, unref, onMounted } from "vue";
-import { Notify, Toast } from "vant";
-import { useRouter } from "vue-router";
-import { getResouceList } from "@/api/resource";
-import { ResourceOption } from "@/entities/resource";
+import { defineComponent, reactive, toRefs, ref, unref, onMounted } from 'vue'
+import { Notify, Toast } from 'vant'
+import { useRouter } from 'vue-router'
+import { getResouceList } from '@/api/resource'
+import { ResourceOption } from '@/entities/resource'
 
-import { chat } from "@/api/chat";
-// import { ApiResult } from "@/entities/result";
+import { chat } from '@/api/chat'
+import { menus, resource } from '@/mock/data'
+import Recommend from '@/components/Recommend.vue'
+import { showImg } from '@/utils/utils'
+import ChatBox, { Message } from '@/components/ChatBox.vue'
 
-import { menus, resource } from "@/mock/data";
-import Recommend from "@/components/Recommend.vue";
-import { showImg } from "@/utils/utils";
-import ChatBox, { Message } from "@/components/ChatBox.vue";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const targetAvatar = require('@/assets/icon/openai.svg')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sourceAvatar = require('@/assets/icon/my.webp')
 
 export default defineComponent({
-  name: "HOME",
+  name: 'HOME',
   components: {
     Recommend,
-    ChatBox,
+    ChatBox
   },
   setup() {
-    const router = useRouter();
-    // const banners = [
-    //   // require('@/assets/images/banner1.jpg'),
-    //   require("@/assets/images/banner2.jpg"),
-    //   require("@/assets/images/banner3.jpg"),
-    //   require("@/assets/images/banner4.jpg"),
-    // ];
-    const sourceAvatar = ref(
-      "https://gitee.com/run27017/assets/raw/master/avatars/girl.jpg"
-    );
-    const targetAvatar = ref(
-      "https://gitee.com/run27017/assets/raw/master/avatars/bear.jpg"
-    );
+    const router = useRouter()
     const state: {
-      list: ResourceOption[];
-      collection: ResourceOption[];
+      list: ResourceOption[]
+      collection: ResourceOption[]
     } = reactive({
       list: [],
-      collection: [],
-    });
+      collection: []
+    })
 
-    const activeTopic = ref(0);
+    const activeTopic = ref(0)
 
-    const prompt = ref<Message[]>([]);
+    const prompt = ref<Message[]>([])
 
-    const content = ref("");
+    const content = ref('')
 
-    const chatRef = ref();
+    const chatRef = ref()
 
     function loadHistory() {
       return {
         // 消息数据，字段如下，应以时间的倒序给出。
         messages: unref(prompt),
         // 定义是否还有历史消息，如果为 false，将停止加载。读者可将其改为 true 演示一下自动滚动更新的效果。
-        hasMore: false,
-      };
+        hasMore: false
+      }
     }
 
     function getChatAnswer() {
-      console.log(prompt);
+      console.log(prompt)
       const param = {
         prompt: unref(prompt)
-          .map((v) => v.text)
-          .join("\n\n"),
-      };
+          .map(v => v.text)
+          .join('\n\n')
+      }
       chat(param)
-        .then((res) => {
-          console.log(res);
+        .then(res => {
+          console.log(res)
           if (res.success) {
             const anwsers = res.result.choices.map(
               (choice): Message => ({
                 text: choice.text,
                 time: new Date(),
-                direction: "received",
+                direction: 'received'
               })
-            );
-            console.log("anwsers", anwsers);
-            prompt.value.push(...anwsers);
-            chatRef.value.appendNew(...anwsers);
+            )
+            console.log('anwsers', anwsers)
+            prompt.value.push(...anwsers)
+            chatRef.value.appendNew(...anwsers)
           } else {
-            Toast.fail(res.message);
+            Toast.fail(res.message)
           }
 
           // state.list = result;
         })
-        .catch();
+        .catch()
     }
 
     function sendMessage({ text }: Partial<Message>) {
       prompt.value.push({
         text: text as string,
         time: new Date(),
-        direction: "sent",
-      });
-      getChatAnswer();
+        direction: 'sent'
+      })
+      getChatAnswer()
       return {
         text,
         time: new Date(),
-        direction: "sent",
-      };
+        direction: 'sent'
+      }
     }
 
     const toDetail = (path: string) => {
-      router.push(path);
-    };
+      router.push(path)
+    }
     const toMessage = () => {
-      router.push("/message");
-    };
+      router.push('/message')
+    }
 
     const getData = () => {
       getResouceList()
         .then(() => {
           // state.list = result;
         })
-        .catch();
-    };
+        .catch()
+    }
 
     function toCollectResource(resource: ResourceOption) {
       Notify({
-        color: "#ffffff",
-        background: "#85a5ff",
-        message: "关注成功！",
-      });
-      const index = state.collection.findIndex(
-        (item) => item.title === resource.title
-      );
+        color: '#ffffff',
+        background: '#85a5ff',
+        message: '关注成功！'
+      })
+      const index = state.collection.findIndex(item => item.title === resource.title)
       if (index === -1) {
-        state.collection.push(resource);
+        state.collection.push(resource)
       } else {
-        state.collection.splice(index, 1);
+        state.collection.splice(index, 1)
       }
     }
 
     function handleItemIsSelect(resource: ResourceOption) {
-      const index = state.collection.findIndex(
-        (item) => item.title === resource.title
-      );
-      return index === -1;
+      const index = state.collection.findIndex(item => item.title === resource.title)
+      return index === -1
     }
 
     onMounted(() => {
-      state.list = resource;
-      getData();
-    });
+      state.list = resource
+      getData()
+    })
 
     return {
       ...toRefs(state),
       menus,
-      // banners,
       toDetail,
       toMessage,
       content,
@@ -292,13 +252,13 @@ export default defineComponent({
       targetAvatar,
       loadHistory,
       sendMessage,
-      chatRef,
-    };
-  },
-});
+      chatRef
+    }
+  }
+})
 </script>
 <style lang="less" scoped>
-@import "@/theme/hairline";
+@import '@/theme/hairline';
 .home {
   height: 100%;
   .page_header {

@@ -8,8 +8,3 @@ export const chat = (chat: any) => {
     data: chat
   })
 }
-interface ApiType {
-  '/couse/buy': {
-    id: number
-  }
-}
