@@ -38,7 +38,7 @@ mybatis-plus:
 
 
 openai:
-  model: 'text-davinci-001'
+  model: 'text-davinci-003'
   timeout: 15s
 
 

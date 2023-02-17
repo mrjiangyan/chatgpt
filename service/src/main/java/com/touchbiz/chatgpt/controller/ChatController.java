@@ -30,16 +30,15 @@ public class ChatController {
 
     @PostMapping
     public Mono<Result<?>> prompt(@RequestBody Chat chat, ServerHttpRequest request){
-        log.info("chat:{}, length:{}", chat, chat.getPrompt().length());
+        log.info("chat:{}", chat);
         CompletionRequest completionRequest = CompletionRequest.builder()
                 .prompt(chat.getPrompt())
                 .model(config.getModel())
-//                .echo(true)
                 .stop(Arrays.asList(" Human:"," AI:"))
                 .maxTokens(512)
-                .presencePenalty(0d)
+                .presencePenalty(0.6d)
                 .frequencyPenalty(0d)
-                .temperature(0.57D)
+                .temperature(0.9D)
                 .bestOf(1)
                 .topP(1d)
                 .build();
