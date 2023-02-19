@@ -439,4 +439,10 @@ public interface CommonConstant {
     String SYS_ADMIN_ROLE_CODE = "sys_admin";
 
     String SYS_ADMIN_NAME = "sysAdmin";
+
+    String APPID = "appid";
+
+    String SIGN = "sign";
+
+    String SYS_USERS_CACHE = "sys:cache:encrypt:user";
 }

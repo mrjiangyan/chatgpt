@@ -1,5 +1,6 @@
 package com.touchbiz.chatgpt.boot;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -24,11 +25,10 @@ import java.util.TimeZone;
 @EnableWebFlux
 @EnableDiscoveryClient
 //@EnableFeignClients(basePackages = {"com.prime"})
-//@MapperScan(basePackages ={"com.ai.prime.backup.database.mapper",
-//        "com.ai.prime.common.database.mapper",
-//        "com.ai.prime.module.database.mapper"}
-//
-//)
+@MapperScan(basePackages ={"com.touchbiz.chatgpt.database.mapper",
+     }
+
+)
 public class ChatgptApplication {
 
     public static void main(String[] args) {

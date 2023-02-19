@@ -22,25 +22,6 @@ import java.util.Set;
  */
 public interface ISysUserService extends IService<SysUser> {
 
-	/**
-	 * 重置密码
-	 *
-	 * @param username
-	 * @param oldpassword
-	 * @param newpassword
-	 * @param confirmpassword
-	 * @return
-	 */
-	Result<?> resetPassword(String username, String oldpassword, String newpassword, String confirmpassword);
-
-	/**
-	 * 修改密码
-	 *
-	 * @param sysUser
-	 * @return
-	 */
-	Result<?> changePassword(SysUser sysUser);
-
     /**
      * 根据用户名查询
      * @param username 用户名
@@ -68,18 +49,14 @@ public interface ISysUserService extends IService<SysUser> {
 	/**
 	 * 保存用户
 	 * @param user 用户
-	 * @param selectedRoles 选择的角色id，多个以逗号隔开
-	 * @param selectedDeparts 选择的部门id，多个以逗号隔开
 	 */
-	void saveUser(SysUser user, String selectedRoles, String selectedDeparts, String departIds, String positionIds, String jobIds);
+	void saveUser(SysUser user);
 
 	/**
 	 * 编辑用户
 	 * @param user 用户
-	 * @param roles 选择的角色id，多个以逗号隔开
-	 * @param departs 选择的部门id，多个以逗号隔开
 	 */
-	void editUser(SysUser user, String roles, String departs, String chargeDeparts, String positionIds, String jobIds);
+	void editUser(SysUser user);
 
 
 }
