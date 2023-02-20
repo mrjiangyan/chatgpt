@@ -8,12 +8,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'LAYOUT',
     redirect: '/home',
-    component: () => import(/* webpackChunkName: "layout" */ '../views/layout/index.vue'),
+    component: () => import('@/views/layout/index.vue'),
     children: [
       {
         path: 'home',
         name: 'HOME',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Home.vue')
+        component: () => import('@/views/Home.vue')
       },
       {
         path: 'about',
@@ -26,6 +26,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/shop',
     name: 'SHOP',
     component: () => import(/* webpackChunkName: "SHOP" */ '../views/shop/index.vue')
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import(/* webpackChunkName: "SHOP" */ '../views/login/index.vue')
   },
   {
     path: '/vuex',

@@ -53,44 +53,6 @@
         </van-swipe>
       </div>
     </div> -->
-    <div v-if="false" class="hot_topic">
-      <van-tabs v-model:active="activeTopic" sticky class="topic_tab my-tab" color="#85a5ff">
-        <van-tab title="发现">
-          <div class="topic_box">
-            <van-swipe-cell class="swipe-item" v-for="(item, index) in list" :key="index">
-              <Recommend :data="item" />
-              <template #right>
-                <van-button
-                  @click="toCollectResource(item)"
-                  square
-                  :text="handleItemIsSelect(item) ? '关注' : '取消'"
-                  type="danger"
-                  color="#85a5ff"
-                  class="star-button"
-                />
-              </template>
-            </van-swipe-cell>
-          </div>
-        </van-tab>
-        <van-tab title="关注">
-          <div class="topic_box">
-            <van-empty v-if="collection.length == 0" description="发现列表向左滑动每一项来关注😄" />
-            <van-swipe-cell v-else class="swipe-item" v-for="(item, index) in collection" :key="'collection' + index">
-              <Recommend :data="item" />
-              <template #right>
-                <van-button
-                  @click="toCollectResource(item)"
-                  square
-                  :text="handleItemIsSelect(item) ? '关注' : '取消'"
-                  color="#85a5ff"
-                  class="star-button"
-                />
-              </template>
-            </van-swipe-cell>
-          </div>
-        </van-tab>
-      </van-tabs>
-    </div>
 
     <div class="page_prompt">
       <ChatBox
@@ -107,12 +69,10 @@
 import { defineComponent, reactive, toRefs, ref, unref, onMounted } from 'vue'
 import { Notify, Toast } from 'vant'
 import { useRouter } from 'vue-router'
-import { getResouceList } from '@/api/resource'
 import { ResourceOption } from '@/entities/resource'
 
 import { chat } from '@/api/chat'
 import { menus, resource } from '@/mock/data'
-import Recommend from '@/components/Recommend.vue'
 import { showImg } from '@/utils/utils'
 import ChatBox, { Message } from '@/components/ChatBox.vue'
 
@@ -124,7 +84,6 @@ const sourceAvatar = require('@/assets/icon/my.webp')
 export default defineComponent({
   name: 'HOME',
   components: {
-    Recommend,
     ChatBox
   },
   setup() {
@@ -205,28 +164,6 @@ export default defineComponent({
       router.push('/message')
     }
 
-    const getData = () => {
-      getResouceList()
-        .then(() => {
-          // state.list = result;
-        })
-        .catch()
-    }
-
-    function toCollectResource(resource: ResourceOption) {
-      Notify({
-        color: '#ffffff',
-        background: '#85a5ff',
-        message: '关注成功！'
-      })
-      const index = state.collection.findIndex(item => item.title === resource.title)
-      if (index === -1) {
-        state.collection.push(resource)
-      } else {
-        state.collection.splice(index, 1)
-      }
-    }
-
     function handleItemIsSelect(resource: ResourceOption) {
       const index = state.collection.findIndex(item => item.title === resource.title)
       return index === -1
@@ -234,7 +171,6 @@ export default defineComponent({
 
     onMounted(() => {
       state.list = resource
-      getData()
     })
 
     return {
@@ -243,7 +179,6 @@ export default defineComponent({
       toDetail,
       toMessage,
       content,
-      toCollectResource,
       handleItemIsSelect,
       activeTopic,
       prompt,
