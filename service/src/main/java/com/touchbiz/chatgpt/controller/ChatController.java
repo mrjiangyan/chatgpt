@@ -7,6 +7,7 @@ import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.database.domain.SysUser;
 import com.touchbiz.chatgpt.dto.Chat;
+import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.chatgpt.dto.ChatInfo;
 import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
