@@ -28,9 +28,7 @@ public class LogDTO implements Serializable {
     /**登录用户 */
     private LoginUser loginUser;
 
-    private String id;
     private String createBy;
-    private Date createTime;
     private Long costTime;
     private String ip;
 
@@ -51,6 +49,8 @@ public class LogDTO implements Serializable {
 
     /**操作人用户账户*/
     private String userid;
+
+    private String header;
 
     public LogDTO(){
 

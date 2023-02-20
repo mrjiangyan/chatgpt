@@ -18,6 +18,9 @@ public interface BaseCommonService {
      */
     void addLog(String logContent, Integer logType, Integer operateType, LoginUser user);
 
+    void addLog(String logContent, Integer logType, Integer operateType, SysUser user);
+
+
     /**
      * 保存日志
      * @param logContent

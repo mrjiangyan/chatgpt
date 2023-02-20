@@ -1,11 +1,16 @@
 package com.touchbiz.chatgpt.infrastructure.utils;
 
 import com.touchbiz.common.utils.text.CommonConstant;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * IP地址
@@ -25,37 +30,30 @@ public class IpUtils {
 	 * 使用Nginx等反向代理软件， 则不能通过request.getRemoteAddr()获取IP地址
 	 * 如果使用了多级反向代理的话，X-Forwarded-For的值并不止一个，而是一串IP地址，X-Forwarded-For中第一个非unknown的有效IP字符串，则为真实IP地址
 	 */
-	public static String getIpAddr(HttpServletRequest request) {
-    	String ip = null;
+	public static String getIpAddr(ServerHttpRequest request) {
+    	List<String> ip = null;
         try {
-            ip = request.getHeader("x-forwarded-for");
-            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
-                ip = request.getHeader("Proxy-Client-IP");
+            var headers = request.getHeaders();
+            ip = headers.get("x-forwarded-for");
+            if (CollectionUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip.get(0))) {
+                ip = headers.get("Proxy-Client-IP");
             }
-            if (StringUtils.isEmpty(ip) || ip.length() == 0 ||CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
-                ip = request.getHeader("WL-Proxy-Client-IP");
+            if (CollectionUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip.get(0))) {
+                ip = headers.get("WL-Proxy-Client-IP");
             }
-            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
-                ip = request.getHeader("HTTP_CLIENT_IP");
+            if (CollectionUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip.get(0))) {
+                ip = headers.get("HTTP_CLIENT_IP");
             }
-            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
-                ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+            if (CollectionUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip.get(0))) {
+                ip = headers.get("HTTP_X_FORWARDED_FOR");
             }
-            if (StringUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip)) {
-                ip = request.getRemoteAddr();
+            if (CollectionUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip.get(0))) {
+                return  request.getRemoteAddress().toString();
             }
         } catch (Exception e) {
         	logger.error("IPUtils ERROR ", e);
         }
-        
-//        //使用代理，则获取第一个IP地址
-//        if(StringUtils.isEmpty(ip) && ip.length() > 15) {
-//			if(ip.indexOf(",") > 0) {
-//				ip = ip.substring(0, ip.indexOf(","));
-//			}
-//		}
-        
-        return ip;
+        return ip.get(0);
     }
 	
 }

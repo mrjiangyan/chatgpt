@@ -1,8 +1,10 @@
 package com.touchbiz.chatgpt.infrastructure.utils;
 
+import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -36,12 +38,6 @@ public class SpringContextUtils implements ApplicationContextAware {
 		return applicationContext;
 	}
 
-	/**
-	  * 获取HttpServletRequest
-	 */
-	public static HttpServletRequest getHttpServletRequest() {
-		return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-	}
 	/**
 	 * 获取HttpServletResponse
 	 */

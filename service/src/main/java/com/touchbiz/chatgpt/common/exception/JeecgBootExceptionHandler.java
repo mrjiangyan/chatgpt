@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 //import org.springframework.dao.DataIntegrityViolationException;
 //import org.springframework.dao.DuplicateKeyException;
 //import org.springframework.data.redis.connection.PoolException;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -78,7 +79,7 @@ public class JeecgBootExceptionHandler {
 		}
 
 		log.warn("WebExchangeBindException", e);
-		return Result.error("参数错误:" +  sb.substring(0, sb.length() - 1));
+		return Result.error(HttpStatus.BAD_REQUEST.value(), sb.substring(0, sb.length() - 1));
 	}
 
 	@ExceptionHandler({IllegalArgumentException.class})
