@@ -66,15 +66,5 @@ public class RequestUtils {
         return token;
     }
 
-    public static Map<String, Object> getHeads(HttpServletRequest request){
-        Map<String, Object> stringObjectHashMap = new HashMap<>();
-        Enumeration<String> headers = request.getHeaderNames();
-        while(headers.hasMoreElements()){
-            String headName = headers.nextElement();
-            String headValue = request.getHeader(headName);
-            stringObjectHashMap.put(headName,headValue);
-        }
-        return stringObjectHashMap;
-    }
 	
 }

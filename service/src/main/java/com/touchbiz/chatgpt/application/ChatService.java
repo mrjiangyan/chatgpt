@@ -4,6 +4,7 @@ package com.touchbiz.chatgpt.application;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.touchbiz.chatgpt.database.domain.SysUser;
 import com.touchbiz.chatgpt.dto.ChatInfo;
+import com.touchbiz.common.entity.model.SysUserCacheInfo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,11 +18,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface ChatService {
 
-	IPage<ChatInfo> getPageList(Integer pageNo, Integer pageSize, SysUser sysUser);
+	IPage<ChatInfo> getPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo sysUser);
 
-	String addSessionId(SysUser sysUser, HttpServletRequest request);
+	String addSessionId(SysUserCacheInfo sysUser);
 
-	void add(ChatInfo chatInfo, SysUser sysUser);
+	void add(ChatInfo chatInfo, SysUserCacheInfo sysUser);
 
 	void delete(String id);
 }

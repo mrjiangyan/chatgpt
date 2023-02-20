@@ -32,16 +32,13 @@ import java.util.*;
 @Slf4j
 @RequestMapping("/api/chatGpt/chatting")
 @RestController
-public class ChatController {
+public class ChatController extends AbstractBaseController {
 
     @Autowired
     private OpenAiConfig config;
 
     @Autowired
     private OpenAiEventStreamService service;
-
-    @Autowired
-    private ISysUserService sysUserService;
 
     @Autowired
     private ChatService chatService;
@@ -69,24 +66,21 @@ public class ChatController {
     @GetMapping
     public MonoResult<?> getPageList(HttpServletRequest request, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        String token = RequestUtils.getToken(request);
-        SysUser user = getUser(token);
+        var user = getUser();
         return MonoResult.ok(chatService.getPageList(pageNo, pageSize, user));
     }
 
     @ApiOperation("新增会话id")
     @PostMapping("/addSessionId")
-    public MonoResult<?> addSessionId(HttpServletRequest request) {
-        String token = RequestUtils.getToken(request);
-        SysUser user = getUser(token);
-        return MonoResult.OK(chatService.addSessionId(user, request));
+    public MonoResult<?> addSessionId() {
+        var user = getUser();
+        return MonoResult.OK(chatService.addSessionId(user));
     }
 
     @ApiOperation("新增会话")
     @PostMapping("/add")
     public MonoResult<?> add(HttpServletRequest request, @RequestBody @Validated @NotNull ChatInfo chatInfo) {
-        String token = RequestUtils.getToken(request);
-        SysUser user = getUser(token);
+        var user = getUser();
         chatService.add(chatInfo, user);
         return MonoResult.OK("新增成功！");
     }
@@ -105,15 +99,6 @@ public class ChatController {
     public MonoResult<?> delete(@PathVariable String id) {
         chatService.delete(id);
         return MonoResult.ok("删除成功！");
-    }
-
-    private SysUser getUser(String token){
-        String username = JwtUtil.getUsername(token);
-        SysUser userByName = sysUserService.getUserByName(username);
-        if (ObjectUtils.isEmpty(userByName)) {
-            throw new BizException("暂无当前用户信息，请联系管理员");
-        }
-        return userByName;
     }
 
 }

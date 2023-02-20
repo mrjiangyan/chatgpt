@@ -16,6 +16,7 @@ import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.chatgpt.service.ChatSessionService;
 import com.touchbiz.common.entity.exception.BizException;
+import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
@@ -51,11 +52,8 @@ public class ChatServiceImpl implements ChatService {
 	@Autowired
 	private ChatSessionInfoService chatSessionInfoService;
 
-	@Autowired
-	private IRedisTemplate iRedisTemplate;
-
 	@Override
-	public IPage<ChatInfo> getPageList(Integer pageNo, Integer pageSize, SysUser user) {
+	public IPage<ChatInfo> getPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo user) {
 		Page<ChatSession> page = new Page<>(pageNo, pageSize);
 		LambdaQueryWrapper<ChatSession> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(ChatSession::getCreator, user.getUsername());
@@ -91,15 +89,14 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public String addSessionId(SysUser user, HttpServletRequest request) {
+	public String addSessionId(SysUserCacheInfo user) {
 		String uuid = UUID.randomUUID().toString();
-		Map<String, Object> heads = RequestUtils.getHeads(request);
-		ChatSession chatSession = new ChatSession();
-		chatSession.setSessionId(uuid);
 		//获取request
 		var requests = ReactiveRequestContextHolder.get();
+		ChatSession chatSession = new ChatSession();
+		chatSession.setSessionId(uuid);
 		chatSession.setIp(RequestUtils.getIpAddr(requests));
-		chatSession.setHead(JsonUtils.toJson(heads));
+//		chatSession.setHead(JsonUtils.toJson(heads));
 		chatSession.setSessionStartTime(LocalDateTime.now());
 		chatSession.setCreator(user.getUsername());
 		chatSessionService.save(chatSession);
@@ -107,7 +104,7 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public void add(ChatInfo chatInfo, SysUser user) {
+	public void add(ChatInfo chatInfo, SysUserCacheInfo user) {
 		String sessionId = chatInfo.getSessionId();
 		checkSessionId(sessionId);
 		List<ChatSessionInfo> chatSessionInfoList = new ArrayList<>();
