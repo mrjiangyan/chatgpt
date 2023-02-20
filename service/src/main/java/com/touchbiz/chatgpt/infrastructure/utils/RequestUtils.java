@@ -1,16 +1,18 @@
 package com.touchbiz.chatgpt.infrastructure.utils;
 
+import com.touchbiz.common.entity.exception.BizException;
 import com.touchbiz.common.utils.text.CommonConstant;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import com.touchbiz.common.utils.text.oConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpRequestDecorator;
 import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * IP地址
@@ -21,8 +23,8 @@ import java.util.List;
  * @email jeecgos@163.com
  * @Date 2019年01月14日
  */
-public class IpUtils {
-	private static Logger logger = LoggerFactory.getLogger(IpUtils.class);
+public class RequestUtils {
+	private static Logger logger = LoggerFactory.getLogger(RequestUtils.class);
 
 	/**
 	 * 获取IP地址
@@ -54,6 +56,25 @@ public class IpUtils {
         	logger.error("IPUtils ERROR ", e);
         }
         return ip.get(0);
+    }
+
+    public static String getToken(HttpServletRequest request) {
+        String token = request.getHeader(com.touchbiz.chatgpt.infrastructure.constants.CommonConstant.X_ACCESS_TOKEN);
+        if(oConvertUtils.isEmpty(token)) {
+            throw new BizException("用户token失效，请联系管理员");
+        }
+        return token;
+    }
+
+    public static Map<String, Object> getHeads(HttpServletRequest request){
+        Map<String, Object> stringObjectHashMap = new HashMap<>();
+        Enumeration<String> headers = request.getHeaderNames();
+        while(headers.hasMoreElements()){
+            String headName = headers.nextElement();
+            String headValue = request.getHeader(headName);
+            stringObjectHashMap.put(headName,headValue);
+        }
+        return stringObjectHashMap;
     }
 	
 }

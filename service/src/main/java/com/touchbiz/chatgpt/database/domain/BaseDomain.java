@@ -1,7 +1,5 @@
 package com.touchbiz.chatgpt.database.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,11 +13,6 @@ import java.sql.Timestamp;
 @Data
 public class BaseDomain {
 
-    /**
-     * 主键
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
 
     /**
      * 创建人

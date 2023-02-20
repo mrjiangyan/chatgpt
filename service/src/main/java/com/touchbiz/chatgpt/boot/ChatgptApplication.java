@@ -20,7 +20,7 @@ import java.util.TimeZone;
                 "com.touchbiz.chatgpt",
                 "com.touchbiz.webflux.starter",
                 "com.touchbiz.cache.starter",
-//                "com.touchbiz.db.starter",
+                "com.touchbiz.db.starter",
                 "com.touchbiz.config.starter",
 
         }

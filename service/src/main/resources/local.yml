@@ -1,0 +1,55 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: chat-service
+  main:
+    allow-circular-references: true
+    allow-bean-definition-overriding: true
+  datasource:
+    dynamic:
+      enabled: false
+    username: chatgpt
+    password: 1q2w3e4r5t^Y&U*I(O)P
+    url: jdbc:mysql://rm-bp10s6v10v75ax5x6lo.mysql.rds.aliyuncs.com:3306/chatgpt?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+  redis:
+    database: 2
+    host: 192.168.48.106
+    password: Aiprime@2019
+    port: 6379
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos.ai-prime.tech:8848
+        watch:
+          enabled: true
+        enabled: false
+      config:
+        server-addr: nacos.ai-prime.tech:8848
+        file-extension: yaml
+        enabled: false
+
+logging:
+  config: classpath:logback-spring.xml
+mybatis-plus:
+  global-config:
+    banner: false
+    db-config:
+      id-type: AUTO
+      table-underline: true
+  configuration:
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+openai:
+  model: 'text-davinci-003'
+  timeout: 15s
+  key: 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
+
+
+wechat:
+  appId: wx71b6f43f81ed66d9
+  appSecret: 4b238cf258673414c438837199b1b01b
+  token: PC8cVHmGxnSq8zmO

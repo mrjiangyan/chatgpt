@@ -1,5 +1,7 @@
 package com.touchbiz.chatgpt.database.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -25,6 +27,11 @@ import java.time.LocalDate;
 @ToString(callSuper = true)
 public class SysUser extends BaseDomain {
 
+    /**
+     * 主键
+     */
+    @TableId(type = IdType.AUTO)
+    private Long id;
     /**
      * 登录账号
      */
