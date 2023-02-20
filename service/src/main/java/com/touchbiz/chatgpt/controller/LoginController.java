@@ -175,7 +175,8 @@ public class LoginController {
 			return MonoResult.ok(base64);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			return MonoResult.ok().error500("获取验证码失败,请检查redis配置!");
+			MonoResult.ok();
+			return MonoResult.error500("获取验证码失败,请检查redis配置!");
 		}
 	}
 }

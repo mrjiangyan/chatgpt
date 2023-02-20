@@ -1,6 +1,7 @@
 package com.touchbiz.chatgpt.controller;
 
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Slf4j
-public abstract class AbstractBaseController<T, S extends List<T>> {
+public abstract class AbstractBaseController<T, S extends IService<T>> {
 
     @Getter
     @Autowired
