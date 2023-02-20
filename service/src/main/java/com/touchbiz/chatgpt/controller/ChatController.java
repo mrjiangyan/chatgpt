@@ -5,6 +5,7 @@ import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.dto.Chat;
+import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -43,16 +44,15 @@ public class ChatController {
         var result = service.createCompletion(completionRequest);
         log.info("result:{}", JsonUtils.toJson(result));
         return Mono.just(Result.ok(result));
-
     }
 
     /**
      * 判断是否允许进行聊天，如果没有相应的次数，则不能进行后续的聊天，并返回相应的提示内容
      * @return
      */
-    @GetMapping
-    public MonoResult<Object> canChat(){
-
+    @PostMapping("/validRight")
+    public MonoResult<Object> validChatRight(@RequestBody ValidChatRight validChatRight){
         return MonoResult.ok("");
     }
+
 }
