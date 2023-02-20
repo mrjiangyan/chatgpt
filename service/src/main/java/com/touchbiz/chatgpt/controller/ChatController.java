@@ -7,20 +7,20 @@ import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.database.domain.SysUser;
 import com.touchbiz.chatgpt.dto.Chat;
+import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.chatgpt.dto.ChatInfo;
 import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
 import com.touchbiz.chatgpt.service.ISysUserService;
 import com.touchbiz.common.entity.exception.BizException;
-import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.utils.security.JwtUtil;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 
@@ -88,6 +88,15 @@ public class ChatController {
         SysUser user = getUser(token);
         chatService.add(chatInfo, user);
         return MonoResult.OK("新增成功！");
+    }
+
+    /**
+     * 判断是否允许进行聊天，如果没有相应的次数，则不能进行后续的聊天，并返回相应的提示内容
+     * @return
+     */
+    @PostMapping("/validRight")
+    public MonoResult<Object> validChatRight(@RequestBody ValidChatRight validChatRight) {
+        return MonoResult.ok("");
     }
 
     @ApiOperation(value = "删除会话")
