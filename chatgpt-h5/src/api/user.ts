@@ -24,6 +24,7 @@ export const logout = () => {
     method: 'post'
   }).finally(() => {
     delToken()
+    window.location.reload()
   })
 }
 
