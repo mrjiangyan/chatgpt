@@ -5,10 +5,8 @@ import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
-import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
 import com.touchbiz.chatgpt.dto.Chat;
-import com.touchbiz.chatgpt.dto.ChatInfo;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.common.entity.result.MonoResult;
@@ -16,12 +14,10 @@ import com.touchbiz.common.utils.tools.JsonUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
 @Slf4j
@@ -36,7 +32,7 @@ public class ChatController extends AbstractBaseController<ChatSessionInfo, Chat
     private OpenAiEventStreamService service;
 
     @Autowired
-    private ChatApplicationService chatService;
+    private ChatApplicationService chatApplicationService;
 
     @PostMapping
     public Mono<Result<?>> prompt(@RequestBody Chat chat){
@@ -62,22 +58,14 @@ public class ChatController extends AbstractBaseController<ChatSessionInfo, Chat
     public MonoResult<?> getPageList(HttpServletRequest request, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         var user = getUser();
-        return MonoResult.ok(chatService.getPageList(pageNo, pageSize, user));
+        return MonoResult.ok(chatApplicationService.getPageList(pageNo, pageSize, user));
     }
 
     @ApiOperation("新增会话id")
     @PostMapping("/session")
     public MonoResult<?> createSession() {
         var user = getUser();
-        return MonoResult.OK(chatService.createSession(user));
-    }
-
-    @ApiOperation("新增会话")
-    @PostMapping("/add")
-    public MonoResult<?> add(HttpServletRequest request, @RequestBody @Validated @NotNull ChatInfo chatInfo) {
-        var user = getUser();
-        chatService.add(chatInfo, user);
-        return MonoResult.OK("新增成功！");
+        return MonoResult.OK(chatApplicationService.createSession(user));
     }
 
     /**
@@ -92,7 +80,7 @@ public class ChatController extends AbstractBaseController<ChatSessionInfo, Chat
     @ApiOperation(value = "删除会话")
     @DeleteMapping("/{id}")
     public MonoResult<?> delete(@PathVariable String id) {
-        chatService.delete(id);
+        chatApplicationService.deleteSession(id);
         return MonoResult.ok("删除成功！");
     }
 

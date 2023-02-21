@@ -46,3 +46,24 @@ CREATE TABLE `sys_log` (
                            KEY `idx_sl_userid`(`userid`) USING BTREE,
                            KEY `idx_sl_create_time`(`gmt_create`) USING BTREE
 ) COMMENT='系统日志表';
+
+
+CREATE TABLE `chat_session` (
+                                `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+                                `session_id` varchar(64) NOT NULL,
+                                `start_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                `last_time` datetime NULL,
+                                `ip` varchar(50) DEFAULT NULL COMMENT 'ip地址',
+                                `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+                                `deleted` bit(1) NOT NULL  DEFAULT 0  COMMENT '是否标记删除',
+                                `creator` varchar(32) NOT NULL,
+                                `modifier` varchar(32)  DEFAULT NULL,
+                                `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                `gmt_modify` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+                                PRIMARY KEY (`id`)
+) COMMENT='会话信息表';
+
+
+ALTER TABLE `chat_session`
+    ADD UNIQUE INDEX `unique_session_id` (`session_id` ASC);
+;

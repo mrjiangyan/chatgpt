@@ -50,7 +50,7 @@ public class RequestUtils {
                 ip = headers.get("HTTP_X_FORWARDED_FOR");
             }
             if (CollectionUtils.isEmpty(ip) || CommonConstant.UNKNOWN.equalsIgnoreCase(ip.get(0))) {
-                return  request.getRemoteAddress().toString();
+                return  request.getRemoteAddress().getHostString();
             }
         } catch (Exception e) {
         	logger.error("IPUtils ERROR ", e);
@@ -59,7 +59,7 @@ public class RequestUtils {
     }
 
     public static String getToken(HttpServletRequest request) {
-        String token = request.getHeader(com.touchbiz.chatgpt.infrastructure.constants.CommonConstant.X_ACCESS_TOKEN);
+        String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
         if(oConvertUtils.isEmpty(token)) {
             throw new BizException("用户token失效，请联系管理员");
         }

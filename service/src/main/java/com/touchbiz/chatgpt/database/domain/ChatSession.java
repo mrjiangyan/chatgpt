@@ -25,6 +25,8 @@ public class ChatSession extends BaseDomain {
      * 会话id
      */
     private String sessionId;
+
+    private Long userId;
     /**
      * ip
      */
@@ -40,5 +42,7 @@ public class ChatSession extends BaseDomain {
     private LocalDateTime startTime;
 
     private LocalDateTime lastTime;
+
+    private Boolean deleted;
 
 }

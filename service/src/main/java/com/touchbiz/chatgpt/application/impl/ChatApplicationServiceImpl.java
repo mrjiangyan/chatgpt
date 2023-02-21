@@ -3,6 +3,8 @@ package com.touchbiz.chatgpt.application.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
@@ -17,6 +19,7 @@ import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.chatgpt.service.ChatSessionService;
 import com.touchbiz.common.entity.exception.BizException;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
+import com.touchbiz.common.utils.text.CommonConstant;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +88,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 
 	@Override
 	public ChatSession createSession(SysUserCacheInfo user) {
-		String uuid = UUID.randomUUID().toString();
+		String uuid = IdWorker.getIdStr();
 		//获取request
 		var requests = ReactiveRequestContextHolder.get();
 		ChatSession chatSession = new ChatSession();
@@ -94,6 +97,10 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 		chatSession.setStartTime(LocalDateTime.now());
 		if(user != null){
 			chatSession.setCreator(user.getUsername());
+			chatSession.setUserId(Long.valueOf(user.getId()));
+		}
+		else{
+			chatSession.setCreator("");
 		}
 		chatSessionService.save(chatSession);
 		return chatSession;
@@ -119,12 +126,12 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 	}
 
 	@Override
-	public void delete(String id) {
-		chatSessionInfoService.removeById(id);
+	public void deleteSession(String id) {
 		LambdaQueryWrapper<ChatSession> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(ChatSession::getSessionId, id);
-		ChatSession one = chatSessionService.getOne(queryWrapper);
-		chatSessionService.removeById(one.getId());
+		ChatSession session = new ChatSession();
+		session.setDeleted(true);
+		chatSessionService.update(session, queryWrapper);
 	}
 
 	private void checkSessionId(String sessionId) {

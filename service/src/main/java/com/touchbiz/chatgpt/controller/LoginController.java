@@ -113,7 +113,7 @@ public class LoginController {
 	@RequestMapping(value = "/logout")
 	public Result<Object> logout(HttpServletRequest request) {
 		//用户退出逻辑
-	    String token = request.getHeader(CommonConstant.X_ACCESS_TOKEN);
+	    String token = request.getHeader(com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN);
 	    if(oConvertUtils.isEmpty(token)) {
 	    	return Result.error("退出登录失败！");
 	    }
