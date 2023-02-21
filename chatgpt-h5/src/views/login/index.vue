@@ -51,7 +51,7 @@ import { useRouter } from 'vue-router'
 import { login, getCodeInfo } from '@/api/user'
 import { Toast } from 'vant'
 import { setToken, setCookie } from '@/utils/cookie'
-
+import { USER_INFO_KEY } from '@/configs/cacheEnum'
 export default defineComponent({
   name: 'HOME',
   components: {},
@@ -88,7 +88,7 @@ export default defineComponent({
           Toast.clear()
           //保存token以及用户信息
           setToken(res.token, 1)
-          setCookie('userInfo', JSON.stringify(res.userInfo), 7)
+          setCookie(USER_INFO_KEY, JSON.stringify(res.userInfo), 7)
           router.push('/home')
         })
         .catch(err => {
