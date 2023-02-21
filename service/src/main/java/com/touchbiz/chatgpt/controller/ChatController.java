@@ -3,6 +3,7 @@ package com.touchbiz.chatgpt.controller;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
+import com.touchbiz.chatgpt.common.aspect.annotation.RequestLimit;
 import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
@@ -23,7 +24,8 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.*;
+import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.CHAT_SESSION_EXPIRE_SECONDS;
+import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.CHAT_SESSION_KEY;
 
 @Slf4j
 @RequestMapping("/api/chatGpt/chatting")
@@ -40,12 +42,13 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     private ChatApplicationService chatApplicationService;
 
     @PostMapping
-    public Mono<Result<?>> prompt(@RequestBody Chat chat){
+    @RequestLimit()
+    public Mono<Result<?>> prompt(@RequestBody Chat chat) {
         log.info("chat:{}", chat);
         CompletionRequest completionRequest = CompletionRequest.builder()
                 .prompt(chat.getPrompt())
                 .model(config.getModel())
-                .stop(Arrays.asList(" Human:"," AI:"))
+                .stop(Arrays.asList(" Human:", " AI:"))
                 .maxTokens(512)
                 .presencePenalty(0.6d)
                 .frequencyPenalty(0d)
@@ -83,6 +86,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
 
     /**
      * 判断是否允许进行聊天，如果没有相应的次数，则不能进行后续的聊天，并返回相应的提示内容
+     *
      * @return
      */
     @PostMapping("/validRight")
