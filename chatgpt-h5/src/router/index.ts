@@ -23,34 +23,9 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
-    path: '/shop',
-    name: 'SHOP',
-    component: () => import(/* webpackChunkName: "SHOP" */ '../views/shop/index.vue')
-  },
-  {
     path: '/login',
     name: 'login',
     component: () => import(/* webpackChunkName: "SHOP" */ '../views/login/index.vue')
-  },
-  {
-    path: '/vuex',
-    name: 'VUEX',
-    component: () => import(/* webpackChunkName: "vuex" */ '../views/vuex/index.vue')
-  },
-  {
-    path: '/message',
-    name: 'MESSAGE',
-    component: () => import(/* webpackChunkName: "message" */ '../views/message/index.vue')
-  },
-  {
-    path: '/form',
-    name: 'FORM',
-    component: () => import(/* webpackChunkName: "form" */ '../views/message/form.vue')
-  },
-  {
-    path: '/video',
-    name: 'Video',
-    component: () => import(/* webpackChunkName: "video" */ '../views/video/index')
   }
 ]
 

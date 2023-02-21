@@ -23,6 +23,8 @@ import reactor.core.publisher.Mono;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.*;
+
 @Slf4j
 @RequestMapping("/api/chatGpt/chatting")
 @RestController
@@ -72,8 +74,11 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     @PostMapping("/session")
     public MonoResult<?> createSession() {
         var user = getCurrentUser();
-        var session = ChatSessionConverter.INSTANCE.transformOut(chatApplicationService.createSession(user));
-        return MonoResult.OK(session);
+        var session = chatApplicationService.createSession(user);
+        //添加缓存
+        String key = CHAT_SESSION_KEY + session.getSessionId();
+        getRedisTemplate().set(key, session, CHAT_SESSION_EXPIRE_SECONDS);
+        return MonoResult.OK(ChatSessionConverter.INSTANCE.transformOut(session));
     }
 
     /**

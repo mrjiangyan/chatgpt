@@ -66,43 +66,35 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, unref, onMounted } from "vue";
-import { Toast } from "vant";
-import { useRouter } from "vue-router";
-import { ResourceOption } from "@/entities/resource";
+import { defineComponent, ref, unref, onMounted } from 'vue'
+import { Toast } from 'vant'
+import { useRouter } from 'vue-router'
 
-import { chat } from "@/api/chat";
-import { menus, resource } from "@/mock/data";
-import { showImg } from "@/utils/utils";
-import ChatBox, { Message } from "@/components/ChatBox.vue";
+import { chat } from '@/api/chat'
+import { menus } from '@/mock/data'
+import { showImg } from '@/utils/utils'
+import ChatBox, { Message } from '@/components/ChatBox.vue'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const targetAvatar = require("@/assets/icon/openai.svg");
+const targetAvatar = require('@/assets/icon/openai.svg')
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const sourceAvatar = require("@/assets/icon/my.webp");
+const sourceAvatar = require('@/assets/icon/my.webp')
 
 export default defineComponent({
-  name: "HOME",
+  name: 'HOME',
   components: {
     ChatBox
   },
   setup() {
-    const router = useRouter();
-    const state: {
-      list: ResourceOption[];
-      collection: ResourceOption[];
-    } = reactive({
-      list: [],
-      collection: []
-    });
+    const router = useRouter()
 
-    const activeTopic = ref(0);
+    const activeTopic = ref(0)
 
-    const prompt = ref<Message[]>([]);
+    const prompt = ref<Message[]>([])
 
-    const content = ref("");
+    const content = ref('')
 
-    const chatRef = ref();
+    const chatRef = ref()
 
     function loadHistory() {
       return {
@@ -110,78 +102,67 @@ export default defineComponent({
         messages: unref(prompt),
         // 定义是否还有历史消息，如果为 false，将停止加载。读者可将其改为 true 演示一下自动滚动更新的效果。
         hasMore: false
-      };
+      }
     }
 
     function getChatAnswer() {
-      console.log(prompt);
+      console.log(prompt)
       const param = {
         prompt: unref(prompt)
           .map(v => v.text)
-          .join("\n\n")
-      };
+          .join('\n\n')
+      }
       chat(param)
         .then(res => {
-          console.log(res);
+          console.log(res)
           if (res.success) {
             const anwsers = res.result.choices.map(
               (choice): Message => ({
-                text: choice.text.replace("\n\n", "\n"),
+                text: choice.text.replace('\n\n', '\n'),
                 time: new Date(),
-                direction: "received"
+                direction: 'received'
               })
-            );
-            console.log("anwsers", anwsers);
-            prompt.value.push(...anwsers);
-            chatRef.value.appendNew(...anwsers);
+            )
+            console.log('anwsers', anwsers)
+            prompt.value.push(...anwsers)
+            chatRef.value.appendNew(...anwsers)
           } else {
-            Toast.fail(res.message);
+            Toast.fail(res.message)
           }
 
           // state.list = result;
         })
-        .catch();
+        .catch()
     }
 
     function sendMessage({ text }: Partial<Message>) {
       prompt.value.push({
         text: text as string,
         time: new Date(),
-        direction: "sent"
-      });
-      getChatAnswer();
+        direction: 'sent'
+      })
+      getChatAnswer()
       return {
         text,
         time: new Date(),
-        direction: "sent"
-      };
+        direction: 'sent'
+      }
     }
 
     const toDetail = (path: string) => {
-      router.push(path);
-    };
+      router.push(path)
+    }
     const toMessage = () => {
-      router.push("/message");
-    };
-
-    function handleItemIsSelect(resource: ResourceOption) {
-      const index = state.collection.findIndex(
-        item => item.title === resource.title
-      );
-      return index === -1;
+      router.push('/message')
     }
 
-    onMounted(() => {
-      state.list = resource;
-    });
+    onMounted(() => {})
 
     return {
-      ...toRefs(state),
       menus,
       toDetail,
       toMessage,
       content,
-      handleItemIsSelect,
       activeTopic,
       prompt,
       showImg,
@@ -190,12 +171,12 @@ export default defineComponent({
       loadHistory,
       sendMessage,
       chatRef
-    };
+    }
   }
-});
+})
 </script>
 <style lang="less" scoped>
-@import "@/theme/hairline";
+@import '@/theme/hairline';
 .home {
   height: 100%;
   .page_header {

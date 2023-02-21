@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { vantPlugins } from './plugins/vant'
-import Bmob, { globalPlugins } from './plugins/global'
+import { globalPlugins } from './plugins/global'
 // import { setupWechatAuth } from '@/configs/wechatAuth'
 import './assets/style/reset.less'
 import './assets/style/global.less'
@@ -12,7 +12,6 @@ import { Toast } from 'vant'
 import { getToken, delToken } from '@/utils/cookie'
 
 const app = createApp(App)
-app.config.globalProperties.$bmob = Bmob
 app.config.globalProperties.$toast = Toast
 
 app

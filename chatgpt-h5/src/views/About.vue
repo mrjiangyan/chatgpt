@@ -16,7 +16,7 @@
       <div class="info-box">
         <div class="my-info">
           <div class="avatar">
-            <img src="@assets/images/avatar1.jpg" alt="" srcset="" />
+            <!-- <img src="@assets/images/avatar1.jpg" alt="" srcset="" /> -->
           </div>
           <div class="intro">
             <div class="name">
@@ -58,7 +58,7 @@
             <div class="talk-item">
               <div class="talk-user">
                 <div class="avatar">
-                  <img src="@assets/images/avatar1.jpg" alt="" srcset="" />
+                  <!-- <img src="@assets/images/avatar1.jpg" alt="" srcset="" /> -->
                 </div>
                 <div class="info">
                   <div class="name">weizhanzhan</div>
