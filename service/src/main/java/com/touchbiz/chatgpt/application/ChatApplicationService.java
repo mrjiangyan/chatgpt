@@ -22,5 +22,5 @@ public interface ChatApplicationService {
 
 	void add(ChatInfo chatInfo, SysUserCacheInfo sysUser);
 
-	void deleteSession(String id);
+	void deleteSession(String id, SysUserCacheInfo user);
 }

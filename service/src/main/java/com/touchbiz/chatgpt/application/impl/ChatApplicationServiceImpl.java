@@ -126,9 +126,10 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 	}
 
 	@Override
-	public void deleteSession(String id) {
+	public void deleteSession(String id, SysUserCacheInfo user) {
 		LambdaQueryWrapper<ChatSession> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(ChatSession::getSessionId, id);
+		queryWrapper.eq(ChatSession::getUserId, user.getId());
 		ChatSession session = new ChatSession();
 		session.setDeleted(true);
 		chatSessionService.update(session, queryWrapper);

@@ -9,6 +9,7 @@ import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
 import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
+import com.touchbiz.common.entity.annotation.Auth;
 import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import io.swagger.annotations.ApiOperation;
@@ -57,14 +58,14 @@ public class ChatController extends AbstractBaseController<ChatSessionInfo, Chat
     @GetMapping
     public MonoResult<?> getPageList(HttpServletRequest request, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                      @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        var user = getUser();
+        var user = getCurrentUser();
         return MonoResult.ok(chatApplicationService.getPageList(pageNo, pageSize, user));
     }
 
     @ApiOperation("新增会话id")
     @PostMapping("/session")
     public MonoResult<?> createSession() {
-        var user = getUser();
+        var user = getCurrentUser();
         return MonoResult.OK(chatApplicationService.createSession(user));
     }
 
@@ -77,10 +78,12 @@ public class ChatController extends AbstractBaseController<ChatSessionInfo, Chat
         return MonoResult.ok("");
     }
 
+    @Auth
     @ApiOperation(value = "删除会话")
     @DeleteMapping("/{id}")
     public MonoResult<?> delete(@PathVariable String id) {
-        chatApplicationService.deleteSession(id);
+        var user = getCurrentUser();
+        chatApplicationService.deleteSession(id, user);
         return MonoResult.ok("删除成功！");
     }
 

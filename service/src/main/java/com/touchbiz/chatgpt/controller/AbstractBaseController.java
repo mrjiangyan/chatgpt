@@ -3,18 +3,14 @@ package com.touchbiz.chatgpt.controller;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.touchbiz.cache.starter.IRedisTemplate;
-import com.touchbiz.chatgpt.database.domain.SysUser;
 import com.touchbiz.chatgpt.infrastructure.constants.CommonConstant;
 import com.touchbiz.chatgpt.service.ISysUserService;
-import com.touchbiz.common.entity.exception.BizException;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
-import com.touchbiz.common.utils.security.JwtUtil;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.ObjectUtils;
 
 import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
 
@@ -37,11 +33,11 @@ public abstract class AbstractBaseController<T, S extends IService<T>> {
     @Autowired
     protected IRedisTemplate redisTemplate;
 
-    protected SysUserCacheInfo getCurrentUser(){
-       return (SysUserCacheInfo) ReactiveRequestContextHolder.getUser();
-    }
+//    protected SysUserCacheInfo getCurrentUser(){
+//       return (SysUserCacheInfo) ReactiveRequestContextHolder.getUser();
+//    }
 
-    protected SysUserCacheInfo getUser(){
+    protected SysUserCacheInfo getCurrentUser(){
         var user = ReactiveRequestContextHolder.getUser();
         if(user == null){
             var request = ReactiveRequestContextHolder.get();
