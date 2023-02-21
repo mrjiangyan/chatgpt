@@ -24,7 +24,6 @@ public class UserController extends AbstractBaseController<SysUser, ISysUserServ
      * 获取用户基本信息以及购买的服务信息
      * @return
      */
-    @Auth
     @GetMapping
     public MonoResult<SysUserCacheInfo> info() {
         var user = getCurrentUser();
