@@ -29,7 +29,7 @@ export const logout = () => {
 
 export const userInfo = () => {
   return request<UserInfo>({
-    url: 'api/chatGpt/user/',
+    url: 'chatGpt/user/',
     method: 'get'
   }).then(res => {
     if (res === null) {

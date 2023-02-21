@@ -1,6 +1,7 @@
 export interface ChatSession {
   sessionId: string
 }
+
 export interface CompletionResult {
   id: string
   object: string

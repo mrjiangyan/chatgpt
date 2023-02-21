@@ -1,6 +1,8 @@
 package com.touchbiz.chatgpt.controller;
 
 import com.touchbiz.chatgpt.database.domain.SysUser;
+import com.touchbiz.chatgpt.dto.response.UserDTO;
+import com.touchbiz.chatgpt.infrastructure.converter.UserConverter;
 import com.touchbiz.chatgpt.service.ISysUserService;
 import com.touchbiz.common.entity.annotation.Auth;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
@@ -25,14 +27,18 @@ public class UserController extends AbstractBaseController<SysUser, ISysUserServ
      * @return
      */
     @GetMapping
-    public MonoResult<SysUserCacheInfo> info() {
+    public MonoResult<UserDTO> info() {
         var user = getCurrentUser();
         //拿到用户是否有购买。
         //购买方式，包年/包月/按次
 
         //如果是按次则需要显示次数
-
-        return MonoResult.ok(user);
+        var result = UserConverter.INSTANCE.transformOut(user);
+        if(result!= null){
+            result.setMemberLevel("付费会员");
+            result.setSessionCount(0);
+        }
+        return MonoResult.ok(result);
     }
 
 

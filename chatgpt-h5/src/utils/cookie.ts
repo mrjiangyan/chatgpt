@@ -12,6 +12,10 @@ export const setCookie = (key: string, value: string, cookieExpires: number) => 
   Cookies.set(key, value, { expires: cookieExpires || 1 })
 }
 
+export const getCookie = (key: string) => {
+  return Cookies.get(key)
+}
+
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
   if (token) return token

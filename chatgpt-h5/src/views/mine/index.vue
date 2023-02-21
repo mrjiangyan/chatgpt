@@ -5,10 +5,10 @@
         <img src="../../assets/icon/chat.svg" class="header-img" />
       </div>
 
-      <!-- <div class="login-regist">
-          <router-link to="/login" class="order-item" tag="span">登录</router-link>
-          <router-link to="/register/phoneRegister" class="order-item" tag="span">/注册</router-link>
-        </div> -->
+      <div class="login-regist" v-if="user == null">
+        <router-link to="/login" class="order-item">登录</router-link>
+        <!-- <router-link to="/register/phoneRegister" class="order-item" tag="span">/注册</router-link> -->
+      </div>
       <ul class="user-info">
         <li class="user-name"></li>
         <li class="user-name">{{ user != null ? user.memberLevel : '' }}</li>

@@ -39,20 +39,6 @@
         <span>更多</span>
       </div>
     </div>
-    <!-- <div v-if="false" class="hot_rank">
-      <div class="title">今日热榜</div>
-      <div>
-        <van-swipe class="projects" :loop="false" :width="300">
-          <van-swipe-item v-for="(img, index) in banners" :key="index">
-            <img
-              :src="img"
-              @click="showImg(banners, { startPosition: index })"
-              alt=""
-            />
-          </van-swipe-item>
-        </van-swipe>
-      </div>
-    </div> -->
 
     <div class="page_prompt">
       <ChatBox
@@ -70,8 +56,10 @@ import { defineComponent, ref, unref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { chat, createSession } from '@/api/chat'
+import { getCookie } from '@/utils/cookie'
 import { showImg } from '@/utils/utils'
 import ChatBox, { Message } from '@/components/ChatBox.vue'
+import { SESSION_ID_KEY } from '@/configs/cacheEnum'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const targetAvatar = require('@/assets/icon/openai.svg')
@@ -105,10 +93,12 @@ export default defineComponent({
 
     function getChatAnswer() {
       console.log(prompt)
+
       const param = {
         prompt: unref(prompt)
           .map(v => v.text)
-          .join('\n\n')
+          .join('\n\n'),
+        sessionId: getCookie(SESSION_ID_KEY)
       }
       chat(param)
         .then(res => {
@@ -170,7 +160,8 @@ export default defineComponent({
       targetAvatar,
       loadHistory,
       sendMessage,
-      chatRef
+      chatRef,
+      getCookie
     }
   }
 })
