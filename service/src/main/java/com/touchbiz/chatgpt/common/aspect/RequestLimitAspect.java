@@ -4,6 +4,7 @@ import com.touchbiz.chatgpt.common.aspect.annotation.RequestLimit;
 import com.touchbiz.chatgpt.common.exception.RequestLimitException;
 import com.touchbiz.common.entity.exception.BizException;
 import com.touchbiz.common.utils.text.CommonConstant;
+import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -38,58 +39,29 @@ public class RequestLimitAspect {
     }
 
     @Around("@annotation(requestLimit)")
-    public Mono<Object> requestLimit(ProceedingJoinPoint joinPoint, RequestLimit requestLimit) throws RequestLimitException {
-        Mono<ServerHttpRequest> requestMono = ReactiveHttpContextHolder.getRequest();
-        return requestMono.flatMap(request -> {
-            String hostAddress = getIpAddr(request);
-            log.info("hostAddress={}", hostAddress);
-            String url = request.getURI().toString();
-            log.info("url={}", url);
-            String redisKey = String.format("%s::%s:%s", REQUEST_LIMIT_KEY, hostAddress, url);
-            long count = redisTemplate.opsForValue().increment(redisKey, 1);
-            if (count == 1) {
-                redisTemplate.persist(redisKey);
-            }
-            if (count > requestLimit.maxCount()) {
-                String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimit.maxCount());
-                log.error(error);
-                throw new RequestLimitException(error);
-            }
-            try {
-                return (Mono<Object>) joinPoint.proceed();
-            } catch (Throwable e) {
-                log.error("接口方法出现异常-->{}", e);
-                throw new RequestLimitException(e.toString());
-            }
-        });
+    public Object requestLimit(ProceedingJoinPoint joinPoint, RequestLimit requestLimit) throws RequestLimitException {
+        var request = ReactiveRequestContextHolder.get();
+        String hostAddress = getIpAddr(request);
+        log.info("hostAddress={}", hostAddress);
+        String url = request.getURI().toString();
+        log.info("url={}", url);
+        String redisKey = String.format("%s::%s:%s", REQUEST_LIMIT_KEY, hostAddress, url);
+        long count = redisTemplate.opsForValue().increment(redisKey, 1);
+        if (count == 1) {
+            redisTemplate.persist(redisKey);
+        }
+        if (count > requestLimit.maxCount()) {
+            String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimit.maxCount());
+            log.error(error);
+            throw new RequestLimitException(error);
+        }
+        try {
+            return joinPoint.proceed();
+        } catch (Throwable e) {
+            log.error("接口方法出现异常-->{}", e);
+            throw new RequestLimitException(e.toString());
+        }
     }
-
-//    @Around("@annotation(requestLimit)")
-//    public Mono<Object> requestLimit(ProceedingJoinPoint joinPoint, RequestLimit requestLimit) throws RequestLimitException {
-//        Mono<ServerHttpRequest> requestMono = ReactiveHttpContextHolder.getRequest();
-//        return requestMono.flatMap(request -> {
-//            String hostAddress = getIpAddr(request);
-//            log.info("hostAddress={}", hostAddress);
-//            String url = request.getURI().toString();
-//            log.info("url={}", url);
-//            String redisKey = String.format("%s::%s:%s", REQUEST_LIMIT_KEY, hostAddress, url);
-//            long count = redisTemplate.opsForValue().increment(redisKey, 1);
-//            if (count == 1) {
-//                redisTemplate.persist(redisKey);
-//            }
-//            if (count > requestLimit.maxCount()) {
-//                String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimit.maxCount());
-//                log.error(error);
-//                throw new RequestLimitException(error);
-//            }
-//            try {
-//                return (Mono<Object>) joinPoint.proceed();
-//            } catch (Throwable e) {
-//                log.error("接口方法出现异常-->{}", e);
-//                throw new RequestLimitException(e.toString());
-//            }
-//        });
-//    }
 
     /**
      * 获取IP地址
