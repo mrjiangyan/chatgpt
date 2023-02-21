@@ -1,6 +1,6 @@
 package com.touchbiz.chatgpt.common;
 
-import com.touchbiz.common.entity.model.SysUserCacheInfo;
+import com.touchbiz.chatgpt.dto.response.LoginUser;
 import com.touchbiz.webflux.starter.configuration.HttpHeaderConstants;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.Data;
@@ -32,7 +32,7 @@ public abstract class BaseControllerTest extends BaseTest {
 //        };
 //        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();//建议使用这种
 
-        SysUserCacheInfo token = new SysUserCacheInfo();
+        LoginUser token = new LoginUser();
         token.setId("0");
         ReactiveRequestContextHolder.putUser(token);
     }

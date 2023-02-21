@@ -5,10 +5,8 @@ import com.touchbiz.chatgpt.database.domain.SysUser;
 import com.touchbiz.chatgpt.database.mapper.SysUserMapper;
 import com.touchbiz.chatgpt.service.BaseCommonService;
 import com.touchbiz.chatgpt.service.ISysUserService;
-import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.entity.result.Result;
 import com.touchbiz.common.utils.text.CommonConstant;
-import com.touchbiz.common.utils.text.oConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,32 +30,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	public SysUser getUserByName(String username) {
 		return getBaseMapper().getUserByName(username);
-	}
-	
-
-
-
-	/**
-	 * 升级SpringBoot2.6.6,不允许循环依赖
-	 * @author:qinfeng
-	 * @update: 2022-04-07
-	 * @param username
-	 * @return
-	 */
-	@Override
-	public SysUserCacheInfo getCacheUser(String username) {
-		SysUserCacheInfo info = new SysUserCacheInfo();
-			if (oConvertUtils.isEmpty(username)) {
-			return null;
-		}
-
-		//查询用户信息
-		SysUser sysUser = getBaseMapper().getUserByName(username);
-		if (sysUser != null) {
-			info.setSysUserCode(sysUser.getUsername());
-			info.setSysUserName(sysUser.getRealname());
-		}
-		return info;
 	}
 
 	/**

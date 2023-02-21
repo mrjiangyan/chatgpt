@@ -3,8 +3,8 @@ package com.touchbiz.chatgpt.boot.filter;
 import cn.hutool.http.HttpStatus;
 import com.touchbiz.cache.starter.IRedisTemplate;
 import com.touchbiz.chatgpt.common.dto.Result;
+import com.touchbiz.chatgpt.dto.response.LoginUser;
 import com.touchbiz.common.entity.annotation.Auth;
-import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import com.touchbiz.webflux.starter.configuration.HttpHeaderConstants;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
@@ -31,6 +31,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static com.touchbiz.chatgpt.infrastructure.constants.CommonConstant.TOKEN_PREFIX;
 import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
 
 
@@ -80,13 +81,14 @@ public class AuthFilter implements WebFilter, Ordered {
             }
         }
 
+        if(token != null && token.startsWith(TOKEN_PREFIX)){
+            token = token.replaceFirst(TOKEN_PREFIX, "");
+        }
         Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
         assert auth != null;
         try {
             String redisKey = SYS_USERS_CACHE + token;
-            String json = (String) redisTemplate.get(redisKey);
-            log.info("key:{},json:{}", redisKey, json);
-            SysUserCacheInfo user =  JsonUtils.toObject(json, SysUserCacheInfo.class);
+            var user = redisTemplate.getObject(redisKey, LoginUser.class);
             //查找该用户
             exchange.getAttributes().put(HttpHeaderConstants.HEADER_USER, user);
             ReactiveRequestContextHolder.putUser(user);

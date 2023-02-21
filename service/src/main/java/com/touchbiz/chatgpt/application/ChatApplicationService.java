@@ -4,9 +4,8 @@ package com.touchbiz.chatgpt.application;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.dto.Chat;
-import com.touchbiz.chatgpt.dto.ChatInfo;
 import com.touchbiz.chatgpt.dto.ChatResult;
-import com.touchbiz.common.entity.model.SysUserCacheInfo;
+import com.touchbiz.chatgpt.dto.response.LoginUser;
 
 /**
  * <p>
@@ -18,13 +17,13 @@ import com.touchbiz.common.entity.model.SysUserCacheInfo;
  */
 public interface ChatApplicationService {
 
-	IPage<ChatSession> getChatSessionPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo sysUser);
+	IPage<ChatSession> getChatSessionPageList(Integer pageNo, Integer pageSize, LoginUser sysUser);
 
-	ChatSession createSession(SysUserCacheInfo sysUser);
+	ChatSession createSession(LoginUser sysUser);
 
-	String createSessionInfo(Chat chat, ChatResult result, SysUserCacheInfo sysUser);
+	String createSessionInfo(Chat chat, ChatResult result, LoginUser sysUser);
 
-	void deleteSession(String id, SysUserCacheInfo user);
+	void deleteSession(String id, LoginUser user);
 
 	void checkSessionId(String sessionId);
 }

@@ -97,7 +97,7 @@ public class LoginController extends AbstractBaseController<SysUser, ISysUserSer
 		LoginUser loginUser = UserConverter.INSTANCE.transformOut(sysUser);
 
 		String token = result.getResult().getString("token");
-		getRedisTemplate().set(CommonConstant.SYS_USERS_CACHE + token, loginUser, JwtUtil.EXPIRE_TIME / 1000);
+		getRedisTemplate().setObject(CommonConstant.SYS_USERS_CACHE + token, loginUser, JwtUtil.EXPIRE_TIME / 1000);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,sysUser);
      	return result;
 	}
@@ -113,7 +113,7 @@ public class LoginController extends AbstractBaseController<SysUser, ISysUserSer
 	    if( user!=null) {
 			log.info(" 用户名:  "+ user.getRealname()+",退出成功！ ");
 			baseCommonService.addLog("用户名: "+user.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null,
-					UserConverter.INSTANCE.transform(user));
+					user);
 			var request = ReactiveRequestContextHolder.get();
 			String token = request.getHeaders().getFirst(X_ACCESS_TOKEN);
 			//清空用户登录Token缓存

@@ -94,7 +94,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         var session = chatApplicationService.createSession(user);
         //添加缓存
         String key = CHAT_SESSION_KEY + session.getSessionId();
-        getRedisTemplate().set(key, session, CHAT_SESSION_EXPIRE_SECONDS);
+        getRedisTemplate().setObject(key, session, CHAT_SESSION_EXPIRE_SECONDS);
         return MonoResult.OK(ChatSessionConverter.INSTANCE.transformOut(session));
     }
 

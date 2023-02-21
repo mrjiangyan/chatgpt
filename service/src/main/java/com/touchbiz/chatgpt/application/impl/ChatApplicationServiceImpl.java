@@ -10,19 +10,17 @@ import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
-
 import com.touchbiz.chatgpt.dto.ChatResult;
+import com.touchbiz.chatgpt.dto.response.LoginUser;
 import com.touchbiz.chatgpt.infrastructure.enums.ChatSessionInfoTypeEnum;
 import com.touchbiz.chatgpt.infrastructure.utils.AesEncryptUtil;
 import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.chatgpt.service.ChatSessionService;
 import com.touchbiz.common.entity.exception.BizException;
-import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,7 +60,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
     private final int length = 10;
 
     @Override
-    public IPage<ChatSession> getChatSessionPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo user) {
+    public IPage<ChatSession> getChatSessionPageList(Integer pageNo, Integer pageSize, LoginUser user) {
         Page<ChatSession> page = new Page<>(pageNo, pageSize);
         LambdaQueryWrapper<ChatSession> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ChatSession::getUserId, user.getId());
@@ -74,7 +71,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
     }
 
     @Override
-    public ChatSession createSession(SysUserCacheInfo user) {
+    public ChatSession createSession(LoginUser user) {
         String uuid = IdWorker.getIdStr();
         //获取request
         var requests = ReactiveRequestContextHolder.get();
@@ -94,7 +91,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String createSessionInfo(Chat chat, ChatResult result, SysUserCacheInfo user) {
+    public String createSessionInfo(Chat chat, ChatResult result, LoginUser user) {
         String sessionId = chat.getSessionId();
         String prompt = chat.getPrompt();
         String redis = CHAT_SESSION_SEQUENCE_KEY + sessionId;
@@ -138,7 +135,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
     }
 
     @Override
-    public void deleteSession(String id, SysUserCacheInfo user) {
+    public void deleteSession(String id, LoginUser user) {
         LambdaQueryWrapper<ChatSession> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ChatSession::getSessionId, id);
         queryWrapper.eq(ChatSession::getUserId, user.getId());

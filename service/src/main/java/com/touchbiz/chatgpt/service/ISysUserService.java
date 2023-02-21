@@ -1,16 +1,8 @@
 package com.touchbiz.chatgpt.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.touchbiz.chatgpt.database.domain.SysUser;
-import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.entity.result.Result;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * <p>
@@ -28,15 +20,6 @@ public interface ISysUserService extends IService<SysUser> {
      * @return SysUser
      */
 	SysUser getUserByName(String username);
-
-	/**
-	  * 查询用户信息包括 部门信息
-	 * @param username
-	 * @return
-	 */
-	@Deprecated
-	SysUserCacheInfo getCacheUser(String username);
-
 
 
 	/**
