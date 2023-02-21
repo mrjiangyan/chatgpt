@@ -41,7 +41,6 @@
     </properties>
 
     <dependencyManagement>
-             
         <dependencies>
             <!-- spring-cloud-alibaba -->
             <dependency>
