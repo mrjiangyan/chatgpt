@@ -68,15 +68,7 @@
                   ...
                 </div>
               </div>
-              <div class="talk-content">
-                <div class="content-text">
-                  冬天总是爱犯困😪
-                </div>
-                <div class="content-img">
-                  <img class="img1" :src="talk1Img" alt="" @click="showImg([talk1Img])" srcset="" />
-                  <img class="img2" :src="talk2Img" alt="" srcset="" @click="showImg([talk2Img])" />
-                </div>
-              </div>
+
               <div class="talk-action">
                 <!-- 点赞70 -->
                 <div class="like"><van-icon name="like" size="16" color="red" /> <span>79</span></div>
@@ -96,12 +88,8 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import { showImg } from '@/utils/utils'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const talk1Img = require('@/assets/images/talk1.png')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const talk2Img = require('@/assets/images/talk2.png')
 export default defineComponent({
-  name: 'ABOUT',
+  name: 'My',
   setup() {
     const todos = ref([])
     const container = ref<HTMLElement>()
@@ -166,9 +154,7 @@ export default defineComponent({
       onDragEnd,
       container,
       person,
-      showImg,
-      talk1Img,
-      talk2Img
+      showImg
     }
   }
 })

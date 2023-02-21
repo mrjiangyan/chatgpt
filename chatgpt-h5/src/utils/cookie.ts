@@ -1,7 +1,8 @@
 import Cookies from 'js-cookie'
-// cookie保存的天数
 
-export const TOKEN_KEY = 'NOW_TOKEN'
+import { TOKEN_KEY } from '@/configs/cacheEnum'
+
+// cookie保存的天数
 
 export const setToken = (token: string, cookieExpires: any) => {
   Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })

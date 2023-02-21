@@ -67,11 +67,9 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, unref, onMounted } from 'vue'
-import { Toast } from 'vant'
 import { useRouter } from 'vue-router'
 
-import { chat } from '@/api/chat'
-import { menus } from '@/mock/data'
+import { chat, createSession } from '@/api/chat'
 import { showImg } from '@/utils/utils'
 import ChatBox, { Message } from '@/components/ChatBox.vue'
 
@@ -115,20 +113,16 @@ export default defineComponent({
       chat(param)
         .then(res => {
           console.log(res)
-          if (res.success) {
-            const anwsers = res.result.choices.map(
-              (choice): Message => ({
-                text: choice.text.replace('\n\n', '\n'),
-                time: new Date(),
-                direction: 'received'
-              })
-            )
-            console.log('anwsers', anwsers)
-            prompt.value.push(...anwsers)
-            chatRef.value.appendNew(...anwsers)
-          } else {
-            Toast.fail(res.message)
-          }
+          const anwsers = res.choices.map(
+            (choice): Message => ({
+              text: choice.text.replace('\n\n', '\n'),
+              time: new Date(),
+              direction: 'received'
+            })
+          )
+          console.log('anwsers', anwsers)
+          prompt.value.push(...anwsers)
+          chatRef.value.appendNew(...anwsers)
 
           // state.list = result;
         })
@@ -156,10 +150,16 @@ export default defineComponent({
       router.push('/message')
     }
 
-    onMounted(() => {})
+    const getSession = () => {
+      createSession()
+    }
+
+    onMounted(() => {
+      getSession()
+    })
 
     return {
-      menus,
+      getSession,
       toDetail,
       toMessage,
       content,
