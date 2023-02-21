@@ -28,11 +28,6 @@ import java.time.LocalDate;
 public class SysUser extends BaseDomain {
 
     /**
-     * 主键
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    /**
      * 登录账号
      */
     private String username;

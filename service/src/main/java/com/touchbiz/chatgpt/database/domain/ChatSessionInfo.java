@@ -23,7 +23,7 @@ public class ChatSessionInfo extends BaseDomain {
      * 会话id
      */
     @ApiModelProperty("会话id")
-    private String id;
+    private String sessionId;
 
     @ApiModelProperty("类型(1.问题2.回答)")
     private Integer type;

@@ -22,11 +22,6 @@ import java.time.LocalDateTime;
 public class ChatSession extends BaseDomain {
 
     /**
-     * 主键
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    /**
      * 会话id
      */
     private String sessionId;
@@ -42,6 +37,8 @@ public class ChatSession extends BaseDomain {
     /**
      * 会话开始时间
      */
-    private LocalDateTime sessionStartTime;
+    private LocalDateTime startTime;
+
+    private LocalDateTime lastTime;
 
 }

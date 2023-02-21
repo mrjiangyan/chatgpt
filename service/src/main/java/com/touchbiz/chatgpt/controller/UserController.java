@@ -1,21 +1,15 @@
 package com.touchbiz.chatgpt.controller;
 
 import com.touchbiz.chatgpt.database.domain.SysUser;
-import com.touchbiz.chatgpt.infrastructure.constants.CommonConstant;
 import com.touchbiz.chatgpt.service.ISysUserService;
 import com.touchbiz.common.entity.annotation.Auth;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
 import com.touchbiz.common.entity.result.MonoResult;
-import com.touchbiz.common.entity.result.Result;
-import com.touchbiz.common.utils.security.JwtUtil;
-import com.touchbiz.common.utils.text.oConvertUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author jiangyan

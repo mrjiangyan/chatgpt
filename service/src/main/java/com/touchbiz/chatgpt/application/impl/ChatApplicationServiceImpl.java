@@ -4,33 +4,28 @@ package com.touchbiz.chatgpt.application.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.touchbiz.cache.starter.IRedisTemplate;
-import com.touchbiz.chatgpt.application.ChatService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
-import com.touchbiz.chatgpt.database.domain.SysUser;
+import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.chatgpt.dto.ChatInfo;
-import com.touchbiz.chatgpt.infrastructure.constants.CommonConstant;
 import com.touchbiz.chatgpt.infrastructure.converter.ChatSessionInfoConverter;
+import com.touchbiz.chatgpt.infrastructure.utils.AesEncryptUtil;
 import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.chatgpt.service.ChatSessionService;
 import com.touchbiz.common.entity.exception.BizException;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
-import com.touchbiz.common.entity.result.MonoResult;
-import com.touchbiz.common.utils.tools.JsonUtils;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,7 +39,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class ChatServiceImpl implements ChatService {
+public class ChatApplicationServiceImpl implements ChatApplicationService {
 
 	@Autowired
 	private ChatSessionService chatSessionService;
@@ -89,18 +84,19 @@ public class ChatServiceImpl implements ChatService {
 	}
 
 	@Override
-	public String addSessionId(SysUserCacheInfo user) {
+	public ChatSession createSession(SysUserCacheInfo user) {
 		String uuid = UUID.randomUUID().toString();
 		//获取request
 		var requests = ReactiveRequestContextHolder.get();
 		ChatSession chatSession = new ChatSession();
-		chatSession.setSessionId(uuid);
+		chatSession.setSessionId(AesEncryptUtil.encrypt(uuid));
 		chatSession.setIp(RequestUtils.getIpAddr(requests));
-//		chatSession.setHead(JsonUtils.toJson(heads));
-		chatSession.setSessionStartTime(LocalDateTime.now());
-		chatSession.setCreator(user.getUsername());
+		chatSession.setStartTime(LocalDateTime.now());
+		if(user != null){
+			chatSession.setCreator(user.getUsername());
+		}
 		chatSessionService.save(chatSession);
-		return uuid;
+		return chatSession;
 	}
 
 	@Override
@@ -112,7 +108,7 @@ public class ChatServiceImpl implements ChatService {
 		if (!CollectionUtils.isEmpty(list)) {
 			list.forEach(item -> {
 				ChatSessionInfo chatSessionInfo = new ChatSessionInfo();
-				chatSessionInfo.setId(sessionId);
+				chatSessionInfo.setSessionId(sessionId);
 				chatSessionInfo.setCreator(user.getUsername());
 				chatSessionInfo.setType(item.getType());
 				chatSessionInfo.setContent(item.getContent());
