@@ -51,39 +51,13 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 	private ChatSessionInfoService chatSessionInfoService;
 
 	@Override
-	public IPage<ChatInfo> getPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo user) {
+	public IPage<ChatSession> getChatSessionPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo user) {
 		Page<ChatSession> page = new Page<>(pageNo, pageSize);
 		LambdaQueryWrapper<ChatSession> queryWrapper = new LambdaQueryWrapper<>();
-		queryWrapper.eq(ChatSession::getCreator, user.getUsername());
+		queryWrapper.eq(ChatSession::getUserId, user.getId());
 		queryWrapper.orderByDesc(ChatSession::getGmtCreate);
-		Page<ChatSession> ChatSessionPage = chatSessionService.page(page, queryWrapper);
-		List<ChatSession> records = ChatSessionPage.getRecords();
-		if (CollectionUtils.isEmpty(records)) {
-			return new Page<>();
-		}
-		List<String> sessionIds = records.stream().map(ChatSession::getSessionId).collect(Collectors.toList());
-		List<ChatSessionInfo> chatSessionInfoList = chatSessionInfoService.listByIds(sessionIds);
-		IPage<ChatInfo> iPage = new Page<>();
-		List<ChatInfo> list = records.stream().map(item -> {
-			ChatInfo chatInfo = new ChatInfo();
-			List<ChatInfo.ChatSessionInfo> chatSessionInfos = new ArrayList<>();
-			chatInfo.setSessionId(item.getSessionId());
-			chatInfo.setCreateTime(item.getGmtCreate().toLocalDateTime());
-			chatInfo.setCreator(user.getUsername());
-			chatSessionInfoList.stream().filter(chatSessionInfo -> item.getSessionId().equals(chatSessionInfo.getId())).forEach(chatSessionInfo -> {
-						ChatInfo.ChatSessionInfo chatSession = ChatSessionInfoConverter.INSTANCE.transformOut(chatSessionInfo);
-						chatSession.setSessionTime(chatSessionInfo.getGmtCreate().toLocalDateTime());
-						chatSessionInfos.add(chatSession);
-					}
-			);
-			chatInfo.setList(chatSessionInfos);
-			return chatInfo;
-		}).collect(Collectors.toList());
-		iPage.setRecords(list);
-		iPage.setCurrent(pageNo);
-		iPage.setSize(pageSize);
-		iPage.setTotal(ChatSessionPage.getTotal());
-		return iPage;
+		var sessionPage = chatSessionService.page(page, queryWrapper);
+		return sessionPage;
 	}
 
 	@Override

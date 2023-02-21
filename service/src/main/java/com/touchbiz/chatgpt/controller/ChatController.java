@@ -8,6 +8,8 @@ import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
 import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
+import com.touchbiz.chatgpt.dto.response.ChatSessionDTO;
+import com.touchbiz.chatgpt.infrastructure.converter.ChatSessionConverter;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.common.entity.annotation.Auth;
 import com.touchbiz.common.entity.result.MonoResult;
@@ -20,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/api/chatGpt/chatting")
@@ -54,19 +57,24 @@ public class ChatController extends AbstractBaseController<ChatSessionInfo, Chat
         return Mono.just(Result.ok(result));
     }
 
+    @Auth
     @ApiOperation("获取会话列表")
     @GetMapping
-    public MonoResult<?> getPageList(HttpServletRequest request, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                     @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+    public MonoResult<List<ChatSessionDTO>> getPageList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         var user = getCurrentUser();
-        return MonoResult.ok(chatApplicationService.getPageList(pageNo, pageSize, user));
+        var result = chatApplicationService.getChatSessionPageList(pageNo, pageSize, user);
+        var list = result.getRecords().stream().map(ChatSessionConverter.INSTANCE::transformOut)
+                .toList();
+        return MonoResult.ok(list);
     }
 
     @ApiOperation("新增会话id")
     @PostMapping("/session")
     public MonoResult<?> createSession() {
         var user = getCurrentUser();
-        return MonoResult.OK(chatApplicationService.createSession(user));
+        var session = ChatSessionConverter.INSTANCE.transformOut(chatApplicationService.createSession(user));
+        return MonoResult.OK(session);
     }
 
     /**

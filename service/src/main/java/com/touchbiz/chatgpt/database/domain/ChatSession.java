@@ -32,11 +32,6 @@ public class ChatSession extends BaseDomain {
      */
     private String ip;
     /**
-     * 请求头信息
-     */
-    private String head;
-
-    /**
      * 会话开始时间
      */
     private LocalDateTime startTime;

@@ -16,7 +16,7 @@ import com.touchbiz.common.entity.model.SysUserCacheInfo;
  */
 public interface ChatApplicationService {
 
-	IPage<ChatInfo> getPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo sysUser);
+	IPage<ChatSession> getChatSessionPageList(Integer pageNo, Integer pageSize, SysUserCacheInfo sysUser);
 
 	ChatSession createSession(SysUserCacheInfo sysUser);
 
