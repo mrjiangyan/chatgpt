@@ -1,19 +1,23 @@
 <template>
   <div class="mine-layout">
     <section class="mine-header">
-      <img src="../../assets/icon/chat.svg" class="header-img" />
+      <div class="header-circle">
+        <img src="../../assets/icon/chat.svg" class="header-img" />
+      </div>
+
       <!-- <div class="login-regist">
           <router-link to="/login" class="order-item" tag="span">登录</router-link>
           <router-link to="/register/phoneRegister" class="order-item" tag="span">/注册</router-link>
         </div> -->
       <ul class="user-info">
-        <li class="user-name">钻石王老五</li>
+        <li class="user-name"></li>
+        <li class="user-name">{{ user != null ? user.memberLevel : '' }}</li>
       </ul>
     </section>
     <section class="my-info">
       <ul class="info-list">
         <li class="info-item">
-          <b>0</b>
+          <b>{{ user != null ? 0 : 0 }}</b>
           <span>提问次数</span>
         </li>
         <!-- <li class="info-item">
@@ -21,8 +25,8 @@
           <span>店铺关注</span>
         </li> -->
         <li class="info-item">
-          <b>09</b>
-          <span>我的会话</span>
+          <b>{{ user != null ? user.sessionCount : 0 }}</b>
+          <span>会话数</span>
         </li>
       </ul>
     </section>
@@ -51,7 +55,7 @@
           <van-icon name="arrow" color="#DBDBDB" />
         </router-link>
 
-        <li class="option-item" @click="clickLogout" :v-if="true">
+        <li class="option-item" @click="clickLogout" v-if="getToken() !== false">
           <div class="item-info">
             <svg-icon class="incon" icon-class="my-assets"></svg-icon>
             <span>退出登录</span>
@@ -98,19 +102,28 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
-import { logout } from '@/api/user'
+import { ref, onMounted } from 'vue'
+import { logout, userInfo } from '@/api/user'
+import { getToken } from '@/utils/cookie'
+import { UserInfo } from '@/entities/user'
 export default {
   name: 'index',
   setup() {
-    const columns = ref(1)
-
+    const user = ref<UserInfo | null>()
     const clickLogout = () => {
       logout()
     }
-    // onMounted(() => {})
 
-    return { columns, clickLogout }
+    const getUserInfo = () => {
+      userInfo().then(res => {
+        user.value = res
+      })
+    }
+    onMounted(() => {
+      getUserInfo()
+    })
+
+    return { clickLogout, getToken, getUserInfo, user }
   }
 }
 </script>
@@ -129,10 +142,18 @@ export default {
     align-items: center;
     flex-direction: row;
     padding-bottom: 20px;
-    .header-img {
-      width: 70px;
-      height: 70px;
+    .header-circle {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border-radius: 100%;
+      overflow: hidden;
+      .header-img {
+        margin: 12px;
+        height: 36px;
+      }
     }
+
     .user-info {
       padding-left: 16px;
       font-size: 15px;
