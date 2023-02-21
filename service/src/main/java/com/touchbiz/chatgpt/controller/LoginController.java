@@ -21,6 +21,7 @@ import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.entity.result.Result;
 import com.touchbiz.common.utils.security.JwtUtil;
 import com.touchbiz.common.utils.text.oConvertUtils;
+import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 
+import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
+
 /**
  * @Author scott
  * @since 2018-12-17
@@ -40,14 +43,9 @@ import java.util.LinkedHashMap;
 @RequestMapping("/api/chatGpt/")
 @Api(tags="用户登录")
 @Slf4j
-public class LoginController {
+public class LoginController extends AbstractBaseController<SysUser, ISysUserService> {
 
 	private final String BASE_CHECK_CODES = "qwertyuipkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
-
-	@Autowired
-	private ISysUserService sysUserService;
-	@Autowired
-    private IRedisTemplate redisUtil;
 
 	@Autowired
 	private BaseCommonService baseCommonService;
@@ -67,7 +65,7 @@ public class LoginController {
 		String origin = lowerCaseCaptcha + sysLoginModel.getCheckKey() + jeecgBaseConfig.getSignatureSecret();
 		String realKey = Md5Util.md5Encode(origin, CharsetUtil.UTF_8);
 		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-		String checkCode = String.valueOf(redisUtil.get(realKey));
+		String checkCode = String.valueOf(getRedisTemplate().get(realKey));
 		//当进入登录页时，有一定几率出现验证码错误 #1714
 		if (lowerCaseCaptcha.equals(checkCode.toString())) {
 			log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
@@ -77,7 +75,7 @@ public class LoginController {
 			return result;
 		}
 		//验证码验证通过，删除缓存
-		redisUtil.del(realKey);
+		getRedisTemplate().del(realKey);
 		LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysUser::getUsername,username);
 		SysUser sysUser = sysUserService.getOne(queryWrapper);
@@ -99,35 +97,30 @@ public class LoginController {
 		LoginUser loginUser = UserConverter.INSTANCE.transformOut(sysUser);
 
 		String token = result.getResult().getString("token");
-		redisUtil.set(CommonConstant.SYS_USERS_CACHE + token, loginUser, JwtUtil.EXPIRE_TIME / 1000);
+		getRedisTemplate().set(CommonConstant.SYS_USERS_CACHE + token, loginUser, JwtUtil.EXPIRE_TIME / 1000);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,sysUser);
      	return result;
 	}
 	
 	/**
 	 * 退出登录
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	@RequestMapping(value = "/logout")
-	public Result<Object> logout(HttpServletRequest request) {
+	public Result<Object> logout() {
 		//用户退出逻辑
-	    String token = request.getHeader(com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN);
-	    if(oConvertUtils.isEmpty(token)) {
-	    	return Result.error("退出登录失败！");
-	    }
-	    String username = JwtUtil.getUsername(token);
-		var sysUser = sysUserService.getUserByName(username);
-	    if(sysUser!=null) {
-			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null, sysUser);
-			log.info(" 用户名:  "+ sysUser.getRealname()+",退出成功！ ");
+	    var user = getCurrentUser();
+	    if( user!=null) {
+			log.info(" 用户名:  "+ user.getRealname()+",退出成功！ ");
+			baseCommonService.addLog("用户名: "+user.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null,
+					UserConverter.INSTANCE.transform(user));
+			var request = ReactiveRequestContextHolder.get();
+			String token = request.getHeaders().getFirst(X_ACCESS_TOKEN);
 			//清空用户登录Token缓存
-			redisUtil.del(CommonConstant.SYS_USERS_CACHE + token);
-			return Result.ok("退出登录成功！");
-	    } else {
-	    	return Result.error("Token无效!");
+			getRedisTemplate().del(CommonConstant.SYS_USERS_CACHE + token);
+
 	    }
+		return Result.ok("退出登录成功！");
 	}
 
 	/**
@@ -168,7 +161,7 @@ public class LoginController {
 			// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
 			String origin = lowerCaseCode+key+jeecgBaseConfig.getSignatureSecret();
 			String realKey = Md5Util.md5Encode(origin, CharsetUtil.UTF_8);
-			redisUtil.set(realKey, lowerCaseCode, 60);
+			getRedisTemplate().set(realKey, lowerCaseCode, 60);
 			log.info("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
 			//返回前端
 			Object base64 = RandImageUtil.generate(code);
