@@ -53,4 +53,6 @@ public abstract class AbstractBaseController<T, S extends IService<T>> {
         return (SysUserCacheInfo) user;
     }
 
+
+
 }

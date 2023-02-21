@@ -10,37 +10,37 @@
     <div class="bottom-bar">
       <van-tabbar v-model="active" active-color="#85a5ff">
         <van-tabbar-item name="/home" icon="home-o">首页</van-tabbar-item>
-        <van-tabbar-item name="/about" icon="award">我的</van-tabbar-item>
+        <van-tabbar-item name="/mine" icon="award">我的</van-tabbar-item>
       </van-tabbar>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { defineComponent, reactive, toRefs, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 export default defineComponent({
-  name: "LAYOUT",
+  name: 'LAYOUT',
   setup() {
-    const router = useRouter();
+    const router = useRouter()
     const state = reactive({
-      active: "/home",
-      includeRoutes: ["ABOUT"]
-    });
+      active: '/home',
+      includeRoutes: ['mines']
+    })
     watch(
       () => state.active,
       val => {
-        router.push(val);
+        router.push(val)
       }
-    );
+    )
 
     onMounted(() => {
-      state.active = router.currentRoute.value.path;
-    });
+      state.active = router.currentRoute.value.path
+    })
     return {
       ...toRefs(state)
-    };
+    }
   }
-});
+})
 </script>
 <style lang="less" scoped>
 // @import "@assets/style/mixin.scss";
