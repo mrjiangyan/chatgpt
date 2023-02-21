@@ -1,10 +1,13 @@
 package com.touchbiz.chatgpt.database.domain;
 
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Table;
 
 /**
  * <p>
@@ -17,7 +20,8 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class ChatSessionInfo extends BaseDomain {
+@TableName("chat_session_info")
+public class ChatSessionDetail extends BaseDomain {
 
     /**
      * 会话id

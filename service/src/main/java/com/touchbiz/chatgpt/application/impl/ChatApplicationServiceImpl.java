@@ -3,23 +3,18 @@ package com.touchbiz.chatgpt.application.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
-import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
-import com.touchbiz.chatgpt.dto.Chat;
+import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.ChatInfo;
-import com.touchbiz.chatgpt.infrastructure.converter.ChatSessionInfoConverter;
 import com.touchbiz.chatgpt.infrastructure.utils.AesEncryptUtil;
 import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.chatgpt.service.ChatSessionService;
 import com.touchbiz.common.entity.exception.BizException;
 import com.touchbiz.common.entity.model.SysUserCacheInfo;
-import com.touchbiz.common.utils.text.CommonConstant;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +24,6 @@ import org.springframework.util.CollectionUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -84,18 +77,18 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 	public void add(ChatInfo chatInfo, SysUserCacheInfo user) {
 		String sessionId = chatInfo.getSessionId();
 		checkSessionId(sessionId);
-		List<ChatSessionInfo> chatSessionInfoList = new ArrayList<>();
+		List<ChatSessionDetail> chatSessionDetailList = new ArrayList<>();
 		List<ChatInfo.ChatSessionInfo> list = chatInfo.getList();
 		if (!CollectionUtils.isEmpty(list)) {
 			list.forEach(item -> {
-				ChatSessionInfo chatSessionInfo = new ChatSessionInfo();
-				chatSessionInfo.setSessionId(sessionId);
-				chatSessionInfo.setCreator(user.getUsername());
-				chatSessionInfo.setType(item.getType());
-				chatSessionInfo.setContent(item.getContent());
-				chatSessionInfoList.add(chatSessionInfo);
+				ChatSessionDetail chatSessionDetail = new ChatSessionDetail();
+				chatSessionDetail.setSessionId(sessionId);
+				chatSessionDetail.setCreator(user.getUsername());
+				chatSessionDetail.setType(item.getType());
+				chatSessionDetail.setContent(item.getContent());
+				chatSessionDetailList.add(chatSessionDetail);
 			});
-			chatSessionInfoService.saveBatch(chatSessionInfoList);
+			chatSessionInfoService.saveBatch(chatSessionDetailList);
 		}
 	}
 

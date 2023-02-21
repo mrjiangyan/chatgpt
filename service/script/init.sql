@@ -67,3 +67,24 @@ CREATE TABLE `chat_session` (
 ALTER TABLE `chat_session`
     ADD UNIQUE INDEX `unique_session_id` (`session_id` ASC);
 ;
+
+
+CREATE TABLE `chat_session_info` (
+        `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键id',
+       `session_id` varchar(64) NOT NULL,
+       `user_id` int(11) DEFAULT NULL COMMENT '用户id',
+       `sequence` int(11) DEFAULT 0 COMMENT '顺序',
+        `type` int(2) NOT NULL COMMENT '类型(1.问题2.回答)',
+        `content` text NOT NULL COMMENT '会话内容',
+        `creator` varchar(32)  NOT NULL,
+        `modifier` varchar(32) DEFAULT NULL,
+        `gmt_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `gmt_modify` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+) ;
+
+
+ALTER TABLE `chat_session_info`
+    ADD INDEX `idx_session_id` (`session_id` ASC, `sequence` ASC),
+ADD INDEX `idx_user_id` (`user_id` ASC);
+;

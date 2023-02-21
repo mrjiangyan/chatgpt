@@ -2,7 +2,7 @@ package com.touchbiz.chatgpt.database.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
+import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 
 /**
  * <p>
@@ -12,6 +12,6 @@ import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
  * @Author scott
  * @since 2018-12-20
  */
-public interface ChatSessionInfoMapper extends BaseMapper<ChatSessionInfo> {
+public interface ChatSessionInfoMapper extends BaseMapper<ChatSessionDetail> {
 
 }

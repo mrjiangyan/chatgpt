@@ -1,7 +1,7 @@
 package com.touchbiz.chatgpt.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
+import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 
 /**
  * <p>
@@ -11,7 +11,7 @@ import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
  * @Author scott
  * @since 2018-12-20
  */
-public interface ChatSessionInfoService extends IService<ChatSessionInfo> {
+public interface ChatSessionInfoService extends IService<ChatSessionDetail> {
 
 
 }

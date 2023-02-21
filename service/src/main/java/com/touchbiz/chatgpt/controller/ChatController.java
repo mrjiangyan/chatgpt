@@ -5,7 +5,7 @@ import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
-import com.touchbiz.chatgpt.database.domain.ChatSessionInfo;
+import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.chatgpt.dto.response.ChatSessionDTO;
@@ -20,14 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 @RequestMapping("/api/chatGpt/chatting")
 @RestController
-public class ChatController extends AbstractBaseController<ChatSessionInfo, ChatSessionInfoService> {
+public class ChatController extends AbstractBaseController<ChatSessionDetail, ChatSessionInfoService> {
 
     @Autowired
     private OpenAiConfig config;
