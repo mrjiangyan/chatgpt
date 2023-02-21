@@ -1,5 +1,6 @@
 package com.touchbiz.chatgpt.controller;
 
+
 import com.theokanning.openai.completion.CompletionRequest;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
@@ -8,6 +9,7 @@ import com.touchbiz.chatgpt.common.dto.Result;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
+import com.touchbiz.chatgpt.dto.ChatResult;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.chatgpt.dto.response.ChatSessionDTO;
 import com.touchbiz.chatgpt.infrastructure.converter.ChatSessionConverter;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,7 +46,10 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
 
     @PostMapping
     @RequestLimit()
-    public Mono<Result<?>> prompt(@RequestBody Chat chat) {
+    public Mono<Result<?>> prompt(@RequestBody @Valid Chat chat) {
+        //sessionId校验合法性
+        chatApplicationService.checkSessionId(chat.getSessionId());
+        var user = getCurrentUser();
         log.info("chat:{}", chat);
         CompletionRequest completionRequest = CompletionRequest.builder()
                 .prompt(chat.getPrompt())
@@ -56,9 +62,17 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                 .bestOf(1)
                 .topP(1d)
                 .build();
-        var result = service.createCompletion(completionRequest);
-        log.info("result:{}", JsonUtils.toJson(result));
-        return Mono.just(Result.ok(result));
+        long start = System.currentTimeMillis();
+        try {
+            var result = service.createCompletion(completionRequest);
+            log.info("调用openAI接口耗时:{}", System.currentTimeMillis() - start + "ms");
+            String rt = JsonUtils.toJson(result);
+            log.info("result:{}", rt);
+            return Mono.just(Result.ok(chatApplicationService.createSessionInfo(chat, JsonUtils.toObject(rt, ChatResult.class), user)));
+        } catch (Exception ex) {
+            log.error("error:{}", ex);
+            return Mono.just(Result.error("系统超时,请联系管理员"));
+        }
     }
 
     @Auth
@@ -102,5 +116,4 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         chatApplicationService.deleteSession(id, user);
         return MonoResult.ok("删除成功！");
     }
-
 }

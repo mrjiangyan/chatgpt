@@ -81,6 +81,35 @@ public class AesEncryptUtil {
     }
 
     /**
+     * 解密方法
+     * @param data 要解密的数据
+     * @param key  解密key
+     * @param iv 解密iv
+     * @return 解密的结果
+     * @throws Exception
+     */
+    public static Boolean isDesEncrypt(String data, String key, String iv) {
+        //update-begin-author:taoyan date:2022-5-23 for:VUEN-1084 【vue3】online表单测试发现的新问题 6、解密报错 ---解码失败应该把异常抛出去，在外面处理
+        try {
+            byte[] encrypted1 = Base64.getDecoder().decode(data);
+            Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+            SecretKeySpec keyspec = new SecretKeySpec(key.getBytes(), "AES");
+            IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes());
+
+            cipher.init(Cipher.DECRYPT_MODE, keyspec, ivspec);
+
+            byte[] original = cipher.doFinal(encrypted1);
+            String originalString = new String(original);
+            //加密解码后的字符串会出现\u0000
+            originalString.replaceAll("\\u0000", "");
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+        //update-end-author:taoyan date:2022-5-23 for:VUEN-1084 【vue3】online表单测试发现的新问题 6、解密报错 ---解码失败应该把异常抛出去，在外面处理
+    }
+
+    /**
      * 使用默认的key和iv加密
      * @param data
      * @return
@@ -99,7 +128,14 @@ public class AesEncryptUtil {
         return desEncrypt(data, KEY, IV);
     }
 
-
+    /**
+     * 是否可以解密
+     * @param data
+     * @return
+     */
+    public static Boolean isDesEncrypt(String data) {
+        return isDesEncrypt(data, KEY, IV);
+    }
 
 //    /**
 //     * 测试
