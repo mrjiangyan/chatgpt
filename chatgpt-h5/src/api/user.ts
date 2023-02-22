@@ -1,27 +1,27 @@
-import { LoginResult, UserInfo } from "@/entities/user"
-import request from "@/utils/http/axios/request"
-import { delToken, removeCookie, setCookie } from "@/utils/cookie"
-import { USER_INFO_KEY } from "@/configs/cacheEnum"
+import { LoginResult, UserInfo } from '@/entities/user'
+import request from '@/utils/http/axios/request'
+import { delToken, removeCookie, setCookie } from '@/utils/cookie'
+import { USER_INFO_KEY } from '@/configs/cacheEnum'
 
 export const login = (loginParam: any) => {
   return request<LoginResult>({
-    url: "chatGpt/login",
-    method: "post",
+    url: 'chatGpt/login',
+    method: 'post',
     data: loginParam
   })
 }
 
 export const getCodeInfo = (key: string) => {
   return request<string>({
-    url: "chatGpt/randomImage/" + key,
-    method: "get"
+    url: 'chatGpt/randomImage/' + key,
+    method: 'get'
   })
 }
 
 export const logout = () => {
   request<string>({
-    url: "chatGpt/logout/",
-    method: "post"
+    url: 'chatGpt/logout/',
+    method: 'post'
   }).finally(() => {
     delToken()
     window.location.reload()
@@ -30,8 +30,8 @@ export const logout = () => {
 
 export const userInfo = () => {
   return request<UserInfo>({
-    url: "chatGpt/user/",
-    method: "get"
+    url: 'chatGpt/user/',
+    method: 'get'
   }).then(res => {
     if (res === null) {
       removeCookie(USER_INFO_KEY)

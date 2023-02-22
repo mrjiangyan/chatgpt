@@ -1,6 +1,6 @@
-import Cookies from "js-cookie"
+import Cookies from 'js-cookie'
 
-import { TOKEN_KEY } from "@/configs/cacheEnum"
+import { TOKEN_KEY } from '@/configs/cacheEnum'
 
 // cookie保存的天数
 

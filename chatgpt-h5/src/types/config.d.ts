@@ -3,7 +3,7 @@ import {
   MenuModeEnum,
   TriggerEnum,
   MixSidebarTriggerEnum
-} from "/@/enums/menuEnum"
+} from '/@/enums/menuEnum'
 import {
   ContentEnum,
   PermissionModeEnum,
@@ -11,11 +11,11 @@ import {
   RouterTransitionEnum,
   SettingButtonPositionEnum,
   SessionTimeoutProcessingEnum
-} from "/@/enums/appEnum"
+} from '/@/enums/appEnum'
 
-import { CacheTypeEnum } from "/@/enums/cacheEnum"
+import { CacheTypeEnum } from '/@/enums/cacheEnum'
 
-export type LocaleType = "zh_CN" | "en" | "ru" | "ja" | "ko"
+export type LocaleType = 'zh_CN' | 'en' | 'ru' | 'ja' | 'ko'
 
 export interface MenuSetting {
   bgColor: string
@@ -29,7 +29,7 @@ export interface MenuSetting {
   mode: MenuModeEnum
   type: MenuTypeEnum
   theme: ThemeEnum
-  topMenuAlign: "start" | "center" | "end"
+  topMenuAlign: 'start' | 'center' | 'end'
   trigger: TriggerEnum
   accordion: boolean
   closeMixSidebarOnChange: boolean

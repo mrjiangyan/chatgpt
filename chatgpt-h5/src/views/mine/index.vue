@@ -11,7 +11,7 @@
       </div>
       <ul class="user-info">
         <li class="user-name"></li>
-        <li class="user-name">{{ user != null ? user.memberLevel : "" }}</li>
+        <li class="user-name">{{ user != null ? user.memberLevel : '' }}</li>
       </ul>
     </section>
     <section class="my-info">
@@ -106,12 +106,12 @@
 </template>
 
 <script lang="ts">
-import { ref, onMounted } from "vue"
-import { logout, userInfo } from "@/api/user"
-import { getToken } from "@/utils/cookie"
-import { UserInfo } from "@/entities/user"
+import { ref, onMounted } from 'vue'
+import { logout, userInfo } from '@/api/user'
+import { getToken } from '@/utils/cookie'
+import { UserInfo } from '@/entities/user'
 export default {
-  name: "index",
+  name: 'index',
   setup() {
     const user = ref<UserInfo | null>()
     const clickLogout = () => {
@@ -180,7 +180,7 @@ export default {
           height: 25px;
           font-size: 11px;
           text-align: center;
-          background: url("../../assets/images/product/sharing-node.png")
+          background: url('../../assets/images/product/sharing-node.png')
             no-repeat center center;
           background-size: 100% 100%;
           border-radius: 11px 11px;

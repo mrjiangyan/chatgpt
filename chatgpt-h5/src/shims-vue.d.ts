@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from "axios"
+import axios from 'axios'
 
-declare module "*.vue" {
-  import { defineComponent } from "vue"
+declare module '*.vue' {
+  import { defineComponent } from 'vue'
   const component: ReturnType<typeof defineComponent>
   export default component
 }
 
-declare module "axios" {
+declare module 'axios' {
   export interface AxiosInstance {
     <T = any>(config: AxiosRequestConfig): Promise<T>
     request<T = any>(config: AxiosRequestConfig): Promise<T>

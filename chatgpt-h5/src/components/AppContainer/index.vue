@@ -16,10 +16,10 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue"
-import { useRouter } from "vue-router"
+import { defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
 export default defineComponent({
-  name: "AppContainer",
+  name: 'AppContainer',
   props: {
     appbar: {
       type: Boolean,
@@ -27,21 +27,21 @@ export default defineComponent({
     },
     title: {
       type: String,
-      default: ""
+      default: ''
     },
     back: {
       type: String,
-      default: ""
+      default: ''
     }
   },
   setup(prop, ctx) {
     const router = useRouter()
     const onClickLeft = () => {
       router.back()
-      ctx.emit("click-left")
+      ctx.emit('click-left')
     }
     const onClickRight = () => {
-      ctx.emit("click-right")
+      ctx.emit('click-right')
     }
     return {
       onClickLeft,

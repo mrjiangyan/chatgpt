@@ -97,10 +97,10 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue"
-import { showImg } from "@/utils/utils"
+import { defineComponent, reactive, ref } from 'vue'
+import { showImg } from '@/utils/utils'
 export default defineComponent({
-  name: "My",
+  name: 'My',
   setup() {
     const todos = ref([])
     const container = ref<HTMLElement>()
@@ -108,7 +108,7 @@ export default defineComponent({
     const person = reactive({
       state: {
         age: 0,
-        name: "weizhanzhan"
+        name: 'weizhanzhan'
       },
       methods: {
         setAge: (age: number) => {
@@ -144,16 +144,16 @@ export default defineComponent({
       let y = scrollAble + initClientY
       y = y / 3.75
       if (containerDom) {
-        containerDom.style.transition = "none"
-        containerDom.style.transform = "translateY(" + y + "vw)"
+        containerDom.style.transition = 'none'
+        containerDom.style.transform = 'translateY(' + y + 'vw)'
       }
     }
     const onDragEnd = (e: TouchEvent) => {
       console.log(e)
       const containerDom = container.value
       if (containerDom) {
-        containerDom.style.transition = "transform .6s"
-        containerDom.style.transform = "translateY(" + -(100 / 3.75) + "vw)"
+        containerDom.style.transition = 'transform .6s'
+        containerDom.style.transform = 'translateY(' + -(100 / 3.75) + 'vw)'
       }
     }
 

@@ -1,4 +1,4 @@
-import { getCurrentInstance } from "vue"
+import { getCurrentInstance } from 'vue'
 
 export const useBmob = () => {
   const app = getCurrentInstance()

@@ -1,4 +1,4 @@
-import { ref, onMounted } from "vue"
+import { ref, onMounted } from 'vue'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const useAsync = (func: () => Promise<any>) => {

@@ -49,50 +49,50 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { login, getCodeInfo } from "@/api/user"
-import { Toast } from "vant"
-import { setToken, setCookie } from "@/utils/cookie"
-import { USER_INFO_KEY } from "@/configs/cacheEnum"
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { login, getCodeInfo } from '@/api/user'
+import { Toast } from 'vant'
+import { setToken, setCookie } from '@/utils/cookie'
+import { USER_INFO_KEY } from '@/configs/cacheEnum'
 export default defineComponent({
-  name: "HOME",
+  name: 'HOME',
   components: {},
   setup() {
     const router = useRouter()
     const formData = reactive({
-      username: "",
-      password: "",
-      captcha: ""
+      username: '',
+      password: '',
+      captcha: ''
     })
     const randCodeData = reactive({
-      randCodeImage: "",
+      randCodeImage: '',
       requestCodeSuccess: false,
-      checkKey: ""
+      checkKey: ''
     })
 
     const onFailed = errorInfo => {
-      console.log("failed", errorInfo)
+      console.log('failed', errorInfo)
     }
 
     function handleChangeCheckCode() {
-      formData.captcha = ""
+      formData.captcha = ''
       //TODO 兼容mock和接口，暂时这样处理
-      randCodeData.checkKey = new Date().getTime() + ""
+      randCodeData.checkKey = new Date().getTime() + ''
       getCodeInfo(randCodeData.checkKey).then(res => {
         randCodeData.randCodeImage = res
         randCodeData.requestCodeSuccess = true
       })
     }
     function handleLogin() {
-      Toast.loading("登录中")
+      Toast.loading('登录中')
       login(formData)
         .then(res => {
           Toast.clear()
           //保存token以及用户信息
           setToken(res.token, 1)
           setCookie(USER_INFO_KEY, JSON.stringify(res.userInfo), 7)
-          router.push("/home")
+          router.push('/home')
         })
         .catch(err => {
           console.log(err)
@@ -116,7 +116,7 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-@import "@/theme/hairline";
+@import '@/theme/hairline';
 .home {
   height: 100%;
   .page_header {

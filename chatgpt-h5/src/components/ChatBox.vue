@@ -17,7 +17,7 @@
           <div
             class="message-cell"
             :style="{
-              flexDirection: message.direction === 'received' ? 'row' : 'row-reverse',
+              flexDirection: message.direction === 'received' ? 'row' : 'row-reverse'
             }"
           >
             <van-image
@@ -74,7 +74,7 @@ export default defineComponent({
     InfiniteLoading,
     'van-button': VanButton,
     'van-image': VanImage,
-    'van-field': VanField,
+    'van-field': VanField
   },
   props: {
     sourceAvatar: String,
@@ -83,14 +83,14 @@ export default defineComponent({
       type: Function,
       default: () => {
         return { messages: [], hasMore: false }
-      },
+      }
     },
     sendMessage: {
       type: Function,
       default: ({ text }: Partial<Message>) => {
         return { text, direction: 'sent' }
-      },
-    },
+      }
+    }
   },
   setup(props) {
     const messages = ref<Message[]>([])
@@ -104,7 +104,7 @@ export default defineComponent({
       if (differenceInMinutes(now, date) <= 30) {
         return formatDistance(new Date(date), now, {
           locale: zhCode,
-          addSuffix: true,
+          addSuffix: true
         })
       } else if (isSameDay(now, date)) {
         return format(date, 'p', { locale: zhCode })
@@ -197,9 +197,9 @@ export default defineComponent({
       scrollToBottom,
       appendNew,
       transformSpecialChars,
-      chatImg,
+      chatImg
     }
-  },
+  }
 })
 </script>
 

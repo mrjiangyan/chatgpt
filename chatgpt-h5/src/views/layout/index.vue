@@ -16,15 +16,15 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch, onMounted } from "vue"
-import { useRouter } from "vue-router"
+import { defineComponent, reactive, toRefs, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 export default defineComponent({
-  name: "LAYOUT",
+  name: 'LAYOUT',
   setup() {
     const router = useRouter()
     const state = reactive({
-      active: "/home",
-      includeRoutes: ["mines"]
+      active: '/home',
+      includeRoutes: ['mines']
     })
     watch(
       () => state.active,

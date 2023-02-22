@@ -1,4 +1,4 @@
-import { App as VM } from "vue"
+import { App as VM } from 'vue'
 import {
   Button,
   List,
@@ -17,7 +17,7 @@ import {
   Tabs,
   SwipeCell,
   Empty
-} from "vant"
+} from 'vant'
 
 const plugins = [
   Button,
