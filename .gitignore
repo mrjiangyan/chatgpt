@@ -33,3 +33,4 @@ build/
 node_modules
 ### VS Code ###
 .vscode/
+service/src/main/resources/application-local.yml

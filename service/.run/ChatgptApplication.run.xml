@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ChatgptApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ACTIVE_PROFILES" value="local" />
+    <module name="chatgpt-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.touchbiz.chatgpt.boot.ChatgptApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.content.location=$PROJECT_DIR$/../../github/local.yml" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

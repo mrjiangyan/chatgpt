@@ -5,7 +5,7 @@ export function is(val: unknown, type: string) {
 }
 
 export function isDef<T = unknown>(val?: T): val is T {
-  return typeof val !== 'undefined'
+  return typeof val !== "undefined"
 }
 
 export function isUnDef<T = unknown>(val?: T): val is T {
@@ -13,7 +13,7 @@ export function isUnDef<T = unknown>(val?: T): val is T {
 }
 
 export function isObject(val: any): val is Record<any, any> {
-  return val !== null && is(val, 'Object')
+  return val !== null && is(val, "Object")
 }
 
 export function isEmpty<T = unknown>(val: T): val is T {
@@ -33,7 +33,7 @@ export function isEmpty<T = unknown>(val: T): val is T {
 }
 
 export function isDate(val: unknown): val is Date {
-  return is(val, 'Date')
+  return is(val, "Date")
 }
 
 export function isNull(val: unknown): val is null {
@@ -49,36 +49,36 @@ export function isNullOrUnDef(val: unknown): val is null | undefined {
 }
 
 export function isNumber(val: unknown): val is number {
-  return is(val, 'Number')
+  return is(val, "Number")
 }
 
 export function isPromise<T = any>(val: any): val is Promise<T> {
   // update-begin--author:sunjianlei---date:20211022---for: 不能既是 Promise 又是 Object --------
-  return is(val, 'Promise') && isFunction(val.then) && isFunction(val.catch)
+  return is(val, "Promise") && isFunction(val.then) && isFunction(val.catch)
   // update-end--author:sunjianlei---date:20211022---for: 不能既是 Promise 又是 Object --------
 }
 
 export function isString(val: unknown): val is string {
-  return is(val, 'String')
+  return is(val, "String")
 }
 
 export function isJsonObjectString(val: string): val is string {
   if (!val) {
     return false
   }
-  return val.startsWith('{') && val.endsWith('}')
+  return val.startsWith("{") && val.endsWith("}")
 }
 
 export function isFunction(val: unknown): val is Function {
-  return typeof val === 'function'
+  return typeof val === "function"
 }
 
 export function isBoolean(val: unknown): val is boolean {
-  return is(val, 'Boolean')
+  return is(val, "Boolean")
 }
 
 export function isRegExp(val: unknown): val is RegExp {
-  return is(val, 'RegExp')
+  return is(val, "RegExp")
 }
 
 export function isArray(val: any): val is Array<any> {
@@ -86,7 +86,7 @@ export function isArray(val: any): val is Array<any> {
 }
 
 export function isWindow(val: any): val is Window {
-  return typeof window !== 'undefined' && is(val, 'Window')
+  return typeof window !== "undefined" && is(val, "Window")
 }
 
 export function isElement(val: unknown): val is Element {
@@ -94,10 +94,10 @@ export function isElement(val: unknown): val is Element {
 }
 
 export function isMap(val: unknown): val is Map<any, any> {
-  return is(val, 'Map')
+  return is(val, "Map")
 }
 
-export const isServer = typeof window === 'undefined'
+export const isServer = typeof window === "undefined"
 
 export const isClient = !isServer
 

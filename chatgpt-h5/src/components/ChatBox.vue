@@ -17,11 +17,20 @@
           <div
             class="message-cell"
             :style="{
-              flexDirection: message.direction === 'received' ? 'row' : 'row-reverse'
+              flexDirection: message.direction === 'received' ? 'row' : 'row-reverse',
             }"
           >
-            <van-image width="32" height="32" :src="message.direction === 'received' ? targetAvatar : sourceAvatar" />
-            <van-button type="default" size="small" round v-html="transformSpecialChars(message.text)"></van-button>
+            <van-image
+              width="32"
+              height="32"
+              :src="message.direction === 'received' ? targetAvatar : sourceAvatar"
+            />
+            <van-button
+              type="default"
+              size="small"
+              round
+              v-html="transformSpecialChars(message.text)"
+            ></van-button>
           </div>
         </div>
       </div>
@@ -65,7 +74,7 @@ export default defineComponent({
     InfiniteLoading,
     'van-button': VanButton,
     'van-image': VanImage,
-    'van-field': VanField
+    'van-field': VanField,
   },
   props: {
     sourceAvatar: String,
@@ -74,14 +83,14 @@ export default defineComponent({
       type: Function,
       default: () => {
         return { messages: [], hasMore: false }
-      }
+      },
     },
     sendMessage: {
       type: Function,
       default: ({ text }: Partial<Message>) => {
         return { text, direction: 'sent' }
-      }
-    }
+      },
+    },
   },
   setup(props) {
     const messages = ref<Message[]>([])
@@ -95,7 +104,7 @@ export default defineComponent({
       if (differenceInMinutes(now, date) <= 30) {
         return formatDistance(new Date(date), now, {
           locale: zhCode,
-          addSuffix: true
+          addSuffix: true,
         })
       } else if (isSameDay(now, date)) {
         return format(date, 'p', { locale: zhCode })
@@ -108,7 +117,8 @@ export default defineComponent({
     const isShowTimes = computed(() => {
       let lastTime = new Date(0)
       return unref(messages).map((message: Message) => {
-        const messageTime = message.time instanceof Date ? message.time : new Date(message.time)
+        const messageTime =
+          message.time instanceof Date ? message.time : new Date(message.time)
         if (differenceInMinutes(messageTime, lastTime) > 10) {
           lastTime = messageTime
           return true
@@ -122,7 +132,9 @@ export default defineComponent({
     }
 
     function appendNew(...msgs: Message[]) {
-      const newMessages: Message[] = msgs.map(message => Object.assign({ direction: 'received' }, message))
+      const newMessages: Message[] = msgs.map((message) =>
+        Object.assign({ direction: 'received' }, message)
+      )
       messages.value.push(...newMessages)
       nextTick(scrollToBottom)
     }
@@ -132,8 +144,10 @@ export default defineComponent({
       typingText.value = ''
       if (message instanceof Promise) {
         message
-          .then(message => appendNew(Object.assign({ time: new Date(), direction: 'sent' }, message)))
-          .catch(e => console.error('发送消息出错', e))
+          .then((message) =>
+            appendNew(Object.assign({ time: new Date(), direction: 'sent' }, message))
+          )
+          .catch((e) => console.error('发送消息出错', e))
       } else {
         appendNew(Object.assign({ time: new Date(), direction: 'sent' }, message))
       }
@@ -155,10 +169,10 @@ export default defineComponent({
       const history = props.loadHistory()
       if (history instanceof Promise) {
         history
-          .then(history => {
+          .then((history) => {
             prependHistory(history, $state)
           })
-          .catch(e => {
+          .catch((e) => {
             console.error('加载历史消息出错', e)
           })
       } else {
@@ -183,9 +197,9 @@ export default defineComponent({
       scrollToBottom,
       appendNew,
       transformSpecialChars,
-      chatImg
+      chatImg,
     }
-  }
+  },
 })
 </script>
 

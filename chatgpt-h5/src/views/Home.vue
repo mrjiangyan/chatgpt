@@ -60,6 +60,8 @@ import { getCookie } from '@/utils/cookie'
 import { showImg } from '@/utils/utils'
 import ChatBox, { Message } from '@/components/ChatBox.vue'
 import { SESSION_ID_KEY } from '@/configs/cacheEnum'
+import { CompletionResult } from '@/entities/chat'
+import { EventSourcePolyfill } from 'event-source-polyfill'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const targetAvatar = require('@/assets/icon/openai.svg')
@@ -82,6 +84,43 @@ export default defineComponent({
 
     const chatRef = ref()
 
+    function eventSource() {
+      const token = '111'
+      const url = 'http://127.0.0.1:8180/sse'
+      const es = new EventSourcePolyfill(url, {
+        headers: {
+          Authorization: token ? `Bearer${token}` : ''
+        }
+      })
+
+      es.onopen = function (event) {
+        console.log('连接成功', event)
+      }
+
+      es.onmessage = function (event) {
+        // to to something…
+        console.log('接收信息', event.data)
+        var res = <CompletionResult>JSON.parse(event.data)
+        var choice = res.choices[0]
+        const answer: Message = {
+          text: choice.text.replace('\n\n', '\n'),
+          time: new Date(),
+          direction: 'received'
+        }
+        if (choice.text.includes('10\n')) {
+          console.log('关闭EventSource')
+          es.close()
+        }
+        console.log('anwsers', answer)
+        prompt.value.push(answer)
+        chatRef.value.appendNew(answer)
+      }
+
+      es.onerror = function (error) {
+        // 监听错误
+        console.log('错误', error)
+      }
+    }
     function loadHistory() {
       return {
         // 消息数据，字段如下，应以时间的倒序给出。
@@ -96,12 +135,12 @@ export default defineComponent({
 
       const param = {
         prompt: unref(prompt)
-          .map(v => v.text)
+          .map((v) => v.text)
           .join('\n\n'),
         sessionId: getCookie(SESSION_ID_KEY)
       }
       chat(param)
-        .then(res => {
+        .then((res) => {
           console.log(res)
           const anwsers = res.choices.map(
             (choice): Message => ({
@@ -146,6 +185,7 @@ export default defineComponent({
 
     onMounted(() => {
       getSession()
+      eventSource()
     })
 
     return {
@@ -161,7 +201,8 @@ export default defineComponent({
       loadHistory,
       sendMessage,
       chatRef,
-      getCookie
+      getCookie,
+      eventSource
     }
   }
 })

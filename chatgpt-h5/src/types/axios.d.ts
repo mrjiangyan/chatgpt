@@ -1,5 +1,5 @@
-export type ErrorMessageMode = 'none' | 'modal' | 'message' | undefined
-export type SuccessMessageMode = 'none' | 'success' | 'error' | undefined
+export type ErrorMessageMode = "none" | "modal" | "message" | undefined
+export type SuccessMessageMode = "none" | "success" | "error" | undefined
 
 export interface RequestOptions {
   // 将请求参数拼接到url
@@ -31,7 +31,7 @@ export interface RequestOptions {
 
 export interface Result<T = any> {
   code: number
-  type: 'success' | 'error' | 'warning'
+  type: "success" | "error" | "warning"
   message: string
   result: T
 }
