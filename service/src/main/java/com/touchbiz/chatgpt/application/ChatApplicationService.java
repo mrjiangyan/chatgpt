@@ -21,7 +21,7 @@ public interface ChatApplicationService {
 
 	ChatSession createSession(LoginUser sysUser);
 
-	String createSessionInfo(Chat chat, ChatResult result, LoginUser sysUser);
+	void createSessionInfo(Chat chat, String result, LoginUser sysUser);
 
 	void deleteSession(String id, LoginUser user);
 

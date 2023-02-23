@@ -24,7 +24,7 @@ public interface CommonConstant {
 
     String SYS_USERS_CACHE = "sys:cache:encrypt:user";
 
-    String CHAT_SESSION_INFO_KEY = "chat_session_info_key:";
-
     String TOKEN_PREFIX = "Bearer ";
+
+    String SPLICER = "\n\n";
 }

@@ -1,7 +1,6 @@
 package com.touchbiz.chatgpt.controller;
 
 
-import com.theokanning.openai.completion.CompletionChoice;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.completion.CompletionResult;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
@@ -14,6 +13,7 @@ import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.chatgpt.dto.ChatResult;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
 import com.touchbiz.chatgpt.dto.response.ChatSessionDTO;
+import com.touchbiz.chatgpt.infrastructure.constants.CommonConstant;
 import com.touchbiz.chatgpt.infrastructure.converter.ChatSessionConverter;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.common.entity.annotation.Auth;
@@ -24,19 +24,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
-import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.CHAT_SESSION_EXPIRE_SECONDS;
-import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.CHAT_SESSION_KEY;
+import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.*;
 
 @Slf4j
 @RequestMapping("/api/chatGpt/chatting")
@@ -55,12 +54,23 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     @PostMapping
     @RequestLimit()
     public Mono<Result<?>> prompt(@RequestBody @Valid Chat chat) {
+        String sessionId = chat.getSessionId();
+        String prompt = chat.getPrompt();
         //sessionId校验合法性
-        chatApplicationService.checkSessionId(chat.getSessionId());
+        chatApplicationService.checkSessionId(sessionId);
         var user = getCurrentUser();
         log.info("chat:{}", chat);
+        String redisKey = CHAT_SESSION_CONTEXT_KEY + sessionId;
+        String question;
+        //拼接提问
+        if (getRedisTemplate().hasKey(redisKey)) {
+            question = JsonUtils.toJson(getRedisTemplate().get(redisKey)).trim().replace("\\", "").replace("\"", "").replace("n","\\n") + CommonConstant.SPLICER + prompt;
+        } else {
+            question = prompt;
+        }
+        log.info("question:{}", question);
         CompletionRequest completionRequest = CompletionRequest.builder()
-                .prompt(chat.getPrompt())
+                .prompt(question)
                 .model(config.getModel())
                 .stop(Arrays.asList(" Human:", " AI:"))
                 .maxTokens(512)
@@ -70,17 +80,25 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                 .bestOf(1)
                 .topP(1d)
                 .build();
-        long start = System.currentTimeMillis();
         try {
+            long start = System.currentTimeMillis();
             var result = service.createCompletion(completionRequest);
             log.info("调用openAI接口耗时:{}", System.currentTimeMillis() - start + "ms");
             String rt = JsonUtils.toJson(result);
-            log.info("result:{}", rt);
-            return Mono.just(Result.ok(chatApplicationService.createSessionInfo(chat, JsonUtils.toObject(rt, ChatResult.class), user)));
+            ChatResult chatResult = JsonUtils.toObject(rt, ChatResult.class);
+            log.info("result:{}", chatResult);
+            if (!ObjectUtils.isEmpty(chatResult) && !CollectionUtils.isEmpty(chatResult.getChoices())) {
+                String answerContent = chatResult.getChoices().get(0).getText();
+                String answer = answerContent.replace("\\", "");
+                redisTemplate.set(CHAT_SESSION_CONTEXT_KEY + sessionId, question + answer, CHAT_SESSION_INFO_EXPIRE_SECONDS);
+                chatApplicationService.createSessionInfo(chat, answerContent, user);
+                return Mono.just(Result.ok(answerContent));
+            }
         } catch (Exception ex) {
             log.error("error:{}", ex);
             return Mono.just(Result.error("系统超时,请联系管理员"));
         }
+        return Mono.just(Result.error("请求失败，请重试"));
     }
 
 
