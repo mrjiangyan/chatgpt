@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const merge = require('webpack-merge')
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -2,6 +2,7 @@ package com.touchbiz.chatgpt.controller;
 
 
 import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.completion.CompletionResult;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.aspect.annotation.RequestLimit;
@@ -21,10 +22,14 @@ import com.touchbiz.common.utils.tools.JsonUtils;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
 import java.util.Arrays;
@@ -94,6 +99,33 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
             return Mono.just(Result.error("系统超时,请联系管理员"));
         }
         return Mono.just(Result.error("请求失败，请重试"));
+    }
+
+
+    @GetMapping(value = "/completion", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<CompletionResult>> completion(@RequestParam("sessionId") String sessionId,
+                                                              @RequestParam("prompt") String prompt
+                                                              ) {
+        //sessionId校验合法性
+        chatApplicationService.checkSessionId(sessionId);
+        var user = getCurrentUser();
+        log.info("sessionId:{}", sessionId);
+        CompletionRequest completionRequest = CompletionRequest.builder()
+                .prompt(prompt)
+                .model(config.getModel())
+                .stop(Arrays.asList(" Human:", " AI:"))
+                .maxTokens(512)
+                .presencePenalty(0.6d)
+                .frequencyPenalty(0d)
+                .temperature(0.9D)
+                .bestOf(1)
+                .topP(1d)
+                .build();
+        var stream =  service.createCompletionSteam(completionRequest);
+        return Flux
+                .defer(() -> Flux.fromStream(stream))
+                .map(x-> ServerSentEvent.builder(x).build())
+                .subscribeOn(Schedulers.elastic());
     }
 
     @Auth

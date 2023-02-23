@@ -25,13 +25,13 @@ export interface RequestOptions {
   ignoreCancelToken?: boolean;
   //是否在标头中发送令牌
   withToken?: boolean;
-  //业务系统的id
-  bizId?: number;
+  
 }
 
 export interface Result<T = any> {
   code: number;
   type: 'success' | 'error' | 'warning';
+  success: boolean;
   message: string;
   result: T;
 }

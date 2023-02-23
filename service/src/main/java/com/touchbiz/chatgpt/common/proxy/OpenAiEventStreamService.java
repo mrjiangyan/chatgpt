@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.stream.Stream;
 
 /**
  * 支持EventStream方式访问的版本
@@ -88,7 +89,7 @@ public class OpenAiEventStreamService extends OpenAiService {
     }
 
     @SneakyThrows
-    public Flux<CompletionResult> createCompletionSteam(CompletionRequest request) {
+    public Stream<CompletionResult> createCompletionSteam(CompletionRequest request) {
         var httpRequest = generatePostHttpRequest("", request);
         var stream = client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofLines())
                 .thenApply(HttpResponse::body).get()
@@ -96,13 +97,11 @@ public class OpenAiEventStreamService extends OpenAiService {
                     try {
                         return mapper.readValue(result, CompletionResult.class);
                     } catch (JsonProcessingException e) {
+                        log.error("e:", e);
                         throw new RuntimeException(e);
                     }
                 });
-
-        return Flux
-                .defer(() -> Flux.fromStream(stream))
-                .subscribeOn(Schedulers.elastic());
+        return stream;
     }
 
 }

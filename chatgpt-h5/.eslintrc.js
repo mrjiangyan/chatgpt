@@ -21,6 +21,7 @@ module.exports = {
     // "no-extra-semi": 2, //禁止多余的冒号
     // "generator-star-spacing": "off",
     semi: 'off',
+    "@typescript-eslint/no-explicit-any" : "off",
     "@typescript-eslint/explicit-function-return-type" : "off",
     "@typescript-eslint/explicit-module-boundary-types" : "off",
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

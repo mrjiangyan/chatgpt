@@ -10,7 +10,6 @@ declare module '@vue/runtime-core' {
     AppContainer: typeof import('./src/components/AppContainer/index.vue')['default']
     ChatBox: typeof import('./src/components/ChatBox.vue')['default']
     Navbar: typeof import('./src/components/Navbar.vue')['default']
-    Recommend: typeof import('./src/components/Recommend.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     VanButton: typeof import('vant/es')['Button']

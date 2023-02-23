@@ -6,7 +6,7 @@ import {
   RouterTransitionEnum,
   SettingButtonPositionEnum,
   SessionTimeoutProcessingEnum
-} from '/@/enums/appEnum'
+} from '@/enums/appEnum'
 
 import { CacheTypeEnum } from '/@/enums/cacheEnum'
 
