@@ -86,6 +86,7 @@ const chatImg = require('@/assets/icon/chat.svg')
 export type Message = {
   text: string;
   time: Date;
+  id?: string;
   direction: 'sent' | 'received';
 }
 export default defineComponent({
@@ -152,10 +153,7 @@ export default defineComponent({
     }
 
     function appendNew(...msgs: Message[]) {
-      const newMessages: Message[] = msgs.map((message) =>
-        Object.assign({ direction: 'received' }, message)
-      )
-      messages.value.push(...newMessages)
+      messages.value.push(...msgs)
       nextTick(scrollToBottom)
     }
 

@@ -92,7 +92,6 @@
         ref="chatRef"
         :source-avatar="sourceAvatar"
         :target-avatar="targetAvatar"
-        :load-history="loadHistory"
         :send-message="sendMessage"
       />
     </div>
@@ -122,11 +121,7 @@ export default defineComponent({
   setup() {
     const router = useRouter()
 
-    const activeTopic = ref(0)
-
-    const prompt = ref<Message[]>([])
-
-    const content = ref('')
+    const lastAnswer = ref<Message>()
 
     const chatRef = ref()
 
@@ -142,75 +137,41 @@ export default defineComponent({
         console.log('接收信息', event.data)
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const result = <ApiResult<string>>JSON.parse(event.data)
-        if(result.success ===  false || result.result === '[Done]'){
+        if(result.success ===  false || result.result === '[DONE]'){
           es.close()
+          return
         }
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         const res = <CompletionResult>JSON.parse(result.result) 
         const choice = res.choices[0]
-        const answer: Message = {
-          text: choice.text.replace('\n\n', '\n'),
-          time: new Date(),
-          direction: 'received'
+        
+        if(lastAnswer.value?.id === res.id){
+          lastAnswer.value.text += choice.text.replace('\n\n', '\n')
+          console.log('旧的文本内容替换', lastAnswer.value.text)
         }
-        console.log('anwsers', answer)
-        prompt.value.push(answer)
-        chatRef.value.appendNew(answer)
+        else{
+          const answer: Message = {
+            text: choice.text.replace('\n\n', '\n'),
+            time: new Date(),
+            id: res.id,
+            direction: 'received'
+          }
+          lastAnswer.value = answer
+          console.log('新的回答', lastAnswer.value.text)
+          console.log('anwsers', answer)
+          chatRef.value.appendNew(answer)
+        }
+       
       }
 
       es.onerror = function(error: ErrorEvent) {
         // 监听错误
         console.log('错误', error)
         es.close()
-    
       }
     }
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    function loadHistory() {
-      return {
-        // 消息数据，字段如下，应以时间的倒序给出。
-        messages: unref(prompt),
-        // 定义是否还有历史消息，如果为 false，将停止加载。读者可将其改为 true 演示一下自动滚动更新的效果。
-        hasMore: false
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    // function getChatAnswer() {
-    //   console.log(prompt)
-
-    //   const param = {
-    //     prompt: unref(prompt)
-    //       .map(v => v.text)
-    //       .join('\n\n'),
-    //     sessionId: getCookie(SESSION_ID_KEY)
-    //   }
-    //   chat(param)
-    //     .then(res => {
-    //       console.log(res)
-    //       const anwsers = res.choices.map(
-    //         (choice): Message => ({
-    //           text: choice.text.replace('\n\n', '\n'),
-    //           time: new Date(),
-    //           direction: 'received'
-    //         })
-    //       )
-    //       console.log('anwsers', anwsers)
-    //       prompt.value.push(...anwsers)
-    //       chatRef.value.appendNew(...anwsers)
-
-    //       // state.list = result;
-    //     })
-    //     .catch()
-    // }
-
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     function sendMessage({ text }: Partial<Message>) {
-      prompt.value.push({
-        text: text as string,
-        time: new Date(),
-        direction: 'sent'
-      })
       asyncChatting(text as string)
       return {
         text,
@@ -241,12 +202,9 @@ export default defineComponent({
       getSession,
       toDetail,
       toMessage,
-      content,
-      activeTopic,
-      prompt,
+      lastAnswer,
       sourceAvatar,
       targetAvatar,
-      loadHistory,
       sendMessage,
       chatRef,
       getCookie,

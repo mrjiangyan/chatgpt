@@ -96,7 +96,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
 
     @SneakyThrows
     @GetMapping(value = "/completion", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<Result<Object>>> completion(@RequestParam("sessionId") String sessionId,
+    public Flux<ServerSentEvent<Result<String>>> completion(@RequestParam("sessionId") String sessionId,
                                                               @RequestParam("prompt") String prompt
                                                               ){
         var eventStream = service.createCompletionFlux(this.generateRequest(prompt));
@@ -104,7 +104,11 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         eventStream.subscribe(consumer
                ,error -> log.error("Error receiving SSE:", error),
                 () -> log.info("Completed!!!"));
-        return eventStream.map(x-> ServerSentEvent.builder(Result.OK(x.data())).build())
+        return eventStream.map(x-> {
+                    Result<String> result = Result.ok();
+            result.setResult(x.data());
+            return ServerSentEvent.builder(result).build();
+                })
                 .subscribeOn(Schedulers.elastic());
     }
 
