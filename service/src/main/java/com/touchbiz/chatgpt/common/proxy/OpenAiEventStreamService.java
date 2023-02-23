@@ -11,7 +11,15 @@ import com.theokanning.openai.completion.CompletionResult;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,8 +32,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class OpenAiEventStreamService extends OpenAiService {
 
-    private final HttpClient client;
-
     private final ObjectMapper mapper;
 
     private final OpenAiConfig openAiConfig;
@@ -33,14 +39,12 @@ public class OpenAiEventStreamService extends OpenAiService {
     public OpenAiEventStreamService(OpenAiConfig config, OpenAiApi api) {
         super(api);
         this.openAiConfig = config;
-        this.client = createHttpClient();
         this.mapper = getMapper();
     }
 
     public OpenAiEventStreamService(OpenAiConfig config) {
         super(config.getKey());
         this.openAiConfig = config;
-        this.client = createHttpClient();
         this.mapper = getMapper();
 
     }
@@ -53,55 +57,22 @@ public class OpenAiEventStreamService extends OpenAiService {
         return mapper;
     }
 
-    private HttpClient createHttpClient() {
-        return HttpClient.newBuilder()
-                .connectTimeout(openAiConfig.getTimeout())
-                .build();
-    }
-
     @SneakyThrows
-    private <T> HttpRequest  generatePostHttpRequest(T data) {
-        var json = mapper.writeValueAsString(data);
-        log.info("json:{}", json);
-        HttpRequest request = HttpRequest.newBuilder()
-                .timeout(openAiConfig.getTimeout())
-                .header("Authorization", "Bearer " + this.openAiConfig.getKey())
-                .header( "Content-Type", "application/json")
-                .header("Accept", "text/event-stream")
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .uri(URI.create("https://api.openai.com/" + "v1/completions"))
-                .build();
-        return request;
-    }
-
-    @SneakyThrows
-    private <T> HttpRequest  generateGetHttpRequest(String path) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .timeout(openAiConfig.getTimeout())
-                .header("Authorization", "Bearer " + this.openAiConfig.getKey())
-                .header( "Content-Type", "application/json")
-                .GET()
-                .uri(URI.create("https://api.openai.com/" + path))
-                .build();
-        return request;
-    }
-
-    @SneakyThrows
-    public Stream<CompletionResult> createCompletionSteam(CompletionRequest request) {
-        var httpRequest = generatePostHttpRequest(request);
-        var stream = client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofLines())
-                .thenApply(HttpResponse::body).get()
-                .map(result->{
-                    try {
-                        log.info("result:{}", result);
-//                        return mapper.readValue(result, CompletionResult.class);
-                        return new CompletionResult();
-                    } catch (Exception e) {
-                        log.error("e:", e);
-                        throw new RuntimeException(e);
-                    }
-                });
-        return stream;
+    public Flux<ServerSentEvent<String>> createCompletionFlux(@NotNull CompletionRequest request) {
+        request.setStream(true);
+        WebClient client = WebClient.create("https://api.openai.com/v1/completions");
+        ParameterizedTypeReference<ServerSentEvent<String>> type
+                = new ParameterizedTypeReference<>() {
+        };
+        Flux<ServerSentEvent<String>> eventStream = client
+                .post()
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiConfig.getKey())
+                .body(BodyInserters.fromValue(getMapper().writeValueAsString(request)))
+                .retrieve()
+                .bodyToFlux(type);
+        return eventStream;
     }
 
 }

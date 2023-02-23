@@ -46,7 +46,7 @@ mybatis-plus:
 openai:
   model: 'text-davinci-003'
   timeout: 15s
-  key: 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
+  key: sk-7EigAqli962NWRnYu3f1T3BlbkFJ2UFNAWyK4yi00wrxy5LQ11
 
 
 wechat:

@@ -141,12 +141,12 @@ export default defineComponent({
         // to to something…
         console.log('接收信息', event.data)
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const result = <ApiResult<CompletionResult>>JSON.parse(event.data)
-        if(result.success ===  false){
+        const result = <ApiResult<string>>JSON.parse(event.data)
+        if(result.success ===  false || result.result === '[Done]'){
           es.close()
-          
         }
-        const res = result.result
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+        const res = <CompletionResult>JSON.parse(result.result) 
         const choice = res.choices[0]
         const answer: Message = {
           text: choice.text.replace('\n\n', '\n'),

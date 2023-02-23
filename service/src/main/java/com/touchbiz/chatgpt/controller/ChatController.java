@@ -22,14 +22,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -74,7 +71,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
             question = prompt;
         }
         log.info("question:{}", question);
-        CompletionRequest completionRequest = generateRequest(prompt, false);
+        CompletionRequest completionRequest = generateRequest(prompt);
         try {
             long start = System.currentTimeMillis();
             var result = service.createCompletion(completionRequest);
@@ -102,27 +99,14 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     public Flux<ServerSentEvent<Result<Object>>> completion(@RequestParam("sessionId") String sessionId,
                                                               @RequestParam("prompt") String prompt
                                                               ){
-        WebClient client = WebClient.create("https://api.openai.com/v1/completions");
-        ParameterizedTypeReference<ServerSentEvent<String>> type
-                = new ParameterizedTypeReference<>() {
-        };
-
-        Flux<ServerSentEvent<String>> eventStream = client.post()
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + config.getKey())
-                .body(BodyInserters.fromValue(service.getMapper().writeValueAsString(generateRequest(prompt, true))))
-                .retrieve()
-                .bodyToFlux(type);
+        var eventStream = service.createCompletionFlux(this.generateRequest(prompt));
         eventStream.doOnError(x-> log.error("doOnError SSE:", x));
-
         eventStream.subscribe(consumer
                ,error -> log.error("Error receiving SSE:", error),
                 () -> log.info("Completed!!!"));
         return eventStream.map(x-> ServerSentEvent.builder(Result.OK(x.data())).build())
                 .subscribeOn(Schedulers.elastic());
     }
-
 
 
     private Consumer<ServerSentEvent<String>> consumer = content -> log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
@@ -170,7 +154,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         return MonoResult.ok("删除成功！");
     }
 
-    private CompletionRequest generateRequest(String prompt, Boolean isStream){
+    private CompletionRequest generateRequest(String prompt){
         return  CompletionRequest.builder()
                 .prompt(prompt)
                 .model(config.getModel())
@@ -181,7 +165,6 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                 .temperature(0.9D)
                 .bestOf(1)
                 .topP(1d)
-                .stream(isStream)
                 .build();
     }
 }
