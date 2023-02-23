@@ -11,11 +11,11 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
@@ -27,16 +27,12 @@ import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
 @Slf4j
 @Aspect
 @Component
-@RefreshScope
 public class RequestLimitAspect {
 
     private static final String REQUEST_LIMIT_KEY = "request-limit";
 
-    @Value("${request-limit.maxCount:10}")
-    private Integer requestLimitMaxCount;
-
-    @Value("${request-limit.timeout:-1}")
-    private Long timeout;
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -53,7 +49,8 @@ public class RequestLimitAspect {
         if (ObjectUtils.isNotEmpty(token) && redisTemplate.hasKey(CommonConstant.SYS_USERS_CACHE + token)) {
             return buildProceed(joinPoint);
         }
-
+        String maxCount = Optional.ofNullable(environment.getProperty("request-limit.maxCount")).orElse("10");
+        String timeout = Optional.ofNullable(environment.getProperty("request-limit.timeout")).orElse("-1");
         String hostAddress = RequestUtils.getIpAddr(request);
         log.info("hostAddress={}", hostAddress);
         String url = request.getURI().toString();
@@ -61,14 +58,14 @@ public class RequestLimitAspect {
         String redisKey = String.format("%s::%s", REQUEST_LIMIT_KEY, hostAddress);
         long count = redisTemplate.opsForValue().increment(redisKey, 1);
         if (count == 1) {
-            if (timeout > 0) {
-                redisTemplate.expire(redisKey, timeout, TimeUnit.SECONDS);
+            if (Long.valueOf(timeout) > 0) {
+                redisTemplate.expire(redisKey, Long.valueOf(timeout), TimeUnit.SECONDS);
             } else {
                 redisTemplate.persist(redisKey);
             }
         }
-        if (count > requestLimitMaxCount) {
-            String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimitMaxCount);
+        if (count > Long.valueOf(maxCount)) {
+            String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, maxCount);
             log.error(error);
             throw new RequestLimitException(error);
         }
