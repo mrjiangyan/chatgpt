@@ -60,13 +60,13 @@ public class RequestLimitAspect {
         log.info("url={}", url);
         String redisKey = String.format("%s::%s", REQUEST_LIMIT_KEY, hostAddress);
         long count = redisTemplate.opsForValue().increment(redisKey, 1);
-//        if (count == 1) {
-        if (timeout > 0) {
-            redisTemplate.expire(redisKey, timeout, TimeUnit.SECONDS);
-        } else {
-            redisTemplate.persist(redisKey);
+        if (count == 1) {
+            if (timeout > 0) {
+                redisTemplate.expire(redisKey, timeout, TimeUnit.SECONDS);
+            } else {
+                redisTemplate.persist(redisKey);
+            }
         }
-//        }
         if (count > requestLimitMaxCount) {
             String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimitMaxCount);
             log.error(error);
