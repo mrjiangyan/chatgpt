@@ -138,17 +138,6 @@ public class CscecTokenClearTest {
              */
             private String realname;
 
-            /**
-             * 头像
-             */
-            private String avatar;
-
-            /**
-             * 生日
-             */
-            @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
-            @DateTimeFormat(pattern = "yyyy-MM-dd")
-            private Date birthday;
 
             /**
              * 性别（1：男 2：女）

@@ -3,7 +3,8 @@ import request from '@/utils/http/axios/request'
 import { setCookie } from '@/utils/cookie'
 import { SESSION_ID_KEY } from '@/configs/cacheEnum'
 
-export const chat = (chat: any) => {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const chat = (chat: unknown) => {
   return request<CompletionResult>({
     url: 'chatGpt/chatting',
     method: 'post',
@@ -11,6 +12,7 @@ export const chat = (chat: any) => {
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createSession = async () => {
   const res = await request<ChatSession>({
     url: 'chatGpt/chatting/session',

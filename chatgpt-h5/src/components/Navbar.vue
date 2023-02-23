@@ -1,8 +1,19 @@
 <template>
   <div class="navbar wx-flex wx-flex-sb">
-    <div class="left" @click="back">取消</div>
-    <div class="center">发表文字</div>
-    <div class="action" :class="{ active: submitPermission }" @click="submit">
+    <div
+      class="left"
+      @click="back"
+    >
+      取消
+    </div>
+    <div class="center">
+      发表文字
+    </div>
+    <div
+      class="action"
+      :class="{ active: submitPermission }"
+      @click="submit"
+    >
       发表
     </div>
   </div>

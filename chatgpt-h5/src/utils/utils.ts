@@ -72,11 +72,7 @@ export const getRandomAvatar = (identicon: HTMLElement) => {
   const colors = ['#8473C6', '#DBBB9A', '#84BED4', '#6F99D2', '#9EDB90']
   let data: number[][] = []
   for (let i = 0; i < 5; i++) {
-    data.push([
-      Math.floor(Math.random() * 2),
-      Math.floor(Math.random() * 2),
-      Math.floor(Math.random() * 2)
-    ])
+    data.push([Math.floor(Math.random() * 2), Math.floor(Math.random() * 2), Math.floor(Math.random() * 2)])
   }
   data = data.map(function(d) {
     d.push(d[1], d[0])
@@ -116,10 +112,7 @@ export const getBeforeNowCount = (date: string) => {
   }
 }
 
-export const showImg = (
-  imgs: Array<string>,
-  option?: { startPosition: number }
-) => {
+export const showImg = (imgs: Array<string>, option?: { startPosition: number }) => {
   ImagePreview({
     images: imgs,
     startPosition: option ? option.startPosition || 0 : 0

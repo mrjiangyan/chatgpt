@@ -1,11 +1,6 @@
 import { useRandomName } from './../utils/utils'
 
-import {
-  createRouter,
-  createWebHistory,
-  Router,
-  RouteRecordRaw
-} from 'vue-router'
+import { createRouter, createWebHistory, Router, RouteRecordRaw } from 'vue-router'
 import store from '../store'
 
 const routes: Array<RouteRecordRaw> = [
@@ -30,8 +25,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'login',
-    component: () =>
-      import(/* webpackChunkName: "SHOP" */ '../views/login/index.vue')
+    component: () => import(/* webpackChunkName: "SHOP" */ '../views/login/index.vue')
   }
 ]
 

@@ -2,16 +2,29 @@
   <div class="mine-layout">
     <section class="mine-header">
       <div class="header-circle">
-        <img src="../../assets/icon/chat.svg" class="header-img" />
+        <img
+          src="../../assets/icon/chat.svg"
+          class="header-img"
+        >
       </div>
 
-      <div class="login-regist" v-if="user == null">
-        <router-link to="/login" class="order-item">登录</router-link>
+      <div
+        v-if="user == null"
+        class="login-regist"
+      >
+        <router-link
+          to="/login"
+          class="order-item"
+        >
+          登录
+        </router-link>
         <!-- <router-link to="/register/phoneRegister" class="order-item" tag="span">/注册</router-link> -->
       </div>
       <ul class="user-info">
-        <li class="user-name"></li>
-        <li class="user-name">{{ user != null ? user.memberLevel : '' }}</li>
+        <li class="user-name" />
+        <li class="user-name">
+          {{ user != null ? user.memberLevel : '' }}
+        </li>
       </ul>
     </section>
     <section class="my-info">
@@ -47,61 +60,115 @@
           </div>
           <van-icon name="arrow" color="#DBDBDB" />
         </router-link> -->
-        <router-link to="/wallet/myWallet" class="option-item">
+        <router-link
+          to="/wallet/myWallet"
+          class="option-item"
+        >
           <div class="item-info">
-            <svg-icon class="incon" icon-class="sharing-links"></svg-icon>
+            <svg-icon
+              class="incon"
+              icon-class="sharing-links"
+            />
             <span>分享链接</span>
           </div>
-          <van-icon name="arrow" color="#DBDBDB" />
+          <van-icon
+            name="arrow"
+            color="#DBDBDB"
+          />
         </router-link>
 
         <li
+          v-if="getToken() !== false"
           class="option-item"
           @click="clickLogout"
-          v-if="getToken() !== false"
         >
           <div class="item-info">
-            <svg-icon class="incon" icon-class="my-assets"></svg-icon>
+            <svg-icon
+              class="incon"
+              icon-class="my-assets"
+            />
             <span>退出登录</span>
           </div>
-          <van-icon name="arrow" color="#DBDBDB" />
+          <van-icon
+            name="arrow"
+            color="#DBDBDB"
+          />
         </li>
       </ul>
     </section>
 
-    <section v-if="false" class="mine-content">
+    <section
+      v-if="false"
+      class="mine-content"
+    >
       <ul class="options-list">
-        <router-link to="/mine/shippingAddress" class="option-item">
+        <router-link
+          to="/mine/shippingAddress"
+          class="option-item"
+        >
           <div class="item-info">
-            <svg-icon class="incon" icon-class="shipping-address"></svg-icon>
+            <svg-icon
+              class="incon"
+              icon-class="shipping-address"
+            />
             <span>收货地址</span>
           </div>
-          <van-icon name="arrow" color="#DBDBDB" />
+          <van-icon
+            name="arrow"
+            color="#DBDBDB"
+          />
         </router-link>
-        <router-link to="/mine/messageCenter" class="option-item">
+        <router-link
+          to="/mine/messageCenter"
+          class="option-item"
+        >
           <div class="item-info">
-            <svg-icon class="incon" icon-class="message-center"></svg-icon>
+            <svg-icon
+              class="incon"
+              icon-class="message-center"
+            />
             <span>消息中心</span>
           </div>
-          <van-icon color="#DBDBDB" name="arrow" />
+          <van-icon
+            color="#DBDBDB"
+            name="arrow"
+          />
         </router-link>
-        <router-link to="/mine/helpCenter" class="option-item">
+        <router-link
+          to="/mine/helpCenter"
+          class="option-item"
+        >
           <div class="item-info">
-            <svg-icon class="incon" icon-class="help-center"></svg-icon>
+            <svg-icon
+              class="incon"
+              icon-class="help-center"
+            />
             <span>帮助中心</span>
           </div>
-          <van-icon color="#DBDBDB" name="arrow" />
+          <van-icon
+            color="#DBDBDB"
+            name="arrow"
+          />
         </router-link>
-        <router-link to="/mine/setting" class="option-item">
+        <router-link
+          to="/mine/setting"
+          class="option-item"
+        >
           <div class="item-info">
-            <svg-icon class="incon" icon-class="setting"></svg-icon>
+            <svg-icon
+              class="incon"
+              icon-class="setting"
+            />
             <span>设置</span>
           </div>
-          <van-icon color="#DBDBDB" name="arrow" />
+          <van-icon
+            color="#DBDBDB"
+            name="arrow"
+          />
         </router-link>
       </ul>
     </section>
-    <tabbar></tabbar>
+    <tabbar />
   </div>
 </template>
 
@@ -111,7 +178,7 @@ import { logout, userInfo } from '@/api/user'
 import { getToken } from '@/utils/cookie'
 import { UserInfo } from '@/entities/user'
 export default {
-  name: 'index',
+  name: 'Index',
   setup() {
     const user = ref<UserInfo | null>()
     const clickLogout = () => {
