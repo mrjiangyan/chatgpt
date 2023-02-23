@@ -10,6 +10,7 @@ import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
+import com.touchbiz.chatgpt.dto.ChatResult;
 import com.touchbiz.chatgpt.dto.response.LoginUser;
 import com.touchbiz.chatgpt.infrastructure.enums.ChatSessionInfoTypeEnum;
 import com.touchbiz.chatgpt.infrastructure.utils.AesEncryptUtil;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
@@ -130,6 +132,58 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
         }
         List<ChatSessionDetail> list = Arrays.asList(chatSessionQuestionDetail, chatSessionAnswerDetail);
         chatSessionInfoService.saveBatch(list);
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createSessionInfo(String sessionId, String prompt, List<ChatResult> list, LoginUser user) {
+        String redis = CHAT_SESSION_SEQUENCE_KEY + sessionId;
+        //保存主题为第一次的问题
+        ChatSession chatSession = redisTemplate.getObject(CHAT_SESSION_KEY + sessionId, ChatSession.class);
+        if (redisTemplate.hasKey(redis)) {
+            redisTemplate.incr(redis);
+        } else {
+            if (!ObjectUtils.isEmpty(chatSession)) {
+                chatSession.setSubject(prompt.length() > length ? prompt.substring(0, length) + "..." : prompt);
+            }
+            redisTemplate.set(redis, 0, CHAT_SESSION_SEQUENCE_EXPIRE_SECONDS);
+        }
+        chatSession.setLastTime(LocalDateTime.now());
+        chatSessionService.updateById(chatSession);
+        ChatSessionDetail chatSessionQuestionDetail = ChatSessionDetail.builder()
+                .sessionId(sessionId)
+                .sequence(Long.valueOf(String.valueOf(redisTemplate.get(redis))))
+                .content(prompt)
+                .type(ChatSessionInfoTypeEnum.QUESTION.getCode())
+                .build();
+        StringBuffer stringBuffer = new StringBuffer();
+        list.forEach(item -> {
+            List<ChatResult.Choice> choices = item.getChoices();
+            if (!CollectionUtils.isEmpty(choices)) {
+                String text = choices.get(0).getText();
+                if (!ObjectUtils.isEmpty(text)) {
+                    stringBuffer.append(text);
+                }
+            }
+        });
+        ChatSessionDetail chatSessionAnswerDetail = ChatSessionDetail.builder()
+                .sessionId(sessionId)
+                .sequence(Long.valueOf(String.valueOf(redisTemplate.get(redis))))
+                .content(stringBuffer.toString())
+                .type(ChatSessionInfoTypeEnum.ANSWER.getCode())
+                .build();
+        if (user != null) {
+            chatSessionQuestionDetail.setUserId(Long.valueOf(user.getId()));
+            chatSessionQuestionDetail.setCreator(user.getUsername());
+            chatSessionAnswerDetail.setUserId(Long.valueOf(user.getId()));
+            chatSessionAnswerDetail.setCreator(user.getUsername());
+        } else {
+            chatSessionQuestionDetail.setCreator("");
+            chatSessionAnswerDetail.setCreator("");
+        }
+        List<ChatSessionDetail> details = Arrays.asList(chatSessionQuestionDetail, chatSessionAnswerDetail);
+        chatSessionInfoService.saveBatch(details);
     }
 
     @Override

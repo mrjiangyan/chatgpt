@@ -33,6 +33,7 @@ import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -53,6 +54,8 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     @Autowired
     private ChatApplicationService chatApplicationService;
 
+    private List<ChatResult> list = new ArrayList<>();
+
     @PostMapping
     @RequestLimit()
     public Mono<Result<?>> prompt(@RequestBody @Valid Chat chat) {
@@ -66,7 +69,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         String question;
         //拼接提问
         if (getRedisTemplate().hasKey(redisKey)) {
-            question = JsonUtils.toJson(getRedisTemplate().get(redisKey)).trim().replace("\\", "").replace("\"", "").replace("n","\\n") + CommonConstant.SPLICER + prompt;
+            question = JsonUtils.toJson(getRedisTemplate().get(redisKey)).trim().replace("\\", "").replace("\"", "").replace("n", "\\n") + CommonConstant.SPLICER + prompt;
         } else {
             question = prompt;
         }
@@ -97,25 +100,44 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     @SneakyThrows
     @GetMapping(value = "/completion", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Result<String>>> completion(@RequestParam("sessionId") String sessionId,
-                                                              @RequestParam("prompt") String prompt
-                                                              ){
+                                                            @RequestParam("prompt") String prompt) {
+        if (sessionId.contains(" ")) {
+            sessionId = sessionId.replace(" ", "+");
+        }
+        //sessionId校验合法性
+        chatApplicationService.checkSessionId(sessionId);
+        var user = getCurrentUser();
         //sessionId校验合法性
         chatApplicationService.checkSessionId(sessionId);
         var eventStream = service.createCompletionFlux(this.generateRequest(prompt));
-        eventStream.doOnError(x-> log.error("doOnError SSE:", x));
+        eventStream.doOnError(x -> log.error("doOnError SSE:", x));
+        String finalSessionId = sessionId;
         eventStream.subscribe(consumer
-               ,error -> log.error("Error receiving SSE:", error),
-                () -> log.info("Completed!!!"));
-        return eventStream.map(x-> {
+                , error -> log.error("Error receiving SSE:", error),
+                () -> {
+                    chatApplicationService.createSessionInfo(finalSessionId, prompt, list, user);
+                    list.clear();
+                }
+        );
+        return eventStream.map(x -> {
                     Result<String> result = Result.ok();
-            result.setResult(x.data());
-            return ServerSentEvent.builder(result).build();
+                    result.setResult(x.data());
+                    return ServerSentEvent.builder(result).build();
                 }).subscribeOn(Schedulers.elastic());
     }
 
 
-    private Consumer<ServerSentEvent<String>> consumer = content -> log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
-            LocalTime.now(), content.event(), content.id(), content.data());
+    private Consumer<ServerSentEvent<String>> consumer = content -> {
+        String data = content.data();
+        if ("[DONE]".equals(data)) {
+            return;
+        }
+        ChatResult chatResult = JsonUtils.toObject(data, ChatResult.class);
+        list.add(chatResult);
+        log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
+                LocalTime.now(), content.event(), content.id(), data
+        );
+    };
 
     @Auth
     @ApiOperation("获取会话列表")
@@ -159,8 +181,8 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         return MonoResult.ok("删除成功！");
     }
 
-    private CompletionRequest generateRequest(String prompt){
-        return  CompletionRequest.builder()
+    private CompletionRequest generateRequest(String prompt) {
+        return CompletionRequest.builder()
                 .prompt(prompt)
                 .model(config.getModel())
                 .stop(Arrays.asList(" Human:", " AI:"))
