@@ -2,6 +2,7 @@ package com.touchbiz.chatgpt.dto.request;
 
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -10,6 +11,7 @@ import java.io.Serializable;
  */
 @Data
 public class ThirdLoginModel implements Serializable {
+    @Serial
     private static final long serialVersionUID = 4098628709290780891L;
 
     /**

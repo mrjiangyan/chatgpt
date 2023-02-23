@@ -18,8 +18,9 @@ module.exports = {
   },
   plugins: ['vue', '@typescript-eslint'],
   rules: {
-    // "no-extra-semi": 2, //禁止多余的冒号
-    // "generator-star-spacing": "off",
+    "no-alert": 0,//禁止使用alert confirm prompt
+    "no-extra-semi": 0, //禁止多余的冒号
+    "generator-star-spacing": "off",
     semi: 'off',
     "@typescript-eslint/no-explicit-any" : "off",
     "@typescript-eslint/explicit-function-return-type" : "off",

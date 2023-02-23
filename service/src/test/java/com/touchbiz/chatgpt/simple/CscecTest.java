@@ -19,13 +19,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class CscecTest  {
 
     private static OkHttpClient client =   (new OkHttpClient.Builder()).connectTimeout(5000L,TimeUnit.MILLISECONDS).readTimeout(100000L,TimeUnit.MILLISECONDS).writeTimeout(10000L,TimeUnit.MILLISECONDS).retryOnConnectionFailure(true).connectionPool(new ConnectionPool(500, 5L,TimeUnit.MINUTES)).build();
-    ;
 
     private String listJson ="{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"records\":[{\"id\":80,\"appid\":\"SuypYZUFIIApRriIi\",\"formType\":null,\"name\":\"大年搜\",\"secretKey\":\"QUUO3WYA1ZaN9gOS46gqIXtbeFux8s2IOePkjw9h2ImNYQYXl0xEbqlWWDOe3YlXLajN7llOnw\",\"status\":1,\"gmtCreate\":\"2023-02-17 10:50:41\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":74,\"appid\":\"gEM5YqnGpj7t8GWg3\",\"formType\":null,\"name\":\"21\",\"secretKey\":\"9MoB8LSZIvfmdO46l5pjQa4GddzdxXl7SduU7qGuAOtmsyUii5RdNoRGMTddbpByWN8T4mimJY\",\"status\":2,\"gmtCreate\":\"2023-01-06 16:35:18\",\"gmtModify\":\"2023-01-06 16:35:30\",\"deleted\":0,\"formTypeName\":null},{\"id\":73,\"appid\":\"hkYd2oH8LRGZoVbHl\",\"formType\":null,\"name\":\"测测\",\"secretKey\":\"Eb6kuvJzQgTdrA8MNHl83v8dd3briCKh4J7V2bEm0lfPqam40oZcZHD3lpwVh92r1IBc7qhfr0\",\"status\":2,\"gmtCreate\":\"2023-01-06 16:31:59\",\"gmtModify\":\"2023-01-06 16:32:04\",\"deleted\":0,\"formTypeName\":null},{\"id\":68,\"appid\":\"GthaY332PbueAq5bT\",\"formType\":null,\"name\":\"1112\",\"secretKey\":\"R3s3zWIv8O41gtBYp6mL4blTkVkeXRv5whaFNWZfmiFUaRwT7aGgsRy31iQy8JgLVMINU8prCV\",\"status\":1,\"gmtCreate\":\"2022-12-30 15:19:23\",\"gmtModify\":\"2022-12-30 15:19:31\",\"deleted\":0,\"formTypeName\":null},{\"id\":60,\"appid\":\"uWmzP9TmGWQDFMxHv\",\"formType\":null,\"name\":\"小帅\",\"secretKey\":\"j57DUn0EOymvzy62GWwWqEhfd3tJX8J4e5P3yVqpS4FQGAniYmba3E8DceudjDKH1X9McMtjWy\",\"status\":1,\"gmtCreate\":\"2022-12-21 22:29:55\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":58,\"appid\":\"4Jo89Txg6CzoFhU7K\",\"formType\":null,\"name\":\"7657\",\"secretKey\":\"QFiZDjcJJ6PaL7yzY3J0h392sU7TYjEw3QjH68PluUQ8SeLENB9KGbiRjLL3KBP76lkaaLEptJ\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:38:41\",\"gmtModify\":\"2022-12-21 11:18:04\",\"deleted\":0,\"formTypeName\":null},{\"id\":57,\"appid\":\"dqASM9YQVg0jkTNhI\",\"formType\":null,\"name\":\"532423\",\"secretKey\":\"BIzWXibUC6UZBvqQiI5irhv2lZDFGtDuAxnLRFFGLL4xHJ5Vv82LVSEOI9ycJ8QiiUlcVkkARG\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:38:37\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":56,\"appid\":\"Nx5IA8lCVb7a23rd3\",\"formType\":null,\"name\":\"423\",\"secretKey\":\"wan6ZeIlcI7e8qGr3GlhOMAHbc1s14ha2NjTsUPietBfR8AOR3PEp5l5zWbGWBOUBOTz9gLagp\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:38:23\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":55,\"appid\":\"HYcltT6ciDJYiK8Jp\",\"formType\":null,\"name\":\"43243211\",\"secretKey\":\"4HUADmoqpFU2UwokB6XeoSTHxH4SLJ3VC0GBkaZ7O7i63wQfIkxKLy8nC5h3dCuxeauGDmzIDg\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:35:53\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":54,\"appid\":\"3zBVeVrWNXJ2IzsDS\",\"formType\":null,\"name\":\"43243\",\"secretKey\":\"BoCCluxXfKBKEX4HEnEm9Vhd1jAAgjnrxQbYXpPpbBtxmbUzGYJrXeoCRjRFM9WB34xn0EROQG\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:33:50\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":53,\"appid\":\"GthLXUxZBCkGJZ7jM\",\"formType\":null,\"name\":\"432432\",\"secretKey\":\"7rTqroypIxkszPYLuX0hw6wPY8DlFDq8zMKQ3M6jyk7e613EFQNxFn8bkMNeZBAQbQLC9EGd5w\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:33:46\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":52,\"appid\":\"RztKhJucFwyoMFqmA\",\"formType\":null,\"name\":\"3213\",\"secretKey\":\"0GQrXFGAkcg5pO5UOifCuHaT5vvgSzrTzRunNLPdKMemcx40UFyip6tlM0hPX43eklwoorCyxc\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:32:35\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":51,\"appid\":\"qsHY3otlsA1yh0FBA\",\"formType\":null,\"name\":\"312\",\"secretKey\":\"04RCx6UKRyU4tDRTNiv5X6Bh0NGVU9UtEoRXO0BmGXEJSzOfGk8eyCeQ2UMn8F5BUJzu158X9J\",\"status\":1,\"gmtCreate\":\"2022-12-21 10:31:35\",\"gmtModify\":null,\"deleted\":0,\"formTypeName\":null},{\"id\":1,\"appid\":\"l9d58d177b05b93f6\",\"formType\":null,\"name\":\"test_un_operation\",\"secretKey\":\"52_YgwabmkB-_KU67QWD8UdQ29j_y72IjgNSXOhx0Bz6DfkQ6WhBrCqSix2bDmregNrsM5bN9IPFapTb6rtD_sgKYSHMOJyjxwtimdUzmS9z0roVYoJVWluHepKpP0avFr8QVWwuH0IbVE0Xtw6GNLdAJDXEC\",\"status\":1,\"gmtCreate\":\"2022-12-03 00:51:30\",\"gmtModify\":\"2022-12-30 15:19:56\",\"deleted\":0,\"formTypeName\":null}],\"total\":14,\"size\":30,\"current\":1,\"orders\":[],\"optimizeCountSql\":true,\"searchCount\":true,\"optimizeJoinOfCountSql\":true,\"countId\":null,\"maxLimit\":null,\"pages\":1},\"timestamp\":1676959700106}";
 
@@ -104,7 +102,7 @@ public class CscecTest  {
                     }
                 });
 
-        assert isSuccess.get() != false;
+        assert isSuccess.get();
 
     }
 
@@ -208,7 +206,7 @@ public class CscecTest  {
                 if(times%10 ==0){
                     try{
                         var request = new Request.Builder()
-                                .url(batchDownloadUrl+ list.stream().collect(Collectors.joining(",")))
+                                .url(batchDownloadUrl+ String.join(",", list))
                                 .build();
                         var response = client.newCall(request).execute();
                         log.info("request:{}, response:code:{}，header:{}", request.url().url(), response.code(), response.headers());

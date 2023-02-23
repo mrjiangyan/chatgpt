@@ -16,22 +16,24 @@ public interface BaseCommonMapper {
      * 保存日志
      * @param dto
      */
-    @Insert(" insert into sys_log (log_type, log_content, method, operate_type, request_url, request_type, request_param, ip, userid, username, cost_time,creator,header)\n" +
-            "        values(\n" +
-            "            #{dto.logType,jdbcType=INTEGER},\n" +
-            "            #{dto.logContent,jdbcType=VARCHAR},\n" +
-            "            #{dto.method,jdbcType=VARCHAR},\n" +
-            "            #{dto.operateType,jdbcType=INTEGER},\n" +
-            "            #{dto.requestUrl,jdbcType=VARCHAR},\n" +
-            "            #{dto.requestType,jdbcType=VARCHAR},\n" +
-            "            #{dto.requestParam,jdbcType=VARCHAR},\n" +
-            "            #{dto.ip,jdbcType=VARCHAR},\n" +
-            "            #{dto.userid,jdbcType=VARCHAR},\n" +
-            "            #{dto.username,jdbcType=VARCHAR},\n" +
-            "            #{dto.costTime,jdbcType=BIGINT},\n" +
-            "            #{dto.createBy,jdbcType=VARCHAR},\n" +
-            "            #{dto.header,jdbcType=VARCHAR}\n" +
-            "        )")
+    @Insert("""
+             insert into sys_log (log_type, log_content, method, operate_type, request_url, request_type, request_param, ip, userid, username, cost_time,creator,header)
+                    values(
+                        #{dto.logType,jdbcType=INTEGER},
+                        #{dto.logContent,jdbcType=VARCHAR},
+                        #{dto.method,jdbcType=VARCHAR},
+                        #{dto.operateType,jdbcType=INTEGER},
+                        #{dto.requestUrl,jdbcType=VARCHAR},
+                        #{dto.requestType,jdbcType=VARCHAR},
+                        #{dto.requestParam,jdbcType=VARCHAR},
+                        #{dto.ip,jdbcType=VARCHAR},
+                        #{dto.userid,jdbcType=VARCHAR},
+                        #{dto.username,jdbcType=VARCHAR},
+                        #{dto.costTime,jdbcType=BIGINT},
+                        #{dto.createBy,jdbcType=VARCHAR},
+                        #{dto.header,jdbcType=VARCHAR}
+                    )\
+            """)
     @InterceptorIgnore(illegalSql = "true", tenantLine = "true")
     void saveLog(@Param("dto") LogDTO dto);
 

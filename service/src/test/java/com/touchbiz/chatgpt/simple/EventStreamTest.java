@@ -10,12 +10,20 @@ import com.touchbiz.common.utils.tools.JsonUtils;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 @Slf4j
 public class EventStreamTest {
@@ -47,7 +55,7 @@ public class EventStreamTest {
 
     @SneakyThrows
     @Test
-    public void testHttp() throws InterruptedException {
+    public void testHttp() {
 
         HttpClient client = HttpClient.newBuilder().build();
 
@@ -85,6 +93,53 @@ public class EventStreamTest {
                 .forEach(System.out::println);
     }
 
+    @SneakyThrows
+    @Test
+    public void testFlux(){
+        WebClient client = WebClient.create("https://api.openai.com/v1/completions");
+        ParameterizedTypeReference<ServerSentEvent<String>> type
+                = new ParameterizedTypeReference<>() {
+        };
+
+        CompletionRequest completionRequest = CompletionRequest.builder()
+//                .prompt("Human:" + chat.prompt +"\nAI:")
+                .prompt("给我推荐10本小说")
+                .model("text-davinci-001")
+//                .echo(true)
+                .stop(Arrays.asList(" Human:"," AI:"))
+                .maxTokens(1024)
+                .presencePenalty(0d)
+                .frequencyPenalty(0d)
+                .temperature(0.7D)
+                .bestOf(1)
+                .topP(1d)
+                .stream(true)
+                .build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+
+        Flux<ServerSentEvent<String>> eventStream = client.post()
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer ")
+                .body(BodyInserters.fromValue(mapper.writeValueAsString(completionRequest)))
+                .retrieve()
+                .bodyToFlux(type);
+        eventStream.doOnError(x-> log.error("doOnError SSE:", x));
+        eventStream.subscribe(consumer
+                ,
+                error -> log.error("Error receiving SSE:", error),
+                () -> log.info("Completed!!!"));
+
+        Thread.sleep(10*1000);
+    }
+
+    private Consumer<ServerSentEvent<String>> consumer = content -> log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
+            LocalTime.now(), content.event(), content.id(), content.data());
+
 
     @SneakyThrows
     @Test
@@ -109,4 +164,5 @@ public class EventStreamTest {
         log.info("response:{}", response);
 
     }
+
 }

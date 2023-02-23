@@ -1,5 +1,5 @@
 export class ChatSession {
-  sessionId!: string;
+  sessionId!: string
 }
 
 export interface CompletionResult {
@@ -30,6 +30,6 @@ export interface LogProbResult {
   textOffset: Array<number>;
 }
 
-export class ChatRequest extends ChatSession{
-  prompt!: string;
+export class ChatRequest extends ChatSession {
+  prompt!: string
 }

@@ -1,25 +1,18 @@
 package com.touchbiz.chatgpt.simple;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.touchbiz.common.entity.result.Result;
-import com.touchbiz.common.utils.security.AesEncryptUtil;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.junit.Test;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class CscecTokenClearTest {
@@ -61,7 +54,7 @@ public class CscecTokenClearTest {
                     }
                 });
 
-        assert isSuccess.get() != false;
+        assert isSuccess.get();
 
     }
 
@@ -97,7 +90,7 @@ public class CscecTokenClearTest {
                     }
                 });
 
-        assert isSuccess.get() != false;
+        assert isSuccess.get();
 
     }
 

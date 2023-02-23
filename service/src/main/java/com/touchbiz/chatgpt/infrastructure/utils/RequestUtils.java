@@ -57,7 +57,7 @@ public class RequestUtils {
                     try {
                         inet = InetAddress.getLocalHost();
                     } catch (Exception e) {
-                        log.error("根据网卡获取本机配置的IP异常=>", e.getMessage());
+                        log.error("根据网卡获取本机配置的IP异常=>{}", e.getMessage());
                     }
                     if (inet.getHostAddress() != null) {
                         hostString = inet.getHostAddress();

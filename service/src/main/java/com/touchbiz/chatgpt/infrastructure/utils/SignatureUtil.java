@@ -1,6 +1,6 @@
 package com.touchbiz.chatgpt.infrastructure.utils;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ public class SignatureUtil {
 
     public static String generateSignature(Map<String, String> data, String appKey) {
         Set<String> keySet = data.keySet();
-        String[] keyArray = keySet.toArray(new String[keySet.size()]);
+        String[] keyArray = keySet.toArray(new String[0]);
         Arrays.sort(keyArray);
         StringBuilder sb = new StringBuilder();
         for (String k : keyArray) {
@@ -48,9 +48,9 @@ public class SignatureUtil {
         String encodeStr = "";
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.update(str.getBytes("UTF-8"));
+            messageDigest.update(str.getBytes(StandardCharsets.UTF_8));
             encodeStr = byte2Hex(messageDigest.digest());
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return encodeStr;
@@ -109,11 +109,7 @@ public class SignatureUtil {
         map.put(TIMESTAMP,timestamp);
         map.put("allInfo",appid+timestamp);
         String sign= SignatureUtil.generateSignature(map,secretKey);
-        if (sign.equals(requestSign)){
-            return true;
-        }else{
-            return false;
-        }
+        return sign.equals(requestSign);
     }
 
 

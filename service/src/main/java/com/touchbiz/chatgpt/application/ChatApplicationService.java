@@ -4,7 +4,6 @@ package com.touchbiz.chatgpt.application;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.dto.Chat;
-import com.touchbiz.chatgpt.dto.ChatResult;
 import com.touchbiz.chatgpt.dto.response.LoginUser;
 
 /**

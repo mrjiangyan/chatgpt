@@ -33,10 +33,6 @@ public abstract class AbstractBaseController<T, S extends IService<T>> {
     @Autowired
     protected IRedisTemplate redisTemplate;
 
-//    protected SysUserCacheInfo getCurrentUser(){
-//       return (SysUserCacheInfo) ReactiveRequestContextHolder.getUser();
-//    }
-
     protected LoginUser getCurrentUser(){
         var user = ReactiveRequestContextHolder.getUser();
         if(user == null){

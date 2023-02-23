@@ -1,6 +1,5 @@
 package com.touchbiz.chatgpt.controller;
 
-import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.common.entity.result.MonoResult;
 import lombok.extern.slf4j.Slf4j;

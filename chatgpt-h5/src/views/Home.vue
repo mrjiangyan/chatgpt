@@ -106,6 +106,8 @@ import { createSession, asyncChat } from '@/api/chat'
 import { getCookie } from '@/utils/cookie'
 import ChatBox, { Message } from '@/components/ChatBox.vue'
 import { CompletionResult, ChatRequest } from '@/entities/chat'
+import { ApiResult } from '@/entities/result'
+
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const targetAvatar = require('@/assets/icon/openai.svg')
@@ -130,7 +132,7 @@ export default defineComponent({
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     function asyncChatting(text: string) {
-      const chatRequest = new ChatRequest();
+      const chatRequest = new ChatRequest()
       chatRequest.prompt = text
       const es = asyncChat(chatRequest)
 
@@ -139,26 +141,28 @@ export default defineComponent({
         // to to something…
         console.log('接收信息', event.data)
         // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-        const res = <CompletionResult>JSON.parse(event.data)
+        const result = <ApiResult<CompletionResult>>JSON.parse(event.data)
+        if(result.success ===  false){
+          es.close()
+          
+        }
+        const res = result.result
         const choice = res.choices[0]
         const answer: Message = {
           text: choice.text.replace('\n\n', '\n'),
           time: new Date(),
           direction: 'received'
         }
-        if (choice.text.includes('10\n')) {
-          console.log('关闭EventSource')
-          es.close()
-        }
         console.log('anwsers', answer)
         prompt.value.push(answer)
         chatRef.value.appendNew(answer)
       }
 
-      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      es.onerror = function(error: unknown) {
+      es.onerror = function(error: ErrorEvent) {
         // 监听错误
         console.log('错误', error)
+        es.close()
+    
       }
     }
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

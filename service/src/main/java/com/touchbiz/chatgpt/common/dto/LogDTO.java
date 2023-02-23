@@ -3,8 +3,8 @@ package com.touchbiz.chatgpt.common.dto;
 import com.touchbiz.chatgpt.dto.response.LoginUser;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 日志对象
@@ -14,6 +14,7 @@ import java.util.Date;
 @Data
 public class LogDTO implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 8482720462943906924L;
 
     /**内容*/

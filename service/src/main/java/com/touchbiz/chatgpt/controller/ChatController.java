@@ -2,7 +2,6 @@ package com.touchbiz.chatgpt.controller;
 
 
 import com.theokanning.openai.completion.CompletionRequest;
-import com.theokanning.openai.completion.CompletionResult;
 import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import com.touchbiz.chatgpt.common.aspect.annotation.RequestLimit;
@@ -20,20 +19,26 @@ import com.touchbiz.common.entity.annotation.Auth;
 import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.utils.tools.JsonUtils;
 import io.swagger.annotations.ApiOperation;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.*;
 
@@ -69,17 +74,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
             question = prompt;
         }
         log.info("question:{}", question);
-        CompletionRequest completionRequest = CompletionRequest.builder()
-                .prompt(question)
-                .model(config.getModel())
-                .stop(Arrays.asList(" Human:", " AI:"))
-                .maxTokens(512)
-                .presencePenalty(0.6d)
-                .frequencyPenalty(0d)
-                .temperature(0.9D)
-                .bestOf(1)
-                .topP(1d)
-                .build();
+        CompletionRequest completionRequest = generateRequest(prompt, false);
         try {
             long start = System.currentTimeMillis();
             var result = service.createCompletion(completionRequest);
@@ -95,38 +90,43 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                 return Mono.just(Result.ok(answerContent));
             }
         } catch (Exception ex) {
-            log.error("error:{}", ex);
+            log.error("error:", ex);
             return Mono.just(Result.error("系统超时,请联系管理员"));
         }
         return Mono.just(Result.error("请求失败，请重试"));
     }
 
 
+    @SneakyThrows
     @GetMapping(value = "/completion", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<CompletionResult>> completion(@RequestParam("sessionId") String sessionId,
+    public Flux<ServerSentEvent<Result<Object>>> completion(@RequestParam("sessionId") String sessionId,
                                                               @RequestParam("prompt") String prompt
-                                                              ) {
-        //sessionId校验合法性
-        chatApplicationService.checkSessionId(sessionId);
-        var user = getCurrentUser();
-        log.info("sessionId:{}", sessionId);
-        CompletionRequest completionRequest = CompletionRequest.builder()
-                .prompt(prompt)
-                .model(config.getModel())
-                .stop(Arrays.asList(" Human:", " AI:"))
-                .maxTokens(512)
-                .presencePenalty(0.6d)
-                .frequencyPenalty(0d)
-                .temperature(0.9D)
-                .bestOf(1)
-                .topP(1d)
-                .build();
-        var stream =  service.createCompletionSteam(completionRequest);
-        return Flux
-                .defer(() -> Flux.fromStream(stream))
-                .map(x-> ServerSentEvent.builder(x).build())
+                                                              ){
+        WebClient client = WebClient.create("https://api.openai.com/v1/completions");
+        ParameterizedTypeReference<ServerSentEvent<String>> type
+                = new ParameterizedTypeReference<>() {
+        };
+
+        Flux<ServerSentEvent<String>> eventStream = client.post()
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + config.getKey())
+                .body(BodyInserters.fromValue(service.getMapper().writeValueAsString(generateRequest(prompt, true))))
+                .retrieve()
+                .bodyToFlux(type);
+        eventStream.doOnError(x-> log.error("doOnError SSE:", x));
+
+        eventStream.subscribe(consumer
+               ,error -> log.error("Error receiving SSE:", error),
+                () -> log.info("Completed!!!"));
+        return eventStream.map(x-> ServerSentEvent.builder(Result.OK(x.data())).build())
                 .subscribeOn(Schedulers.elastic());
     }
+
+
+
+    private Consumer<ServerSentEvent<String>> consumer = content -> log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
+            LocalTime.now(), content.event(), content.id(), content.data());
 
     @Auth
     @ApiOperation("获取会话列表")
@@ -168,5 +168,20 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         var user = getCurrentUser();
         chatApplicationService.deleteSession(id, user);
         return MonoResult.ok("删除成功！");
+    }
+
+    private CompletionRequest generateRequest(String prompt, Boolean isStream){
+        return  CompletionRequest.builder()
+                .prompt(prompt)
+                .model(config.getModel())
+                .stop(Arrays.asList(" Human:", " AI:"))
+                .maxTokens(128)
+                .presencePenalty(0.6d)
+                .frequencyPenalty(0d)
+                .temperature(0.9D)
+                .bestOf(1)
+                .topP(1d)
+                .stream(isStream)
+                .build();
     }
 }

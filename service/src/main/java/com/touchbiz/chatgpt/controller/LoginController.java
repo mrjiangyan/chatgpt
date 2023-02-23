@@ -4,7 +4,6 @@ import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.touchbiz.cache.starter.IRedisTemplate;
 import com.touchbiz.chatgpt.boot.config.JeecgBaseConfig;
 import com.touchbiz.chatgpt.database.domain.SysUser;
 import com.touchbiz.chatgpt.dto.request.SysLoginModel;
@@ -20,7 +19,6 @@ import com.touchbiz.chatgpt.service.ISysUserService;
 import com.touchbiz.common.entity.result.MonoResult;
 import com.touchbiz.common.entity.result.Result;
 import com.touchbiz.common.utils.security.JwtUtil;
-import com.touchbiz.common.utils.text.oConvertUtils;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,7 +28,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedHashMap;
 
 import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
@@ -67,7 +64,7 @@ public class LoginController extends AbstractBaseController<SysUser, ISysUserSer
 		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		String checkCode = String.valueOf(getRedisTemplate().get(realKey));
 		//当进入登录页时，有一定几率出现验证码错误 #1714
-		if (lowerCaseCaptcha.equals(checkCode.toString())) {
+		if (lowerCaseCaptcha.equals(checkCode)) {
 			log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
 			result.error500("验证码错误");
 			// 改成特殊的code 便于前端判断

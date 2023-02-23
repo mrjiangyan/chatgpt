@@ -2,7 +2,9 @@ package com.touchbiz.chatgpt.common.dto;
 
 import com.touchbiz.common.entity.query.BaseQuery;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class BasePageQuery  extends BaseQuery {
 

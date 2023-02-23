@@ -40,7 +40,6 @@ public abstract class BaseControllerTest extends BaseTest {
 
 
     public final WebFilter filter = (serverWebExchange, webFilterChain) -> {
-        String key = "TOKEN_USER" + "abc";
         MockServerHttpRequest request = (MockServerHttpRequest) serverWebExchange.getRequest();
         request.getHeaders().add(HttpHeaderConstants.HEADER_TOKEN, "abc");
 //            redisTemplate.setObject(key, new AccountToken(), 100 * 100);

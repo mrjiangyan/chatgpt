@@ -85,7 +85,7 @@ public class RequestLimitAspect {
         try {
             return joinPoint.proceed();
         } catch (Throwable e) {
-            log.error("接口方法出现异常-->{}", e);
+            log.error("接口方法出现异常-->", e);
             throw new RequestLimitException(e.toString());
         }
     }

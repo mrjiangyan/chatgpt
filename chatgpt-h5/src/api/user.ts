@@ -1,5 +1,4 @@
 import { LoginResult, UserInfo } from '@/entities/user'
-import request from '@/utils/http/axios/request'
 import { delToken, removeCookie, setCookie } from '@/utils/cookie'
 import { USER_INFO_KEY } from '@/configs/cacheEnum'
 import { defHttp } from '@/utils/http/axios';

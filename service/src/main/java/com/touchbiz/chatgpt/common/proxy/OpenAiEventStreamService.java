@@ -1,7 +1,6 @@
 package com.touchbiz.chatgpt.common.proxy;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -12,8 +11,6 @@ import com.theokanning.openai.completion.CompletionResult;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -48,7 +45,7 @@ public class OpenAiEventStreamService extends OpenAiService {
 
     }
 
-    private ObjectMapper getMapper(){
+    public ObjectMapper getMapper(){
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -63,15 +60,16 @@ public class OpenAiEventStreamService extends OpenAiService {
     }
 
     @SneakyThrows
-    private <T> HttpRequest  generatePostHttpRequest(String path, T data) {
+    private <T> HttpRequest  generatePostHttpRequest(T data) {
         var json = mapper.writeValueAsString(data);
         log.info("json:{}", json);
         HttpRequest request = HttpRequest.newBuilder()
                 .timeout(openAiConfig.getTimeout())
                 .header("Authorization", "Bearer " + this.openAiConfig.getKey())
                 .header( "Content-Type", "application/json")
+                .header("Accept", "text/event-stream")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .uri(URI.create("https://api.openai.com/" + path))
+                .uri(URI.create("https://api.openai.com/" + "v1/completions"))
                 .build();
         return request;
     }
@@ -90,13 +88,15 @@ public class OpenAiEventStreamService extends OpenAiService {
 
     @SneakyThrows
     public Stream<CompletionResult> createCompletionSteam(CompletionRequest request) {
-        var httpRequest = generatePostHttpRequest("", request);
+        var httpRequest = generatePostHttpRequest(request);
         var stream = client.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofLines())
                 .thenApply(HttpResponse::body).get()
                 .map(result->{
                     try {
-                        return mapper.readValue(result, CompletionResult.class);
-                    } catch (JsonProcessingException e) {
+                        log.info("result:{}", result);
+//                        return mapper.readValue(result, CompletionResult.class);
+                        return new CompletionResult();
+                    } catch (Exception e) {
                         log.error("e:", e);
                         throw new RuntimeException(e);
                     }
