@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
@@ -48,27 +49,21 @@ public class RequestLimitAspect {
         if (ObjectUtils.isNotEmpty(token) && redisTemplate.hasKey(CommonConstant.SYS_USERS_CACHE + token)) {
             return buildProceed(joinPoint);
         }
-        String maxCount = environment.getProperty("request-limit.maxCount");
-        if (ObjectUtils.isEmpty(maxCount)) {
-            maxCount = "10";
-        }
-        String timeout = environment.getProperty("request-limit.timeout");
-        if (ObjectUtils.isEmpty(timeout)) {
-            timeout = "-1";
-        }
+        String maxCount = Optional.ofNullable(environment.getProperty("request-limit.maxCount")).orElse("10");
+        String timeout = Optional.ofNullable(environment.getProperty("request-limit.timeout")).orElse("-1");
         String hostAddress = RequestUtils.getIpAddr(request);
         log.info("hostAddress={}", hostAddress);
         String url = request.getURI().toString();
         log.info("url={}", url);
         String redisKey = String.format("%s::%s", REQUEST_LIMIT_KEY, hostAddress);
         long count = redisTemplate.opsForValue().increment(redisKey, 1);
-//        if (count == 1) {
-        if (Long.valueOf(timeout) > 0) {
-            redisTemplate.expire(redisKey, Long.valueOf(timeout), TimeUnit.SECONDS);
-        } else {
-            redisTemplate.persist(redisKey);
+        if (count == 1) {
+            if (Long.valueOf(timeout) > 0) {
+                redisTemplate.expire(redisKey, Long.valueOf(timeout), TimeUnit.SECONDS);
+            } else {
+                redisTemplate.persist(redisKey);
+            }
         }
-//        }
         if (count > Long.valueOf(maxCount)) {
             String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, maxCount);
             log.error(error);
