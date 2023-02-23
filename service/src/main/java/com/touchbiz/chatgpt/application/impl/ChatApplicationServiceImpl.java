@@ -10,7 +10,6 @@ import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
-import com.touchbiz.chatgpt.dto.ChatResult;
 import com.touchbiz.chatgpt.dto.response.LoginUser;
 import com.touchbiz.chatgpt.infrastructure.enums.ChatSessionInfoTypeEnum;
 import com.touchbiz.chatgpt.infrastructure.utils.AesEncryptUtil;
@@ -18,13 +17,12 @@ import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
 import com.touchbiz.chatgpt.service.ChatSessionInfoService;
 import com.touchbiz.chatgpt.service.ChatSessionService;
 import com.touchbiz.common.entity.exception.BizException;
-import com.touchbiz.common.utils.tools.JsonUtils;
 import com.touchbiz.webflux.starter.filter.ReactiveRequestContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
@@ -91,22 +89,23 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String createSessionInfo(Chat chat, ChatResult result, LoginUser user) {
+    @Async
+    public void createSessionInfo(Chat chat, String result, LoginUser user) {
         String sessionId = chat.getSessionId();
         String prompt = chat.getPrompt();
         String redis = CHAT_SESSION_SEQUENCE_KEY + sessionId;
+        //保存主题为第一次的问题
+        ChatSession chatSession = redisTemplate.getObject(CHAT_SESSION_KEY + sessionId, ChatSession.class);
         if (redisTemplate.hasKey(redis)) {
             redisTemplate.incr(redis);
         } else {
-            //保存主题为第一次的问题
-            ChatSession chatSession = JsonUtils.toObject(JsonUtils.toJson(redisTemplate.get(CHAT_SESSION_KEY + sessionId)), ChatSession.class);
             if (!ObjectUtils.isEmpty(chatSession)) {
                 chatSession.setSubject(prompt.length() > length ? prompt.substring(0, length) + "..." : prompt);
-                chatSessionService.updateById(chatSession);
             }
             redisTemplate.set(redis, 0, CHAT_SESSION_SEQUENCE_EXPIRE_SECONDS);
         }
-        List<ChatResult.Choice> choices = result.getChoices();
+        chatSession.setLastTime(LocalDateTime.now());
+        chatSessionService.updateById(chatSession);
         ChatSessionDetail chatSessionQuestionDetail = ChatSessionDetail.builder()
                 .sessionId(sessionId)
                 .sequence(Long.valueOf(String.valueOf(redisTemplate.get(redis))))
@@ -117,7 +116,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
         ChatSessionDetail chatSessionAnswerDetail = ChatSessionDetail.builder()
                 .sessionId(sessionId)
                 .sequence(Long.valueOf(String.valueOf(redisTemplate.get(redis))))
-                .content(CollectionUtils.isEmpty(choices) ? "" : choices.get(0).getText())
+                .content(result)
                 .type(ChatSessionInfoTypeEnum.ANSWER.getCode())
                 .build();
         if (user != null) {
@@ -131,7 +130,6 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
         }
         List<ChatSessionDetail> list = Arrays.asList(chatSessionQuestionDetail, chatSessionAnswerDetail);
         chatSessionInfoService.saveBatch(list);
-        return chatSessionAnswerDetail.getContent();
     }
 
     @Override
