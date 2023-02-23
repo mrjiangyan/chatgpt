@@ -1,17 +1,18 @@
 import axios from 'axios'
 import { Toast } from 'vant'
-import store from '@/store'
 import { getToken } from '@/utils/cookie'
-// const baseURL = 'http://chat-service.touchbiz.tech:8080/api'
-// const baseURL = 'http://127.0.0.1:8080/api'
+import { getHost } from '@/utils/http/axios/http'
 const requestTimeout = 15000
+
+
 const instance = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' ? 'http://chat-service.touchbiz.tech:8080/api' : 'http://127.0.0.1:8180/api',
+  baseURL: getHost(),
   timeout: requestTimeout,
   headers: {
     'Content-Type': 'application/json;charset=UTF-8'
   }
 })
+
 
 instance.interceptors.request.use(
   config => {
@@ -31,10 +32,12 @@ instance.interceptors.request.use(
 )
 instance.interceptors.response.use(
   res => {
+
     if (res.status !== 200) {
       return Promise.reject(res)
     } else {
       const { success, code, result, message } = res.data
+      console.log(code)
       if (success === true) {
         return result
       } else {

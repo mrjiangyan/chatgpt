@@ -102,13 +102,10 @@
 import { defineComponent, ref, unref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { chat, createSession } from '@/api/chat'
+import { createSession, asyncChat } from '@/api/chat'
 import { getCookie } from '@/utils/cookie'
-import { showImg } from '@/utils/utils'
 import ChatBox, { Message } from '@/components/ChatBox.vue'
-import { SESSION_ID_KEY } from '@/configs/cacheEnum'
-import { CompletionResult } from '@/entities/chat'
-import { EventSourcePolyfill } from 'event-source-polyfill'
+import { CompletionResult, ChatRequest } from '@/entities/chat'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const targetAvatar = require('@/assets/icon/openai.svg')
@@ -132,19 +129,10 @@ export default defineComponent({
     const chatRef = ref()
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    function eventSource() {
-      const token = '111'
-      const url = 'http://127.0.0.1:8180/sse'
-      const es = new EventSourcePolyfill(url, {
-        headers: {
-          Authorization: token ? `Bearer${token}` : ''
-        }
-      })
-
-      // eslint-disable-next-line @typescript-eslint/explicit-function-return-type, @typescript-eslint/no-explicit-any
-      es.onopen = function(event: any) {
-        console.log('连接成功', event)
-      }
+    function asyncChatting(text: string) {
+      const chatRequest = new ChatRequest();
+      chatRequest.prompt = text
+      const es = asyncChat(chatRequest)
 
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
       es.onmessage = function(event: { data: string }) {
@@ -184,33 +172,33 @@ export default defineComponent({
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    function getChatAnswer() {
-      console.log(prompt)
+    // function getChatAnswer() {
+    //   console.log(prompt)
 
-      const param = {
-        prompt: unref(prompt)
-          .map(v => v.text)
-          .join('\n\n'),
-        sessionId: getCookie(SESSION_ID_KEY)
-      }
-      chat(param)
-        .then(res => {
-          console.log(res)
-          const anwsers = res.choices.map(
-            (choice): Message => ({
-              text: choice.text.replace('\n\n', '\n'),
-              time: new Date(),
-              direction: 'received'
-            })
-          )
-          console.log('anwsers', anwsers)
-          prompt.value.push(...anwsers)
-          chatRef.value.appendNew(...anwsers)
+    //   const param = {
+    //     prompt: unref(prompt)
+    //       .map(v => v.text)
+    //       .join('\n\n'),
+    //     sessionId: getCookie(SESSION_ID_KEY)
+    //   }
+    //   chat(param)
+    //     .then(res => {
+    //       console.log(res)
+    //       const anwsers = res.choices.map(
+    //         (choice): Message => ({
+    //           text: choice.text.replace('\n\n', '\n'),
+    //           time: new Date(),
+    //           direction: 'received'
+    //         })
+    //       )
+    //       console.log('anwsers', anwsers)
+    //       prompt.value.push(...anwsers)
+    //       chatRef.value.appendNew(...anwsers)
 
-          // state.list = result;
-        })
-        .catch()
-    }
+    //       // state.list = result;
+    //     })
+    //     .catch()
+    // }
 
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     function sendMessage({ text }: Partial<Message>) {
@@ -219,7 +207,7 @@ export default defineComponent({
         time: new Date(),
         direction: 'sent'
       })
-      getChatAnswer()
+      asyncChatting(text as string)
       return {
         text,
         time: new Date(),
@@ -243,7 +231,6 @@ export default defineComponent({
 
     onMounted(() => {
       getSession()
-      eventSource()
     })
 
     return {
@@ -253,14 +240,13 @@ export default defineComponent({
       content,
       activeTopic,
       prompt,
-      showImg,
       sourceAvatar,
       targetAvatar,
       loadHistory,
       sendMessage,
       chatRef,
       getCookie,
-      eventSource
+      asyncChatting
     }
   }
 })
