@@ -1,6 +1,11 @@
 {
     "semi": false, 
     "singleQuote": true,
-    "trailingComma": "none"
+    "trailingComma": "none",
+    "vueIndentScriptAndStyle": true,
+    "printWidth": 150,
+    "arrowParens": "avoid",
+    "insertPragma": false,
+    "requirePragma": false
 }
   

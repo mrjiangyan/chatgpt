@@ -1,6 +1,9 @@
 <template>
   <div class="container">
-    <div class="appbar" v-if="appbar">
+    <div
+      v-if="appbar"
+      class="appbar"
+    >
       <van-nav-bar
         :title="title"
         left-text="返回"
@@ -11,7 +14,7 @@
       />
     </div>
     <div class="content">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>

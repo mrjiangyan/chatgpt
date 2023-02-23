@@ -1,17 +1,29 @@
 <template>
   <div class="container">
-    <div class="content-container" ref="contentContainer">
+    <div
+      ref="contentContainer"
+      class="content-container"
+    >
       <div ref="content">
-        <InfiniteLoading direction="top" @infinite="loadMoreHistory">
+        <InfiniteLoading
+          direction="top"
+          @infinite="loadMoreHistory"
+        >
           <template #no-more>
-            <div class="message-prompt"></div>
+            <div class="message-prompt" />
           </template>
           <template #no-results>
-            <div class="message-prompt"></div>
+            <div class="message-prompt" />
           </template>
         </InfiniteLoading>
-        <div v-for="(message, index) in messages" :key="index">
-          <div class="message-prompt" v-if="isShowTimes[index]">
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+        >
+          <div
+            v-if="isShowTimes[index]"
+            class="message-prompt"
+          >
             {{ accordingToNow(message.time) }}
           </div>
           <div
@@ -30,15 +42,23 @@
               size="small"
               round
               v-html="transformSpecialChars(message.text)"
-            ></van-button>
+            />
           </div>
         </div>
       </div>
     </div>
     <div class="footer">
-      <van-field v-model="typingText" placeholder="输入内容" border>
+      <van-field
+        v-model="typingText"
+        placeholder="输入内容"
+        border
+      >
         <template #button>
-          <van-image @click.enter="sendText" class="button" :src="chatImg" />
+          <van-image
+            class="button"
+            :src="chatImg"
+            @click.enter="sendText"
+          />
         </template>
       </van-field>
     </div>
@@ -64,9 +84,9 @@ import { computed, defineComponent, nextTick, ref, unref } from 'vue'
 const chatImg = require('@/assets/icon/chat.svg')
 
 export type Message = {
-  text: string
-  time: Date
-  direction: 'sent' | 'received'
+  text: string;
+  time: Date;
+  direction: 'sent' | 'received';
 }
 export default defineComponent({
   name: 'Chat',

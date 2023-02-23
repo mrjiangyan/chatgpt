@@ -8,9 +8,22 @@
       </router-view>
     </div>
     <div class="bottom-bar">
-      <van-tabbar v-model="active" active-color="#85a5ff">
-        <van-tabbar-item name="/home" icon="home-o">首页</van-tabbar-item>
-        <van-tabbar-item name="/mine" icon="award">我的</van-tabbar-item>
+      <van-tabbar
+        v-model="active"
+        active-color="#85a5ff"
+      >
+        <van-tabbar-item
+          name="/home"
+          icon="home-o"
+        >
+          首页
+        </van-tabbar-item>
+        <van-tabbar-item
+          name="/mine"
+          icon="award"
+        >
+          我的
+        </van-tabbar-item>
       </van-tabbar>
     </div>
   </div>

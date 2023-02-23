@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <van-form @submit="handleLogin" @onFailed="onFailed">
+    <van-form
+      @submit="handleLogin"
+      @onFailed="onFailed"
+    >
       <van-cell-group inset>
         <van-field
           v-model="formData.username"
@@ -30,18 +33,23 @@
               style="margin-top: 2px; max-width: initial"
               :src="randCodeData.randCodeImage"
               @click="handleChangeCheckCode"
-            />
+            >
             <img
               v-else
               style="margin-top: 2px; max-width: initial"
               src="../../assets/images/checkcode.png"
               @click="handleChangeCheckCode"
-            />
+            >
           </div>
         </div>
       </van-cell-group>
       <div style="margin: 16px">
-        <van-button round block type="primary" native-type="submit">
+        <van-button
+          round
+          block
+          type="primary"
+          native-type="submit"
+        >
           提交
         </van-button>
       </div>
@@ -71,7 +79,7 @@ export default defineComponent({
       checkKey: ''
     })
 
-    const onFailed = errorInfo => {
+    const onFailed = (errorInfo: never) => {
       console.log('failed', errorInfo)
     }
 

@@ -1,7 +1,13 @@
 <template>
-  <div class="recommend" @click="toDetail">
+  <div
+    class="recommend"
+    @click="toDetail"
+  >
     <div class="logo">
-      <img :src="data.logo" alt="" />
+      <img
+        :src="data.logo"
+        alt=""
+      >
     </div>
     <div class="info">
       <div class="title">

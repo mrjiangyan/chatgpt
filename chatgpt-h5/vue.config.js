@@ -62,6 +62,7 @@ module.exports = {
     }
   },
 
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   chainWebpack: config => {
     config.module
       .rule('ts')
