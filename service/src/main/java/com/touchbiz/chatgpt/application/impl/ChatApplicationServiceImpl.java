@@ -137,7 +137,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createSessionInfo(String sessionId, String prompt, List<ChatResult> list, LoginUser user) {
+    public void createSessionInfo(String sessionId, String prompt,  String result, LoginUser user) {
         String redis = CHAT_SESSION_SEQUENCE_KEY + sessionId;
         //保存主题为第一次的问题
         ChatSession chatSession = redisTemplate.getObject(CHAT_SESSION_KEY + sessionId, ChatSession.class);
@@ -157,20 +157,10 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
                 .content(prompt)
                 .type(ChatSessionInfoTypeEnum.QUESTION.getCode())
                 .build();
-        StringBuffer stringBuffer = new StringBuffer();
-        list.forEach(item -> {
-            List<ChatResult.Choice> choices = item.getChoices();
-            if (!CollectionUtils.isEmpty(choices)) {
-                String text = choices.get(0).getText();
-                if (!ObjectUtils.isEmpty(text)) {
-                    stringBuffer.append(text);
-                }
-            }
-        });
         ChatSessionDetail chatSessionAnswerDetail = ChatSessionDetail.builder()
                 .sessionId(sessionId)
                 .sequence(Long.valueOf(String.valueOf(redisTemplate.get(redis))))
-                .content(stringBuffer.toString())
+                .content(result)
                 .type(ChatSessionInfoTypeEnum.ANSWER.getCode())
                 .build();
         if (user != null) {

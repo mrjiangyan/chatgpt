@@ -84,7 +84,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
             log.info("result:{}", chatResult);
             if (!ObjectUtils.isEmpty(chatResult) && !CollectionUtils.isEmpty(chatResult.getChoices())) {
                 String answerContent = chatResult.getChoices().get(0).getText();
-                String answer = answerContent.replace("\\", "");
+                String answer = answerContent.trim().replace("\\", "");
                 redisTemplate.set(CHAT_SESSION_CONTEXT_KEY + sessionId, question + answer, CHAT_SESSION_INFO_EXPIRE_SECONDS);
                 chatApplicationService.createSessionInfo(chat, answerContent, user);
                 return Mono.just(Result.ok(answerContent));
@@ -109,13 +109,36 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         var user = getCurrentUser();
         //sessionId校验合法性
         chatApplicationService.checkSessionId(sessionId);
-        var eventStream = service.createCompletionFlux(this.generateRequest(prompt));
+
+        String redisKey = CHAT_SESSION_CONTEXT_KEY + sessionId;
+        String question;
+        //拼接提问
+        if (getRedisTemplate().hasKey(redisKey)) {
+            question = JsonUtils.toJson(getRedisTemplate().get(redisKey)).trim().replace("\\", "").replace("\"", "").replace("n", "\\n") + CommonConstant.SPLICER + prompt;
+        } else {
+            question = prompt;
+        }
+        log.info("question:{}", question);
+        var eventStream = service.createCompletionFlux(this.generateRequest(question));
         eventStream.doOnError(x -> log.error("doOnError SSE:", x));
         String finalSessionId = sessionId;
         eventStream.subscribe(consumer
                 , error -> log.error("Error receiving SSE:", error),
                 () -> {
-                    chatApplicationService.createSessionInfo(finalSessionId, prompt, list, user);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    list.forEach(item -> {
+                        List<ChatResult.Choice> choices = item.getChoices();
+                        if (!CollectionUtils.isEmpty(choices)) {
+                            String text = choices.get(0).getText();
+                            if (!ObjectUtils.isEmpty(text)) {
+                                stringBuilder.append(text);
+                            }
+                        }
+                    });
+                    String answerContent = stringBuilder.toString();
+                    String answer = answerContent.replace("\\", "");
+                    redisTemplate.set(CHAT_SESSION_CONTEXT_KEY + finalSessionId, question + answer, CHAT_SESSION_INFO_EXPIRE_SECONDS);
+                    chatApplicationService.createSessionInfo(finalSessionId, prompt, answerContent, user);
                     list.clear();
                 }
         );
