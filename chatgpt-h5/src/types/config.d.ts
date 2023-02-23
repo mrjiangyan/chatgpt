@@ -1,4 +1,9 @@
-import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '/@/enums/menuEnum'
+import {
+  MenuTypeEnum,
+  MenuModeEnum,
+  TriggerEnum,
+  MixSidebarTriggerEnum
+} from '/@/enums/menuEnum'
 import {
   ContentEnum,
   PermissionModeEnum,

@@ -18,10 +18,13 @@
             v-model="formData.captcha"
             type="text"
             placeholder="验证码"
-            style="max-width:200px"
+            style="max-width: 200px"
             :rules="[{ required: true, message: '请填写验证码' }]"
           />
-          <div :style="{ 'text-align': 'right', 'margin-left': '20px' }" class="enter-x">
+          <div
+            :style="{ 'text-align': 'right', 'margin-left': '20px' }"
+            class="enter-x"
+          >
             <img
               v-if="randCodeData.requestCodeSuccess"
               style="margin-top: 2px; max-width: initial"
@@ -37,7 +40,7 @@
           </div>
         </div>
       </van-cell-group>
-      <div style="margin: 16px;">
+      <div style="margin: 16px">
         <van-button round block type="primary" native-type="submit">
           提交
         </van-button>
@@ -46,7 +49,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, unref, onMounted } from 'vue'
+import { defineComponent, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { login, getCodeInfo } from '@/api/user'
 import { Toast } from 'vant'

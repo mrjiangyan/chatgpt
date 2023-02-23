@@ -8,7 +8,11 @@ export const setToken = (token: string, cookieExpires: any) => {
   Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
 }
 
-export const setCookie = (key: string, value: string, cookieExpires: number) => {
+export const setCookie = (
+  key: string,
+  value: string,
+  cookieExpires: number
+) => {
   Cookies.set(key, value, { expires: cookieExpires || 1 })
 }
 

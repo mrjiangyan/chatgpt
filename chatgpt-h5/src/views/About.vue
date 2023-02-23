@@ -53,7 +53,12 @@
         </div>
       </div>
       <div class="talk">
-        <van-tabs v-model:active="state.activeModule" sticky class=" my-tab" color="#85a5ff">
+        <van-tabs
+          v-model:active="state.activeModule"
+          sticky
+          class=" my-tab"
+          color="#85a5ff"
+        >
           <van-tab title="动态">
             <div class="talk-item">
               <div class="talk-user">
@@ -71,9 +76,15 @@
 
               <div class="talk-action">
                 <!-- 点赞70 -->
-                <div class="like"><van-icon name="like" size="16" color="red" /> <span>79</span></div>
-                <div class="comment"><van-icon name="comment-o" size="16" /><span>12</span></div>
-                <div class="guide"><van-icon name="guide-o" size="16" /> <span>10</span></div>
+                <div class="like">
+                  <van-icon name="like" size="16" color="red" /> <span>79</span>
+                </div>
+                <div class="comment">
+                  <van-icon name="comment-o" size="16" /><span>12</span>
+                </div>
+                <div class="guide">
+                  <van-icon name="guide-o" size="16" /> <span>10</span>
+                </div>
               </div>
             </div>
           </van-tab>

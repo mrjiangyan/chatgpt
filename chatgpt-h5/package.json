@@ -14,6 +14,7 @@
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "date-fns": "^2.29.3",
+    "event-source-polyfill": "^1.0.31",
     "hydrogen-js-sdk": "^2.2.4",
     "infinite-loading-vue3-ts": "^1.0.5",
     "js-cookie": "^3.0.1",

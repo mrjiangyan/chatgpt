@@ -19,7 +19,21 @@ import {
   Empty
 } from 'vant'
 
-const plugins = [Button, List, Cell, Tabbar, TabbarItem, Icon, NavBar, Field, ActionSheet, Uploader, Popover, Tab, Tabs]
+const plugins = [
+  Button,
+  List,
+  Cell,
+  Tabbar,
+  TabbarItem,
+  Icon,
+  NavBar,
+  Field,
+  ActionSheet,
+  Uploader,
+  Popover,
+  Tab,
+  Tabs
+]
 
 const useComponents = [Swipe, SwipeItem, SwipeCell, Empty]
 export const vantPlugins = {
