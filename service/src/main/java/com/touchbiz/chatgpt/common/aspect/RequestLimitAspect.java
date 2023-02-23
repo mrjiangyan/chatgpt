@@ -1,6 +1,5 @@
 package com.touchbiz.chatgpt.common.aspect;
 
-import com.touchbiz.chatgpt.common.aspect.annotation.RequestLimit;
 import com.touchbiz.chatgpt.common.exception.RequestLimitException;
 import com.touchbiz.chatgpt.infrastructure.constants.CommonConstant;
 import com.touchbiz.chatgpt.infrastructure.utils.RequestUtils;
@@ -12,8 +11,12 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
 
@@ -24,19 +27,27 @@ import static com.touchbiz.common.utils.text.CommonConstant.X_ACCESS_TOKEN;
 @Slf4j
 @Aspect
 @Component
+@RefreshScope
 public class RequestLimitAspect {
 
     private static final String REQUEST_LIMIT_KEY = "request-limit";
 
+    @Value("${request-limit.maxCount:10}")
+    private Integer requestLimitMaxCount;
+
+    @Value("${request-limit.timeout:-1}")
+    private Long timeout;
+
     @Autowired
     private RedisTemplate redisTemplate;
+
 
     @Pointcut("@annotation(com.touchbiz.chatgpt.common.aspect.annotation.RequestLimit)")
     private void requestLimitRule() {
     }
 
-    @Around("@annotation(requestLimit)")
-    public Object requestLimit(ProceedingJoinPoint joinPoint, RequestLimit requestLimit) throws RequestLimitException {
+    @Around("requestLimitRule()")
+    public Object requestLimit(ProceedingJoinPoint joinPoint) throws RequestLimitException {
         var request = ReactiveRequestContextHolder.get();
         String token = request.getHeaders().getFirst(X_ACCESS_TOKEN);
         if (ObjectUtils.isNotEmpty(token) && redisTemplate.hasKey(CommonConstant.SYS_USERS_CACHE + token)) {
@@ -49,11 +60,15 @@ public class RequestLimitAspect {
         log.info("url={}", url);
         String redisKey = String.format("%s::%s", REQUEST_LIMIT_KEY, hostAddress);
         long count = redisTemplate.opsForValue().increment(redisKey, 1);
-        if (count == 1) {
+//        if (count == 1) {
+        if (timeout > 0) {
+            redisTemplate.expire(redisKey, timeout, TimeUnit.SECONDS);
+        } else {
             redisTemplate.persist(redisKey);
         }
-        if (count > requestLimit.maxCount()) {
-            String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimit.maxCount());
+//        }
+        if (count > requestLimitMaxCount) {
+            String error = String.format("HTTP请求【%s】超过了限定的访问次数【%s】", url, requestLimitMaxCount);
             log.error(error);
             throw new RequestLimitException(error);
         }

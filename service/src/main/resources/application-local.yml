@@ -53,3 +53,7 @@ wechat:
   appId: wx71b6f43f81ed66d9
   appSecret: 4b238cf258673414c438837199b1b01b
   token: PC8cVHmGxnSq8zmO
+
+#请求次数和时间限制，时间单位：秒，不设置默认 永久
+request-limit:
+  maxCount: 10
