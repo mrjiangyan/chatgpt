@@ -99,6 +99,8 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     public Flux<ServerSentEvent<Result<String>>> completion(@RequestParam("sessionId") String sessionId,
                                                               @RequestParam("prompt") String prompt
                                                               ){
+        //sessionId校验合法性
+        chatApplicationService.checkSessionId(sessionId);
         var eventStream = service.createCompletionFlux(this.generateRequest(prompt));
         eventStream.doOnError(x-> log.error("doOnError SSE:", x));
         eventStream.subscribe(consumer
@@ -108,8 +110,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                     Result<String> result = Result.ok();
             result.setResult(x.data());
             return ServerSentEvent.builder(result).build();
-                })
-                .subscribeOn(Schedulers.elastic());
+                }).subscribeOn(Schedulers.elastic());
     }
 
 
