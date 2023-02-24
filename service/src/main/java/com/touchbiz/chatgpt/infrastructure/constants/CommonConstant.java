@@ -27,4 +27,6 @@ public interface CommonConstant {
     String TOKEN_PREFIX = "Bearer ";
 
     String SPLICER = "\n\n";
+
+    String CHARACTER = "@#$!";
 }
