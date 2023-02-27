@@ -11,6 +11,7 @@ import okhttp3.*;
 import org.junit.Test;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -22,7 +23,7 @@ public class CscecTokenClearTest {
     @SneakyThrows
     @Test
     public void testDeleteMaterialUser(){
-        var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzY5ODg2MjksInVzZXJuYW1lIjoiSmVmZiJ9.JoWXXJHLm5sdeKqbLAYWkrgOaET-UFmNpXdaO1roJew";
+        var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzczOTU5NjksInVzZXJuYW1lIjoiMTc3MTc5MjE1MzEifQ.rsesZj4UQDrkMY_lfTTTTS452P2YqM_ihWxN3TDZFDs";
         var url = "https://aiot.cscec8b.com.cn:41883/ai/count/h5/sys/online/list?pageSize=100";
         //下载现有的所有用户
         var request = new Request.Builder()
@@ -58,11 +59,26 @@ public class CscecTokenClearTest {
 
     }
 
+    @SneakyThrows
+    @Test
+    public void testAll(){
+        while(true){
+            int random = new Random().nextInt(1,5);
+            log.info("random-material:{}", random);
+            Thread.sleep(1000*60 * random);
+            testDeleteMaterialUser();
+            random = new Random().nextInt(1,5);
+            log.info("random-nameplate:{}", random);
+            Thread.sleep(1000*60 * random);
+            testDeleteMaterialUser();
+        }
+    }
+
 
     @SneakyThrows
     @Test
     public void testDeleteNameplateUser(){
-        var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzY5ODk3MDAsInVzZXJuYW1lIjoiSmVmZiJ9.DbQxh0IkKt-xAyFim59f7hnlnXrDr1Gvm-xjYV2B2fw";
+        var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2Nzc0MDA1OTMsInVzZXJuYW1lIjoiMTc3MTc5MjE1MzEifQ.acp6hDPYLMRkLTre-PejhE3OQVUCIyrUfgt21Sz0aDQ";
         var url = "https://aiot.cscec8b.com.cn:41883/ai/ocr/h5/sys/online/list?pageSize=100";
         //下载现有的所有用户
         var request = new Request.Builder()

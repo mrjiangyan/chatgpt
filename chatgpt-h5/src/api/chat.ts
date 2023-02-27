@@ -28,7 +28,7 @@ export const asyncChat = (chat: ChatRequest) => {
   chat.sessionId = getCookie(SESSION_ID_KEY) as string
   console.log(chat.sessionId)
   const url = getHost() + 'chatGpt/chatting/completion?sessionId='
-    + chat.sessionId + "&prompt=" + encodeURI(chat.prompt)
+    + encodeURI(chat.sessionId) + "&prompt=" + encodeURI(chat.prompt)
   const es = new EventSourcePolyfill(url, {
     headers: getHeaders()
   })

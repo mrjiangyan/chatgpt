@@ -36,7 +36,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.*;
 
@@ -99,6 +99,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
     @GetMapping(value = "/completion", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<Result<String>>> completion(@RequestParam("sessionId") String sessionId,
                                                             @RequestParam("prompt") String prompt) {
+        log.info("sessionId:{},prompt:{}", sessionId, prompt);
         if (sessionId.contains(" ")) {
             sessionId = sessionId.replace(" ", "+");
         }
@@ -119,12 +120,14 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
         eventStream.doOnError(x -> log.error("doOnError SSE:", x));
         String finalSessionId = sessionId;
         List<ChatResult> list = new ArrayList<>();
+        AtomicReference<ChatResult> lastChatResult = null;
         eventStream.subscribe(content -> {
                     String data = content.data();
                     if ("[DONE]".equals(data)) {
                         return;
                     }
                     ChatResult chatResult = JsonUtils.toObject(data, ChatResult.class);
+                    lastChatResult.set(chatResult);
                     list.add(chatResult);
                     log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
                             LocalTime.now(), content.event(), content.id(), data
@@ -136,9 +139,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                         List<ChatResult.Choice> choices = item.getChoices();
                         if (!CollectionUtils.isEmpty(choices)) {
                             String text = choices.get(0).getText();
-                            if (!ObjectUtils.isEmpty(text)) {
-                                stringBuilder.append(text);
-                            }
+                            stringBuilder.append(text);
                         }
                     });
                     String answerContent = stringBuilder.toString();
@@ -146,6 +147,65 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                     String answer = answerContent.replace("\n", CommonConstant.CHARACTER);
                     redisTemplate.set(CHAT_SESSION_CONTEXT_KEY + finalSessionId, qn + answer, CHAT_SESSION_INFO_EXPIRE_SECONDS);
                     chatApplicationService.createSessionInfo(finalSessionId, prompt, answerContent, user);
+                }
+        );
+        return eventStream.map(x -> {
+            Result<String> result = Result.ok();
+            result.setResult(x.data());
+            return ServerSentEvent.builder(result).build();
+        }).subscribeOn(Schedulers.elastic());
+    }
+
+    @SneakyThrows
+    @GetMapping(value = "/continueCompletion", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Result<String>>> continueCompletion(@RequestParam("sessionId") String sessionId) {
+        if (sessionId.contains(" ")) {
+            sessionId = sessionId.replace(" ", "+");
+        }
+        //sessionId校验合法性
+        chatApplicationService.checkSessionId(sessionId);
+        var user = getCurrentUser();
+        String redisKey = CHAT_SESSION_CONTEXT_KEY + sessionId;
+        String question;
+        //拼接提问
+        if (getRedisTemplate().hasKey(redisKey)) {
+            question = JsonUtils.toJson(getRedisTemplate().get(redisKey)).replace("\"", "").replace(CommonConstant.CHARACTER,"\n") + CommonConstant.SPLICER;
+        } else {
+            question = "";
+        }
+        log.info("question:{}", question);
+        var eventStream = service.createCompletionFlux(this.generateRequest(question));
+
+        eventStream.doOnError(x -> log.error("doOnError SSE:", x));
+        String finalSessionId = sessionId;
+        List<ChatResult> list = new ArrayList<>();
+        AtomicReference<ChatResult> lastChatResult = null;
+        eventStream.subscribe(content -> {
+                    String data = content.data();
+                    if ("[DONE]".equals(data)) {
+                        return;
+                    }
+                    ChatResult chatResult = JsonUtils.toObject(data, ChatResult.class);
+                    lastChatResult.set(chatResult);
+                    list.add(chatResult);
+                    log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
+                            LocalTime.now(), content.event(), content.id(), data
+                    );
+                }, error -> log.error("Error receiving SSE:", error),
+                () -> {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    list.forEach(item -> {
+                        List<ChatResult.Choice> choices = item.getChoices();
+                        if (!CollectionUtils.isEmpty(choices)) {
+                            String text = choices.get(0).getText();
+                            stringBuilder.append(text);
+                        }
+                    });
+                    String answerContent = stringBuilder.toString();
+                    String qn = question.replace("\n", CommonConstant.CHARACTER);
+                    String answer = answerContent.replace("\n", CommonConstant.CHARACTER);
+                    redisTemplate.set(CHAT_SESSION_CONTEXT_KEY + finalSessionId, qn + answer, CHAT_SESSION_INFO_EXPIRE_SECONDS);
+                    chatApplicationService.createSessionInfo(finalSessionId, "prompt", answerContent, user);
                 }
         );
         return eventStream.map(x -> {

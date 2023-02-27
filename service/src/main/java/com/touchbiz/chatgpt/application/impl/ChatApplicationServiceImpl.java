@@ -192,7 +192,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
             throw new BizException("会话id不存在，请联系管理员");
         }
         if (!AesEncryptUtil.isDesEncrypt(sessionId)) {
-            throw new BizException("会话id验证失败，请联系管理员");
+            throw new BizException("会话id验证失败，非法操作");
         }
     }
 }
