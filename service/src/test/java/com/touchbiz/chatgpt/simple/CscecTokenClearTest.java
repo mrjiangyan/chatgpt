@@ -63,13 +63,13 @@ public class CscecTokenClearTest {
     @Test
     public void testAll(){
         while(true){
-            int random = new Random().nextInt(1,5);
+            int random = new Random().nextInt(1,10);
             log.info("random-material:{}", random);
-            Thread.sleep(1000*60 * random);
+            Thread.sleep(1000 * random);
             testDeleteMaterialUser();
-            random = new Random().nextInt(1,5);
+            random = new Random().nextInt(1,10);
             log.info("random-nameplate:{}", random);
-            Thread.sleep(1000*60 * random);
+            Thread.sleep(1000 * random);
             testDeleteMaterialUser();
         }
     }
