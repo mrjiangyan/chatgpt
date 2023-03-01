@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.theokanning.openai.OpenAiApi;
 import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
-import com.theokanning.openai.completion.CompletionResult;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +19,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import javax.validation.constraints.NotNull;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.stream.Stream;
 
 /**
  * 支持EventStream方式访问的版本
@@ -64,15 +58,14 @@ public class OpenAiEventStreamService extends OpenAiService {
         ParameterizedTypeReference<ServerSentEvent<String>> type
                 = new ParameterizedTypeReference<>() {
         };
-        Flux<ServerSentEvent<String>> eventStream = client
+        return client
                 .post()
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiConfig.getKey())
-                .body(BodyInserters.fromValue(getMapper().writeValueAsString(request)))
+                .body(BodyInserters.fromValue(mapper.writeValueAsString(request)))
                 .retrieve()
                 .bodyToFlux(type);
-        return eventStream;
     }
 
 }

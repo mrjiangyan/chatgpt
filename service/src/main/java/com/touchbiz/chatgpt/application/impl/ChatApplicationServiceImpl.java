@@ -10,7 +10,6 @@ import com.touchbiz.chatgpt.application.ChatApplicationService;
 import com.touchbiz.chatgpt.database.domain.ChatSession;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
-import com.touchbiz.chatgpt.dto.ChatResult;
 import com.touchbiz.chatgpt.dto.response.LoginUser;
 import com.touchbiz.chatgpt.infrastructure.enums.ChatSessionInfoTypeEnum;
 import com.touchbiz.chatgpt.infrastructure.utils.AesEncryptUtil;
@@ -24,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
@@ -66,8 +64,7 @@ public class ChatApplicationServiceImpl implements ChatApplicationService {
         queryWrapper.eq(ChatSession::getUserId, user.getId());
         queryWrapper.eq(ChatSession::getDeleted, false);
         queryWrapper.orderByDesc(ChatSession::getGmtCreate);
-        var sessionPage = chatSessionService.page(page, queryWrapper);
-        return sessionPage;
+        return chatSessionService.page(page, queryWrapper);
     }
 
     @Override
