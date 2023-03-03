@@ -2,7 +2,7 @@
 import { getToken } from '@/utils/cookie'
 
 export const getHost = () => {
-    return process.env.NODE_ENV === 'production' ? 'http://chat-service.touchbiz.tech:8080/api/' : 'http://127.0.0.1:8180/api/'
+    return process.env.NODE_ENV === 'production' ? 'http://chat-service.touchbiz.tech:8080/api/' : 'http://chat-service.touchbiz.tech:8080/api/'
 }
   
 
