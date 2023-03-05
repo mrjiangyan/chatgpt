@@ -20,12 +20,12 @@ export const createSession = async () => {
     url: 'chatGpt/chatting/session',
     method: 'post'
   })
-  setCookie(SESSION_ID_KEY, res.sessionId, 1)
+  localStorage.setItem(SESSION_ID_KEY, res.sessionId)
 }
 
 
 export const asyncChat = (chat: ChatRequest) => {
-  chat.sessionId = getCookie(SESSION_ID_KEY) as string
+  chat.sessionId = localStorage.getItem(SESSION_ID_KEY) as string
   console.log(chat.sessionId)
   const url = getHost() + 'chatGpt/chatting/completion?sessionId='
     + encodeURI(chat.sessionId) + "&prompt=" + encodeURI(chat.prompt)
