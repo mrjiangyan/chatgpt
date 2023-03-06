@@ -26,28 +26,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 
 
 	/**
-	 * 查询被逻辑删除的用户
-     * @param wrapper
-     * @return List<SysUser>
-	 */
-	List<SysUser> selectLogicDeleted(@Param(Constants.WRAPPER) Wrapper<SysUser> wrapper);
-
-	/**
-	 * 还原被逻辑删除的用户
-     * @param userIds 用户id
-     * @param entity
-     * @return int
-	 */
-	int revertLogicDeleted(@Param("userIds") String userIds, @Param("entity") SysUser entity);
-
-	/**
-	 * 彻底删除被逻辑删除的用户
-     * @param userIds 多个用户id
-     * @return int
-	 */
-	int deleteLogicDeleted(@Param("userIds") String userIds);
-
-    /**
      * 更新空字符串为null【此写法有sql注入风险，禁止随便用】
      * @param fieldName
      * @return int

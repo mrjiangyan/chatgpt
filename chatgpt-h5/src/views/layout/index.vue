@@ -7,7 +7,7 @@
         </keep-alive>
       </router-view>
     </div>
-    <div class="bottom-bar">
+    <!-- <div class="bottom-bar">
       <van-tabbar
         v-model="active"
         active-color="#85a5ff"
@@ -25,48 +25,48 @@
           我的
         </van-tabbar-item>
       </van-tabbar>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-export default defineComponent({
-  name: 'LAYOUT',
-  setup() {
-    const router = useRouter()
-    const state = reactive({
-      active: '/home',
-      includeRoutes: ['mines']
-    })
-    watch(
-      () => state.active,
-      val => {
-        router.push(val)
-      }
-    )
+  import { defineComponent, reactive, toRefs, watch, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  export default defineComponent({
+    name: 'LAYOUT',
+    setup() {
+      const router = useRouter()
+      const state = reactive({
+        active: '/home',
+        includeRoutes: ['mines']
+      })
+      watch(
+        () => state.active,
+        val => {
+          router.push(val)
+        }
+      )
 
-    onMounted(() => {
-      state.active = router.currentRoute.value.path
-    })
-    return {
-      ...toRefs(state)
+      onMounted(() => {
+        state.active = router.currentRoute.value.path
+      })
+      return {
+        ...toRefs(state)
+      }
     }
-  }
-})
+  })
 </script>
 <style lang="less" scoped>
-// @import "@assets/style/mixin.scss";
-.home {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  .bottom-bar {
-    height: 50px;
+  // @import "@assets/style/mixin.scss";
+  .home {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    .bottom-bar {
+      height: 50px;
+    }
+    .content {
+      flex: 1;
+      overflow: auto;
+    }
   }
-  .content {
-    flex: 1;
-    overflow: auto;
-  }
-}
 </style>
