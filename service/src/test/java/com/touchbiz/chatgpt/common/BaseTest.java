@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(value = {"classpath:local.yml"}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(classes = ChatgptApplication.class )
-@ActiveProfiles(profiles = "dev")
+@ActiveProfiles(profiles = "local")
 @AutoConfigureMockMvc
 //@Transactional
 public abstract class BaseTest {

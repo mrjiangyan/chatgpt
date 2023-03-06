@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableAsync
 @EnableWebFlux
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 //@EnableFeignClients(basePackages = {"com.prime"})
 @MapperScan(basePackages ={"com.touchbiz.chatgpt.database.mapper",
      }

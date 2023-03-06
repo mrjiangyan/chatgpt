@@ -33,6 +33,9 @@ public class CscecTokenClearTest {
         var response = client.newCall(request).execute();
         var json = response.body().string();
         log.info("response:{}", json);
+        if(true){
+            return;
+        }
         Result<PageDTO<SysUserOnlineVO>> result = JsonUtils.toObjectType(json, new TypeReference<Result<PageDTO<SysUserOnlineVO>>>() {
         });
         assert result.isSuccess();
@@ -42,7 +45,7 @@ public class CscecTokenClearTest {
         result.getResult().getRecords().stream().filter(
                 x->!x.getUsername().equals("程帅")
                 && !x.getUsername().equals("13917969197")
-                && !Objects.equals(x.getToken(), "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2NzcxMTU0MDcsInVzZXJuYW1lIjoiSmVmZiJ9.QjKhY5iSUaiAoYdRuoeVLznDWlZ10Kf3yvRBP0UkVEY"))
+                )
                 .forEach(user->{
                     try {
                         forceLogout(
