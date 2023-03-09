@@ -46,6 +46,8 @@ mybatis-plus:
 openai:
   model: 'text-davinci-003'
   timeout: 15s
+  key: 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
+
 
 
 #请求次数和时间限制，时间单位：秒，不设置默认 永久

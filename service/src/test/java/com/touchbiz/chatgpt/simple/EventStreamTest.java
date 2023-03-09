@@ -33,6 +33,7 @@ import java.util.function.Consumer;
 @Slf4j
 public class EventStreamTest {
 
+    String token = "";
 
     @Test
     public void testRetrofit(){
