@@ -262,7 +262,7 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                 .prompt(prompt)
                 .model(config.getModel())
                 .stop(Arrays.asList(" Human:", " AI:"))
-                .maxTokens(128)
+                .maxTokens(1280)
                 .presencePenalty(0.6d)
                 .frequencyPenalty(0d)
                 .temperature(0.9D)
