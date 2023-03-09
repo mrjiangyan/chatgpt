@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.theokanning.openai.service.OpenAiService;
 import com.touchbiz.common.utils.tools.JsonUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -22,13 +25,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
 public class EventStreamTest {
 
-    String token = "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";
 
     @Test
     public void testRetrofit(){
@@ -164,5 +168,60 @@ public class EventStreamTest {
         log.info("response:{}", response);
 
     }
+
+
+
+    @SneakyThrows
+    @Test
+    public void testChatGptModelHttp() {
+
+        HttpClient client = HttpClient.newBuilder().build();
+
+        List<ChatMessage> message = new ArrayList<>();
+        message.add(new ChatMessage("user","请给我推荐10本书"));
+        ChatCompletionRequest completionRequest = ChatCompletionRequest.builder()
+//                .prompt("Human:" + chat.prompt +"\nAI:")
+                .model("gpt-3.5-turbo")
+                .stream(true)
+                .messages(message).build();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+
+        var json = mapper.writeValueAsString(completionRequest);
+        log.info("json:{}", json);
+        HttpRequest request = HttpRequest.newBuilder()
+                .header("Authorization", "Bearer " + this.token)
+                .header( "Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .uri(URI.create("https://api.openai.com/v1/chat/completions"))
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofLines())
+                .thenApply(HttpResponse::body).get()
+                .forEach(System.out::println);
+    }
+
+    @Builder
+    @Data
+    public static class ChatCompletionRequest{
+
+        private String model;
+
+        private Boolean stream;
+
+        private List<ChatMessage> messages;
+    }
+
+    @AllArgsConstructor
+    @Data
+    public static class ChatMessage{
+        private String role;
+
+        private String content;
+    }
+
 
 }

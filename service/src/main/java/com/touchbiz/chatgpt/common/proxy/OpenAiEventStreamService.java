@@ -8,6 +8,7 @@ import com.theokanning.openai.OpenAiApi;
 import com.theokanning.openai.OpenAiService;
 import com.theokanning.openai.completion.CompletionRequest;
 import com.touchbiz.chatgpt.boot.config.OpenAiConfig;
+import com.touchbiz.chatgpt.dto.request.ChatCompletionRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -55,6 +56,24 @@ public class OpenAiEventStreamService extends OpenAiService {
     public Flux<ServerSentEvent<String>> createCompletionFlux(@NotNull CompletionRequest request) {
         request.setStream(true);
         WebClient client = WebClient.create("https://api.openai.com/v1/completions");
+        ParameterizedTypeReference<ServerSentEvent<String>> type
+                = new ParameterizedTypeReference<>() {
+        };
+        return client
+                .post()
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiConfig.getKey())
+                .body(BodyInserters.fromValue(mapper.writeValueAsString(request)))
+                .retrieve()
+                .bodyToFlux(type);
+    }
+
+    @SneakyThrows
+    public Flux<ServerSentEvent<String>> createChatCompletionFlux(@NotNull ChatCompletionRequest request) {
+        request.setStream(true);
+        request.setModel("gpt-3.5-turbo");
+        WebClient client = WebClient.create("https://api.openai.com/v1/chat/completions");
         ParameterizedTypeReference<ServerSentEvent<String>> type
                 = new ParameterizedTypeReference<>() {
         };

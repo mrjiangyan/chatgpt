@@ -10,7 +10,10 @@ import com.touchbiz.chatgpt.common.proxy.OpenAiEventStreamService;
 import com.touchbiz.chatgpt.database.domain.ChatSessionDetail;
 import com.touchbiz.chatgpt.dto.Chat;
 import com.touchbiz.chatgpt.dto.ChatResult;
+import com.touchbiz.chatgpt.dto.request.ChatCompletionRequest;
+import com.touchbiz.chatgpt.dto.request.ChatMessageRequest;
 import com.touchbiz.chatgpt.dto.request.ValidChatRight;
+import com.touchbiz.chatgpt.dto.response.ChatCompontionsResult;
 import com.touchbiz.chatgpt.dto.response.ChatSessionDTO;
 import com.touchbiz.chatgpt.infrastructure.constants.CommonConstant;
 import com.touchbiz.chatgpt.infrastructure.converter.ChatSessionConverter;
@@ -33,9 +36,7 @@ import reactor.core.scheduler.Schedulers;
 
 import javax.validation.Valid;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.touchbiz.chatgpt.infrastructure.constants.CacheConstant.*;
@@ -146,6 +147,70 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                     String qn = question.replace("\n", CommonConstant.CHARACTER);
                     String answer = answerContent.replace("\n", CommonConstant.CHARACTER);
                     redisTemplate.set(CHAT_SESSION_CONTEXT_KEY + finalSessionId, qn + answer, CHAT_SESSION_INFO_EXPIRE_SECONDS);
+                    chatApplicationService.createSessionInfo(finalSessionId, prompt, answerContent, user);
+                }
+        );
+        return eventStream.map(x -> {
+            Result<String> result = Result.ok();
+            result.setResult(x.data());
+            return ServerSentEvent.builder(result).build();
+        }).subscribeOn(Schedulers.elastic());
+    }
+
+    @SneakyThrows
+    @GetMapping(value = "/completions", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<Result<String>>> chatCompletion(@RequestParam("sessionId") String sessionId,
+                                                            @RequestParam("prompt") String prompt) {
+        log.info("sessionId:{},prompt:{}", sessionId, prompt);
+        if (sessionId.contains(" ")) {
+            sessionId = sessionId.replace(" ", "+");
+        }
+        //sessionId校验合法性
+        chatApplicationService.checkSessionId(sessionId);
+        var user = getCurrentUser();
+        final String redisKey = CHAT_SESSION_CONTEXT_KEY + sessionId;
+
+        List<ChatMessageRequest> chatList = redisTemplate.getObjectList(redisKey, ChatMessageRequest.class);
+        if(chatList == null){
+            chatList = new ArrayList<>();
+        }
+        chatList.add(new ChatMessageRequest("user", prompt));
+        var eventStream = service.createChatCompletionFlux(this.generateChatRequest(chatList));
+
+        eventStream.doOnError(x -> log.error("doOnError SSE:", x));
+        String finalSessionId = sessionId;
+        List<ChatCompontionsResult> list = new ArrayList<>();
+        AtomicReference<ChatCompontionsResult> lastChatResult = null;
+        List<ChatMessageRequest> finalChatList = chatList;
+        eventStream.subscribe(content -> {
+                    String data = content.data();
+                    if ("[DONE]".equals(data)) {
+                        //判断上一条的结束原因，如果是因为长度不足，则如何继续请求并拼接到目前的数据中去
+                        return;
+                    }
+                    ChatCompontionsResult chatResult = JsonUtils.toObject(data, ChatCompontionsResult.class);
+                    list.add(chatResult);
+                    log.info("Time: {} - event: name[{}], id [{}], content[{}] ",
+                            LocalTime.now(), content.event(), content.id(), data
+                    );
+                }, error -> log.error("Error receiving SSE:", error),
+                () -> {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    list.forEach(item -> {
+                        List<ChatCompontionsResult.Choice> choices = item.getChoices();
+                        if (!CollectionUtils.isEmpty(choices)) {
+                            choices.forEach(choice->{
+                                choice.getDelta().forEach(delta->{
+                                    stringBuilder.append(delta.getContent());
+                                });
+                            });
+                        }
+                    });
+                    String answerContent = stringBuilder.toString();
+
+                    ChatMessageRequest request = new ChatMessageRequest("system", answerContent);
+                    finalChatList.add(request);
+                    redisTemplate.setObjectList(CHAT_SESSION_CONTEXT_KEY + finalSessionId, finalChatList, CHAT_SESSION_INFO_EXPIRE_SECONDS);
                     chatApplicationService.createSessionInfo(finalSessionId, prompt, answerContent, user);
                 }
         );
@@ -269,5 +334,14 @@ public class ChatController extends AbstractBaseController<ChatSessionDetail, Ch
                 .bestOf(1)
                 .topP(1d)
                 .build();
+    }
+
+    private ChatCompletionRequest generateChatRequest(List<ChatMessageRequest> list) {
+        var request = ChatCompletionRequest.builder().temperature(0d)
+                .messages(list)
+                .build();
+        request.setFrequencyPenalty(0d);
+        request.setMaxTokens(4096);
+        return request;
     }
 }
